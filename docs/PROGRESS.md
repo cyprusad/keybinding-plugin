@@ -2,7 +2,7 @@
 
 | Task | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Repository and plugin skeleton | Complete | 81b8d32 | Manifest, loadable entry points, bar/panel lifecycle, smoke harness, and validations pass. |
+| 01 — Repository and plugin skeleton | Complete | 2ae6a48 | Manifest, loadable entry points, bar/panel lifecycle, smoke harness, and validations pass. |
 | 02 — Catalog generator | Pending | — | |
 | 03 — Configuration inspector | Pending | — | |
 | 04 — Transactional patcher | Pending | — | |
@@ -23,4 +23,4 @@
 | Commit | Scope |
 |---|---|
 | `c284cd1` | Add approved engineering plan. |
-| `81b8d32` | Add Task 01 plugin skeleton and shell smoke harness. |
+| `2ae6a48` | Add Task 01 plugin skeleton and shell smoke harness. |
