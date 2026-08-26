@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+cases="$root/tests/shell/cases"
+
+for test in "$cases"/*; do
+  [ -f "$test" ] || continue
+  [ -x "$test" ] || continue
+  "$test"
+done

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.sai.keybind-dojo",
+  "name": "Keybind Dojo",
+  "version": "0.1.0",
+  "author": "Sai",
+  "license": "MIT",
+  "description": "A local-first, gamified Omarchy keybinding guide.",
+  "kinds": ["bar-widget", "service", "overlay"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml",
+    "service": "Service.qml",
+    "overlay": "Overlay.qml"
+  },
+  "barWidget": {
+    "displayName": "Keybind Dojo",
+    "category": "Learning",
+    "allowMultiple": false,
+    "defaultSection": "right",
+    "defaults": {
+      "guideDelayMs": 0,
+      "showInFullscreen": false
+    },
+    "schema": [
+      {
+        "key": "guideDelayMs",
+        "type": "integer",
+        "label": "Super Guide delay (ms)"
+      },
+      {
+        "key": "showInFullscreen",
+        "type": "boolean",
+        "label": "Show over fullscreen windows"
+      }
+    ]
+  }
+}
