@@ -45,7 +45,6 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    icon: "keyboard"
     text: "Dojo"
     labelVisible: true
     onPressed: function(button) {
