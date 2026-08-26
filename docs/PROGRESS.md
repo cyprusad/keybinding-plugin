@@ -7,7 +7,7 @@
 | 03 — Configuration inspector | Complete | 512367d | Read-only path, symlink, safety, marker, Git, and diff inspection pass in fixtures and live mode. |
 | 04 — Transactional patcher | Complete | 1ffa8d8 | Fixture-only transactional enable/disable, hash checks, backups, Lua validation, atomic replacement, and restoration pass. |
 | 05 — Lua bridge | Complete | 6bc16ab | Fail-closed bridge, exact protocol matching, modifier state, duplicate-load guard, and mock stress tests pass. |
-| 06 — Live feasibility gate | Failed | — | Clean reload and restoration passed, but physical Super input produced no production-bridge events; see `docs/FEASIBILITY.md`. |
+| 06 — Live feasibility gate | Complete | 75ef370 | Live bridge PASS: 267-match matrix, physical lifecycle/chord checks, p95 1 ms, 0.1600% five-minute Quickshell CPU ceiling, identical bind metadata, and byte-identical cleanup. |
 | 07 — Production service | Pending | — | |
 | 08 — Instant Super Guide | Pending | — | |
 | 09 — Bar widget and onboarding | Pending | — | |
@@ -28,3 +28,11 @@
 | `512367d` | Add Task 03 read-only bridge inspector and fixture tests. |
 | `1ffa8d8` | Add Task 04 transactional bridge patcher and fixture test. |
 | `6bc16ab` | Add Task 05 fail-closed Lua bridge and mock harness. |
+| `7dd6bdb` | Correct the live Hyprland keyboard callback signature discovered during Task 06. |
+| `07488dc` | Record the first live feasibility failure and safe config restoration. |
+| `13e79af` | Load the bridge from the installed plugin path. |
+| `25dd38e` | Harden bridge reload behavior and live catalog normalization. |
+| `070c9c5` | Add the Task 06 live timing probe and minimal guide surface. |
+| `d3dc99a` | Load the feasibility service in the installed Omarchy shell. |
+| `af08db5` | Correct the bar widget properties found during live validation. |
+| `75ef370` | Record the Task 06 PASS and add the 267-entry live catalog matrix. |
