@@ -48,6 +48,8 @@ BarWidget {
     icon: "keyboard"
     text: "Dojo"
     labelVisible: true
-    onClicked: root.toggle()
+    onPressed: function(button) {
+      if (button === Qt.LeftButton) root.toggle()
+    }
   }
 }
