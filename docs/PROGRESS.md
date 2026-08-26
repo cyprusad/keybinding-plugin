@@ -5,7 +5,7 @@
 | 01 — Repository and plugin skeleton | Complete | 2ae6a48 | Manifest, loadable entry points, bar/panel lifecycle, smoke harness, and validations pass. |
 | 02 — Catalog generator | Complete | 88e1679 | Offline and live read-only validation pass: 228 active bindings, valid Lua, and second run reports `changed:false` with unchanged mtime. |
 | 03 — Configuration inspector | Complete | 512367d | Read-only path, symlink, safety, marker, Git, and diff inspection pass in fixtures and live mode. |
-| 04 — Transactional patcher | Pending | — | |
+| 04 — Transactional patcher | Complete | 1ffa8d8 | Fixture-only transactional enable/disable, hash checks, backups, Lua validation, atomic replacement, and restoration pass. |
 | 05 — Lua bridge | Pending | — | |
 | 06 — Live feasibility gate | Pending | — | |
 | 07 — Production service | Pending | — | |
@@ -26,3 +26,4 @@
 | `2ae6a48` | Add Task 01 plugin skeleton and shell smoke harness. |
 | `88e1679` | Add Task 02 offline catalog generator, fixtures, and tests. |
 | `512367d` | Add Task 03 read-only bridge inspector and fixture tests. |
+| `1ffa8d8` | Add Task 04 transactional bridge patcher and fixture test. |
