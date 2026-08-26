@@ -7,7 +7,7 @@
 | 03 — Configuration inspector | Complete | 512367d | Read-only path, symlink, safety, marker, Git, and diff inspection pass in fixtures and live mode. |
 | 04 — Transactional patcher | Complete | 1ffa8d8 | Fixture-only transactional enable/disable, hash checks, backups, Lua validation, atomic replacement, and restoration pass. |
 | 05 — Lua bridge | Complete | 6bc16ab | Fail-closed bridge, exact protocol matching, modifier state, duplicate-load guard, and mock stress tests pass. |
-| 06 — Live feasibility gate | Pending | — | |
+| 06 — Live feasibility gate | Failed | — | Clean reload and restoration passed, but physical Super input produced no production-bridge events; see `docs/FEASIBILITY.md`. |
 | 07 — Production service | Pending | — | |
 | 08 — Instant Super Guide | Pending | — | |
 | 09 — Bar widget and onboarding | Pending | — | |
