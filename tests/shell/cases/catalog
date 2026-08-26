@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+out=$(mktemp -d)
+trap 'rm -rf "$out"' EXIT
+
+first=$("$root/scripts/generate-catalog" --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" --keymap-file "$root/tests/fixtures/catalog-keymap.txt" --output-dir "$out")
+printf '%s\n' "$first" | grep -q '"changed":true'
+jq -e '.schemaVersion == 1 and (.bindings | length == 5)' "$out/catalog.json" >/dev/null
+! jq -e '.bindings[] | has("arg")' "$out/catalog.json" >/dev/null
+! grep -Fq "secret" "$out/bridge-catalog.lua"
+luac -p "$out/bridge-catalog.lua"
+second=$("$root/scripts/generate-catalog" --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" --keymap-file "$root/tests/fixtures/catalog-keymap.txt" --output-dir "$out")
+printf '%s\n' "$second" | grep -q '"changed":false'

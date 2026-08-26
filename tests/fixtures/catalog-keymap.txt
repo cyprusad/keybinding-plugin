@@ -1,0 +1,30 @@
+xkb_keycodes "evdev" {
+    <AE01> = 10;
+    <AE02> = 11;
+    <AE11> = 20;
+    <AE12> = 21;
+    <AD03> = 26;
+    <RTRN> = 36;
+    <LFSH> = 50;
+    <RTSH> = 62;
+    <LCTL> = 37;
+    <RCTL> = 105;
+    <LALT> = 64;
+    <RALT> = 108;
+    <LWIN> = 133;
+    <RWIN> = 134;
+};
+xkb_symbols "pc" {
+    key <AE11> { [ minus ] };
+    key <AE12> { [ equal ] };
+    key <AD03> { [ e ] };
+    key <RTRN> { [ Return ] };
+    key <LFSH> { [ Shift_L ] };
+    key <RTSH> { [ Shift_R ] };
+    key <LCTL> { [ Control_L ] };
+    key <RCTL> { [ Control_R ] };
+    key <LALT> { [ Alt_L ] };
+    key <RALT> { [ Alt_R ] };
+    key <LWIN> { [ Super_L ] };
+    key <RWIN> { [ Super_R ] };
+};

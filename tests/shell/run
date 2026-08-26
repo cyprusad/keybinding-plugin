@@ -4,8 +4,10 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 cases="$root/tests/shell/cases"
 
+pattern=\${1-}
 for test in "$cases"/*; do
   [ -f "$test" ] || continue
   [ -x "$test" ] || continue
+  [ -z "$pattern" ] || case "$(basename "$test")" in *"$pattern"*) ;; *) continue ;; esac
   "$test"
 done

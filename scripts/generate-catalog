@@ -1,0 +1,221 @@
+#!/usr/bin/env python3
+"""Generate the local Keybind Dojo catalog and Lua lookup table."""
+import argparse
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import time
+from pathlib import Path
+
+MODIFIERS = {"SHIFT": 1, "CTRL": 4, "CONTROL": 4, "ALT": 8, "SUPER": 64}
+CANONICAL = ("SUPER", "SHIFT", "CTRL", "ALT")
+ALIASES = {"COMMA": "COMMA", "PERIOD": "PERIOD", "MINUS": "MINUS", "EQUAL": "EQUAL", "SLASH": "SLASH"}
+MOUSE_RE = re.compile(r"^(?:mouse|mouse:)", re.I)
+
+
+def fail(code, message):
+    print(json.dumps({"ok": False, "code": code, "message": message}), file=sys.stderr)
+    raise SystemExit(1)
+
+
+def command_output(command, code):
+    try:
+        return subprocess.check_output(command, text=True, stderr=subprocess.STDOUT)
+    except (OSError, subprocess.CalledProcessError) as exc:
+        fail(code, str(exc))
+
+
+def read_input(path, command, code):
+    return Path(path).read_text() if path else command_output(command, code)
+
+
+def value(record, name, default=""):
+    return record.get(name, default).strip()
+
+
+def parse_binds(text):
+    records, current = [], None
+    for line in text.splitlines():
+        if line and not line[0].isspace() and (line.startswith("bind") or line.startswith("unbind")):
+            if current:
+                records.append(current)
+            current = {}
+            continue
+        match = re.match(r"\s*([A-Za-z][A-Za-z0-9_-]*):\s*(.*)$", line)
+        if match and current is not None:
+            current[match.group(1).lower()] = match.group(2).strip()
+    if current:
+        records.append(current)
+    return records
+
+
+def parse_keymap(text):
+    names, symbols = {}, {}
+    for match in re.finditer(r"<([A-Za-z0-9_]+)>\s*=\s*([0-9]+)\s*;", text):
+        names[match.group(1)] = int(match.group(2))
+    for match in re.finditer(r"key\s*<([A-Za-z0-9_]+)>\s*\{\s*\[\s*([^,\]\s]+)", text):
+        symbols.setdefault(match.group(1), []).append(match.group(2).upper())
+    symbol_codes = {}
+    for name, code in names.items():
+        for symbol in symbols.get(name, []):
+            symbol_codes.setdefault(symbol, set()).add(code)
+    return names, symbol_codes
+
+
+def normalize_key(key):
+    key = key.strip()
+    if key.lower().startswith("code:"):
+        return "code:" + key.split(":", 1)[1]
+    if key.lower().startswith("mouse:"):
+        return "mouse:" + key.split(":", 1)[1]
+    key = key.upper().replace("KEY_", "")
+    return ALIASES.get(key, key)
+
+
+def split_combo(modmask, key):
+    mods = []
+    numeric = None
+    try:
+        numeric = int(modmask)
+    except ValueError:
+        pass
+    if numeric is not None:
+        mods = [name for name, bit in (("SUPER", 64), ("SHIFT", 1), ("CTRL", 4), ("ALT", 8)) if numeric & bit]
+    else:
+        parts = re.split(r"\s*\+\s*|\s+", modmask.upper()) if modmask else []
+        mods = ["CTRL" if part == "CONTROL" else part for part in parts if part in MODIFIERS]
+    mods = [name for name in CANONICAL if name in set(mods)]
+    return mods, normalize_key(key)
+
+
+def xkb_codes(key, names, symbol_codes):
+    if key.startswith("code:"):
+        try:
+            return [int(key.split(":", 1)[1])]
+        except ValueError:
+            return []
+    if key.startswith("mouse:"):
+        return []
+    wanted = key.upper()
+    candidates = {wanted, "XF86" + wanted if wanted.startswith("XF86") else wanted}
+    codes = set()
+    for symbol, values in symbol_codes.items():
+        if symbol in candidates or symbol.endswith("_" + wanted) or symbol == "KP_" + wanted:
+            codes.update(values)
+    return sorted(codes)
+
+
+def category(description):
+    text = description.lower()
+    groups = [
+        ("windows", r"window|float|fullscreen|opacity|split|group|focus|move|resize|close"),
+        ("workspaces", r"workspace|scratchpad|special"),
+        ("applications", r"terminal|browser|file manager|launch|menu|emoji|app"),
+        ("system", r"lock|power|wifi|bluetooth|night.?light|system|shutdown|reboot"),
+        ("capture", r"screenshot|screen.?record|recording|capture|color picker"),
+        ("media", r"volume|audio|mute|music|play|pause|media|brightness"),
+        ("clipboard", r"clipboard|copy|paste"),
+        ("notifications", r"notification|dnd|do not disturb"),
+        ("style", r"theme|wallpaper|gap|border|layout|style"),
+    ]
+    for name, pattern in groups:
+        if re.search(pattern, text):
+            return name
+    return "other"
+
+
+def atomic_write(path, data):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=".keybind-dojo.", dir=path.parent)
+    try:
+        os.fchmod(fd, 0o600)
+        with os.fdopen(fd, "w") as handle:
+            handle.write(data)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        os.chmod(path, 0o600)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def lua_string(value):
+    return json.dumps(str(value), ensure_ascii=False).replace("\\u2028", "\\n").replace("\\u2029", "\\n")
+
+
+def build(args):
+    binds = read_input(args.hyprctl_file, ["hyprctl", "binds"], "hyprctl-unavailable")
+    keymap = read_input(args.keymap_file, ["xkbcli", "compile-keymap"], "keymap-unavailable")
+    names, symbol_codes = parse_keymap(keymap)
+    raw = parse_binds(binds)
+    entries, seen = [], set()
+    modifier_codes = {name: set() for name in CANONICAL}
+    for symbol, codes in symbol_codes.items():
+        for name, suffixes in (("SUPER", ("LWIN", "RWIN", "SUPER_L", "SUPER_R")), ("SHIFT", ("SHIFT_L", "SHIFT_R")), ("CTRL", ("CONTROL_L", "CONTROL_R", "CTRL_L", "CTRL_R")), ("ALT", ("ALT_L", "ALT_R"))):
+            if symbol in suffixes:
+                modifier_codes[name].update(codes)
+    for record in raw:
+        mods, key = split_combo(value(record, "modmask", value(record, "mods")), value(record, "key"))
+        if not key and value(record, "keycode"):
+            key = "code:" + value(record, "keycode")
+        if not key:
+            continue
+        description = value(record, "description")
+        dispatcher = value(record, "dispatcher")
+        argument = value(record, "arg", value(record, "argument"))
+        phase = "release" if value(record, "release").lower() in ("1", "true", "yes") else "press"
+        submap = value(record, "submap")
+        repeat = value(record, "repeat").lower() in ("1", "true", "yes")
+        codes = xkb_codes(key, names, symbol_codes)
+        mouse = MOUSE_RE.match(key) is not None
+        normalized = "|".join(["+".join(mods), key, description, dispatcher, argument, phase, submap])
+        identity = "sha256:" + hashlib.sha256(normalized.encode()).hexdigest()
+        if identity in seen:
+            continue
+        seen.add(identity)
+        entries.append({"id": identity, "combo": " + ".join(mods + [key]) if mods else key, "modifiers": mods, "key": key, "xkbCodes": codes, "description": description, "category": category(description), "phase": phase, "submap": submap, "dispatcherKind": dispatcher or "other", "trackable": not mouse, "guideEligible": not mouse, "repeat": repeat})
+    entries.sort(key=lambda item: (item["combo"], item["description"], item["id"]))
+    source = json.dumps({"bindings": entries, "modifierCodes": {k: sorted(v) for k, v in modifier_codes.items()}}, sort_keys=True, separators=(",", ":"))
+    source_hash = "sha256:" + hashlib.sha256(source.encode()).hexdigest()
+    state = Path(args.output_dir)
+    catalog = {"schemaVersion": 1, "generatedAt": int(time.time()), "sourceHash": source_hash, "bindings": entries}
+    lua = ["return {", "  schemaVersion = 1,", f"  sourceHash = {lua_string(source_hash)},", "  modifierCodes = {"]
+    for name in CANONICAL:
+        lua.append("    " + name + " = { " + ", ".join(str(x) for x in sorted(modifier_codes[name])) + " },")
+    lua.append("  },\n  matches = {")
+    for item in entries:
+        if item["trackable"] and item["xkbCodes"]:
+            for code in item["xkbCodes"]:
+                lua.append(f"    [{lua_string('|'.join(['_'.join(item['modifiers']), str(code), item['phase'], item['submap']]))}] = {lua_string(item['id'])},")
+    lua.append("  }\n}\n")
+    catalog_path, lua_path = state / "catalog.json", state / "bridge-catalog.lua"
+    old = None
+    try:
+        old = json.loads(catalog_path.read_text()).get("sourceHash")
+    except (OSError, ValueError):
+        pass
+    changed = old != source_hash or not lua_path.exists()
+    if changed:
+        atomic_write(catalog_path, json.dumps(catalog, ensure_ascii=False, indent=2) + "\n")
+        atomic_write(lua_path, "\n".join(lua))
+    print(json.dumps({"ok": True, "sourceHash": source_hash, "bindingCount": len(entries), "changed": changed}, separators=(",", ":")))
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--hyprctl-file")
+    parser.add_argument("--keymap-file")
+    args = parser.parse_args()
+    if bool(args.hyprctl_file) != bool(args.keymap_file):
+        fail("invalid-arguments", "--hyprctl-file and --keymap-file must be supplied together")
+    build(args)
+
+
+if __name__ == "__main__":
+    main()

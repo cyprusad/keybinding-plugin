@@ -1,0 +1,39 @@
+bind:
+	modmask: 64
+	key: Return
+	keycode: 0
+	dispatcher: exec
+	arg: printf 'secret, "quoted"'
+	description: Terminal, launch
+	submap: 
+	release: 0
+bind:
+	modmask: 0
+	key: code:20
+	keycode: 20
+	dispatcher: exec
+	arg: echo $HOME
+	description: Toggle style
+	release: 1
+bindd:
+	modmask: 64
+	key: Slash
+	keycode: 0
+	dispatcher: __lua
+	arg: __lua
+	description: Lua, "safe"
+	submap: resize
+bind:
+	modmask: 0
+	key: XF86AudioRaiseVolume
+	keycode: 123
+	dispatcher: exec
+	arg: volume
+	description: Volume up
+bind:
+	modmask: 0
+	key: mouse:272
+	keycode: 0
+	dispatcher: exec
+	arg: click
+	description: Mouse action
