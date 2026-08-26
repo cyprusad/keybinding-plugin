@@ -75,9 +75,15 @@ local function event_value(event, key, fallback)
   return value
 end
 
-hl.on("input.keyboard.key", function(event)
-  local code = tonumber(event_value(event, "keycode", event_value(event, "code", 0)))
-  local state = tonumber(event_value(event, "state", -1))
+hl.on("input.keyboard.key", function(keycode, timestamp, event_state)
+  local code, state
+  if type(keycode) == "table" then
+    code = tonumber(event_value(keycode, "keycode", event_value(keycode, "code", 0)))
+    state = tonumber(event_value(keycode, "state", -1))
+  else
+    code = tonumber(keycode)
+    state = tonumber(event_state)
+  end
   if not code or (state ~= 0 and state ~= 1) then return end
   for _, name in ipairs({"SUPER", "SHIFT", "CTRL", "ALT"}) do
     if modifiers[name][code] then
