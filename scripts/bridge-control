@@ -9,6 +9,9 @@ import re
 import stat
 import subprocess
 import sys
+import tempfile
+import time
+import fcntl
 from pathlib import Path
 
 BEGIN = "-- >>> Keybind Dojo managed bridge >>>"
@@ -210,14 +213,93 @@ def inspect(logical, state_dir):
     return result
 
 
+def mutate(command, args):
+    if not args.expected_hash:
+        fail("invalid-arguments", "--expected-hash is required")
+    logical = args.config or default_config()
+    state_dir = args.state_dir or default_state()
+    state_dir.mkdir(parents=True, exist_ok=True)
+    os.chmod(state_dir, 0o700)
+    lock_path = state_dir / "bridge-control.lock"
+    with lock_path.open("a+") as lock:
+        os.chmod(lock_path, 0o600)
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        before = inspect(logical, state_dir)
+        if not before["safeToPatch"]:
+            fail(before["reasonCode"], "configuration is not safe to patch")
+        if before["currentHash"] != args.expected_hash and before["currentHash"] != "sha256:" + args.expected_hash:
+            fail("changed-since-inspect", "configuration hash does not match expected hash")
+        target = Path(before["resolvedPath"])
+        original = target.read_bytes()
+        text = original.decode("utf-8")
+        state, marker_error = marker_state(text)
+        if command == "enable":
+            candidate = text if state == "present" else insertion(text)
+        else:
+            candidate = remove_block(text) if state == "present" else text
+        if candidate == text:
+            output({"ok": True, "changed": False, "logicalPath": str(logical), "resolvedPath": str(target), "oldHash": before["currentHash"], "newHash": before["currentHash"], "validation": "not-needed", "rolledBack": False})
+            return
+        candidate_bytes = candidate.encode("utf-8")
+        syntax_fd, syntax_path = tempfile.mkstemp(prefix=".keybind-dojo-syntax.", dir=target.parent)
+        try:
+            with os.fdopen(syntax_fd, "wb") as syntax_file:
+                syntax_file.write(candidate_bytes)
+            subprocess.run(["luac", "-p", syntax_path], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        except (OSError, subprocess.CalledProcessError) as exc:
+            fail("syntax-error", str(exc))
+        finally:
+            if os.path.exists(syntax_path):
+                os.unlink(syntax_path)
+        backup = state_dir / "backups" / (time.strftime("%Y%m%dT%H%M%SZ", time.gmtime()) + "-" + before["currentHash"][7:19])
+        backup.mkdir(parents=True, exist_ok=False)
+        os.chmod(backup, 0o700)
+        (backup / "content").write_bytes(original)
+        os.chmod(backup / "content", 0o600)
+        (backup / "metadata.json").write_text(json.dumps(before, indent=2) + "\n")
+        os.chmod(backup / "metadata.json", 0o600)
+        fd, temporary = tempfile.mkstemp(prefix=".keybind-dojo.", dir=target.parent)
+        try:
+            os.fchmod(fd, 0o600)
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(candidate_bytes)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.chmod(temporary, stat.S_IMODE(target.stat().st_mode))
+            os.replace(temporary, target)
+        finally:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
+        new_hash = "sha256:" + hashlib.sha256(candidate_bytes).hexdigest()
+        if not args.no_live_reload:
+            reload_result = subprocess.run(["hyprctl", "reload"], text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            errors = subprocess.run(["hyprctl", "configerrors"], text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            if reload_result.returncode != 0 or errors.returncode != 0 or errors.stdout.strip():
+                if "sha256:" + hashlib.sha256(target.read_bytes()).hexdigest() == new_hash:
+                    os.replace(backup / "content", target)
+                    rolled_back = True
+                else:
+                    fail("concurrent-change", "target changed before rollback")
+            else:
+                rolled_back = False
+        else:
+            rolled_back = False
+        output({"ok": True, "changed": True, "logicalPath": str(logical), "resolvedPath": str(target), "oldHash": before["currentHash"], "newHash": new_hash, "backupPath": str(backup), "validation": "skipped" if args.no_live_reload else "passed", "rolledBack": rolled_back})
+
+
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["inspect", "status", "manual-snippet"])
+    parser.add_argument("command", choices=["inspect", "status", "manual-snippet", "enable", "disable"])
+    parser.add_argument("--expected-hash")
+    parser.add_argument("--no-live-reload", action="store_true")
     parser.add_argument("--config", type=Path, default=None)
     parser.add_argument("--state-dir", type=Path, default=None)
     args = parser.parse_args()
     if args.command == "manual-snippet":
         output({"ok": True, "schemaVersion": 1, "snippet": BLOCK})
+        return
+    if args.command in ("enable", "disable"):
+        mutate(args.command, args)
         return
     result = inspect(args.config or default_config(), args.state_dir or default_state())
     if args.command == "status":
