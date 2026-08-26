@@ -6,7 +6,7 @@
 | 02 — Catalog generator | Complete | 88e1679 | Offline and live read-only validation pass: 228 active bindings, valid Lua, and second run reports `changed:false` with unchanged mtime. |
 | 03 — Configuration inspector | Complete | 512367d | Read-only path, symlink, safety, marker, Git, and diff inspection pass in fixtures and live mode. |
 | 04 — Transactional patcher | Complete | 1ffa8d8 | Fixture-only transactional enable/disable, hash checks, backups, Lua validation, atomic replacement, and restoration pass. |
-| 05 — Lua bridge | Pending | — | |
+| 05 — Lua bridge | Complete | 6bc16ab | Fail-closed bridge, exact protocol matching, modifier state, duplicate-load guard, and mock stress tests pass. |
 | 06 — Live feasibility gate | Pending | — | |
 | 07 — Production service | Pending | — | |
 | 08 — Instant Super Guide | Pending | — | |
@@ -27,3 +27,4 @@
 | `88e1679` | Add Task 02 offline catalog generator, fixtures, and tests. |
 | `512367d` | Add Task 03 read-only bridge inspector and fixture tests. |
 | `1ffa8d8` | Add Task 04 transactional bridge patcher and fixture test. |
+| `6bc16ab` | Add Task 05 fail-closed Lua bridge and mock harness. |
