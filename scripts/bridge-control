@@ -16,7 +16,9 @@ from pathlib import Path
 
 BEGIN = "-- >>> Keybind Dojo managed bridge >>>"
 END = "-- <<< Keybind Dojo managed bridge <<<"
-BLOCK = BEGIN + "\npcall(dofile, (os.getenv(\"XDG_STATE_HOME\") or (os.getenv(\"HOME\") .. \"/.local/state\")) .. \"/omarchy/keybind-dojo/bridge.lua\")\n" + END
+PLUGIN_ROOT = Path(__file__).resolve().parent.parent
+BRIDGE_PATH = PLUGIN_ROOT / "bridge.lua"
+BLOCK = BEGIN + "\npcall(dofile, " + json.dumps(str(BRIDGE_PATH)) + ")\n" + END
 REASON_CODES = {
     "ok", "missing", "dangling-symlink", "symlink-loop", "non-regular",
     "wrong-owner", "not-writable", "outside-safe-root", "multiple-hardlinks",

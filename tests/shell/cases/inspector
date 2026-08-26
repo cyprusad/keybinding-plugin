@@ -11,6 +11,9 @@ ln -s "$fixture/config/hypr/hyprland.lua" "$fixture/parent/logical.lua"
 result=$("$root/scripts/bridge-control" inspect --config "$fixture/parent/logical.lua" --state-dir "$fixture/state")
 printf '%s\n' "$result" | jq -e '.safeToPatch == true and .symlinked == true and .managedBlockState == "absent" and (.resolvedPath | endswith("/config/hypr/hyprland.lua"))' >/dev/null
 test ! -e "$fixture/state"
+snippet=$("$root/scripts/bridge-control" manual-snippet | jq -r .snippet)
+printf '%s\n' "$snippet" | grep -Fq "pcall(dofile, \"$root/bridge.lua\")"
+test -f "$root/bridge.lua"
 
 printf '%s\n' '-- >>> Keybind Dojo managed bridge >>>' >> "$fixture/config/hypr/hyprland.lua"
 bad=$("$root/scripts/bridge-control" inspect --config "$fixture/parent/logical.lua" --state-dir "$fixture/state")
