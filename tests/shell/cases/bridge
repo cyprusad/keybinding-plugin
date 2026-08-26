@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+fixture=$(mktemp -d)
+trap 'rm -rf "$fixture"' EXIT
+mkdir -p "$fixture/omarchy/keybind-dojo"
+cp "$root/tests/fixtures/bridge-catalog.lua" "$fixture/omarchy/keybind-dojo/bridge-catalog.lua"
+XDG_STATE_HOME="$fixture" HOME="$fixture" lua "$root/tests/fixtures/bridge-harness.lua" "$root"
+luac -p "$root/bridge.lua"
+if sed -n '/hl.on("input.keyboard.key"/,/^end)/p' "$root/bridge.lua" | grep -Eq 'io%.|os%.execute|os%.remove|os%.rename|io%.popen|require%("socket"|hyprctl'; then
+  echo "forbidden callback API" >&2
+  exit 1
+fi
