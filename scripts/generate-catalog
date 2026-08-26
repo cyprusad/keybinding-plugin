@@ -89,6 +89,10 @@ def split_combo(modmask, key):
         parts = re.split(r"\s*\+\s*|\s+", modmask.upper()) if modmask else []
         mods = ["CTRL" if part == "CONTROL" else part for part in parts if part in MODIFIERS]
     mods = [name for name in CANONICAL if name in set(mods)]
+    # Lua binds may report the full display combo in `key`; the numeric
+    # modmask already carries the modifiers, so retain only the final key.
+    if " + " in key:
+        key = key.rsplit(" + ", 1)[1]
     return mods, normalize_key(key)
 
 
