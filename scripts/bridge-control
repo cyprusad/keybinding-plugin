@@ -1,0 +1,229 @@
+#!/usr/bin/env python3
+"""Read-only bridge configuration inspection for Keybind Dojo."""
+import argparse
+import difflib
+import hashlib
+import json
+import os
+import re
+import stat
+import subprocess
+import sys
+from pathlib import Path
+
+BEGIN = "-- >>> Keybind Dojo managed bridge >>>"
+END = "-- <<< Keybind Dojo managed bridge <<<"
+BLOCK = BEGIN + "\npcall(dofile, (os.getenv(\"XDG_STATE_HOME\") or (os.getenv(\"HOME\") .. \"/.local/state\")) .. \"/omarchy/keybind-dojo/bridge.lua\")\n" + END
+REASON_CODES = {
+    "ok", "missing", "dangling-symlink", "symlink-loop", "non-regular",
+    "wrong-owner", "not-writable", "outside-safe-root", "multiple-hardlinks",
+    "duplicate-markers", "malformed-markers", "changed-since-inspect",
+    "syntax-error", "hyprland-error", "concurrent-change", "unsupported",
+}
+
+
+def output(value, error=False):
+    print(json.dumps(value, ensure_ascii=False, separators=(",", ":")), file=sys.stderr if error else sys.stdout)
+
+
+def fail(code, message):
+    output({"ok": False, "code": code, "message": message}, True)
+    raise SystemExit(1)
+
+
+def default_config():
+    return Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "hypr" / "hyprland.lua"
+
+
+def default_state():
+    return Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "omarchy/keybind-dojo"
+
+
+def under(path, parent):
+    try:
+        path.relative_to(parent)
+        return True
+    except ValueError:
+        return False
+
+
+def resolve_path(logical):
+    try:
+        return logical.resolve(strict=True), None
+    except RuntimeError:
+        return None, "symlink-loop"
+    except FileNotFoundError:
+        if logical.is_symlink():
+            return None, "dangling-symlink"
+        return None, "missing"
+    except OSError:
+        return None, "unsupported"
+
+
+def git_details(target):
+    try:
+        root_text = subprocess.check_output(
+            ["git", "-C", str(target.parent), "rev-parse", "--show-toplevel"],
+            text=True, stderr=subprocess.DEVNULL,
+        ).strip()
+    except (OSError, subprocess.CalledProcessError):
+        return None, False
+    root = Path(root_text).resolve()
+    try:
+        dirty = bool(subprocess.check_output(
+            ["git", "-C", str(root), "status", "--porcelain", "--", str(target)],
+            text=True, stderr=subprocess.DEVNULL,
+        ).strip())
+    except (OSError, subprocess.CalledProcessError):
+        dirty = False
+    return root, dirty
+
+
+def marker_state(text):
+    begins, ends = [m.start() for m in re.finditer(re.escape(BEGIN), text)], [m.start() for m in re.finditer(re.escape(END), text)]
+    if not begins and not ends:
+        return "absent", None
+    if len(begins) != 1 or len(ends) != 1:
+        return "invalid", "duplicate-markers"
+    start, finish = begins[0], ends[0]
+    if finish < start or text.find("\n", finish) == -1 and finish + len(END) != len(text):
+        return "invalid", "malformed-markers"
+    block_end = finish + len(END)
+    if text[start:block_end] != BLOCK and text[start:block_end] != BLOCK + "\n":
+        return "invalid", "malformed-markers"
+    if start and text[start - 1] != "\n":
+        return "invalid", "malformed-markers"
+    return "present", None
+
+
+def insertion(text):
+    # A final top-level return must remain the last executable form.
+    lines = text.splitlines(keepends=True)
+    depth = 0
+    final_return = None
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith("return ") or stripped == "return":
+            if depth == 0:
+                final_return = index
+        depth += line.count("{") - line.count("}")
+    if final_return is not None:
+        return "".join(lines[:final_return]) + BLOCK + ("" if not lines[:final_return] or lines[final_return - 1].endswith("\n") else "\n") + "".join(lines[final_return:])
+    if text and not text.endswith("\n"):
+        text += "\n"
+    return text + BLOCK + "\n"
+
+
+def remove_block(text):
+    pattern = re.compile(r"(^|\n)" + re.escape(BEGIN) + r"\n.*?" + re.escape(END) + r"(?=\n|$)\n?", re.S)
+    return pattern.sub(lambda match: match.group(1), text, count=1)
+
+
+def diff_text(old, new, path):
+    return "".join(difflib.unified_diff(
+        old.splitlines(True), new.splitlines(True),
+        fromfile=str(path), tofile=str(path), n=3,
+    ))
+
+
+def inspect(logical, state_dir):
+    result = {
+        "schemaVersion": 1,
+        "logicalPath": str(logical),
+        "resolvedPath": None,
+        "symlinked": logical.is_symlink(),
+        "gitManaged": False,
+        "gitRoot": None,
+        "gitDirty": False,
+        "fileType": None,
+        "ownerUid": None,
+        "mode": None,
+        "writable": False,
+        "safeToPatch": False,
+        "reasonCode": "missing",
+        "currentHash": None,
+        "managedBlockState": "absent",
+        "proposedDiff": "",
+        "lineEnding": None,
+        "device": None,
+        "inode": None,
+        "hardLinks": None,
+    }
+    target, error = resolve_path(logical)
+    if error:
+        result["reasonCode"] = error
+        result["proposedDiff"] = ""
+        return result
+    result["resolvedPath"] = str(target)
+    try:
+        info = target.stat()
+        result.update({
+            "fileType": "regular" if stat.S_ISREG(info.st_mode) else "directory" if stat.S_ISDIR(info.st_mode) else "other",
+            "ownerUid": info.st_uid,
+            "mode": format(stat.S_IMODE(info.st_mode), "04o"),
+            "writable": os.access(target, os.W_OK),
+            "device": info.st_dev,
+            "inode": info.st_ino,
+            "hardLinks": info.st_nlink,
+        })
+    except OSError:
+        result["reasonCode"] = "missing"
+        return result
+    if result["fileType"] != "regular":
+        result["reasonCode"] = "non-regular"
+        return result
+    try:
+        text = target.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as exc:
+        result["reasonCode"] = "unsupported"
+        result["error"] = str(exc)
+        return result
+    result["lineEnding"] = "CRLF" if "\r\n" in target.read_bytes().decode("utf-8", "replace") else "LF"
+    result["currentHash"] = "sha256:" + hashlib.sha256(target.read_bytes()).hexdigest()
+    state, marker_error = marker_state(text)
+    result["managedBlockState"] = "present" if state == "present" else state
+    home = Path.home().resolve()
+    git_root, dirty = git_details(target)
+    if git_root:
+        result["gitManaged"], result["gitRoot"], result["gitDirty"] = True, str(git_root), dirty
+    allowed = under(target, home) or (git_root and under(target, git_root))
+    if os.getuid() != info.st_uid:
+        result["reasonCode"] = "wrong-owner"
+    elif not result["writable"]:
+        result["reasonCode"] = "not-writable"
+    elif info.st_nlink != 1:
+        result["reasonCode"] = "multiple-hardlinks"
+    elif not allowed or (git_root and (os.stat(git_root).st_uid != os.getuid() or not os.access(git_root, os.W_OK))):
+        result["reasonCode"] = "outside-safe-root"
+    elif marker_error:
+        result["reasonCode"] = marker_error
+    else:
+        result["reasonCode"] = "ok"
+        result["safeToPatch"] = True
+    if state == "absent":
+        proposed = insertion(text)
+    elif state == "present":
+        proposed = remove_block(text)
+    else:
+        proposed = text
+    result["proposedDiff"] = diff_text(text, proposed, target)
+    return result
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", choices=["inspect", "status", "manual-snippet"])
+    parser.add_argument("--config", type=Path, default=None)
+    parser.add_argument("--state-dir", type=Path, default=None)
+    args = parser.parse_args()
+    if args.command == "manual-snippet":
+        output({"ok": True, "schemaVersion": 1, "snippet": BLOCK})
+        return
+    result = inspect(args.config or default_config(), args.state_dir or default_state())
+    if args.command == "status":
+        result["integrationState"] = "enabled" if result["managedBlockState"] == "present" and result["safeToPatch"] else "disabled" if result["safeToPatch"] else "error"
+    output(result)
+
+
+if __name__ == "__main__":
+    main()

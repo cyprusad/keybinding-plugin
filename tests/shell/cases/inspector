@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+fixture=$(mktemp -d)
+trap 'rm -rf "$fixture"' EXIT
+mkdir -p "$fixture/config/hypr" "$fixture/parent"
+printf 'require("default.hypr.omarchy")\n' > "$fixture/config/hypr/hyprland.lua"
+ln -s "$fixture/config/hypr/hyprland.lua" "$fixture/parent/logical.lua"
+
+result=$("$root/scripts/bridge-control" inspect --config "$fixture/parent/logical.lua" --state-dir "$fixture/state")
+printf '%s\n' "$result" | jq -e '.safeToPatch == true and .symlinked == true and .managedBlockState == "absent" and (.resolvedPath | endswith("/config/hypr/hyprland.lua"))' >/dev/null
+test ! -e "$fixture/state"
+
+printf '%s\n' '-- >>> Keybind Dojo managed bridge >>>' >> "$fixture/config/hypr/hyprland.lua"
+bad=$("$root/scripts/bridge-control" inspect --config "$fixture/parent/logical.lua" --state-dir "$fixture/state")
+printf '%s\n' "$bad" | jq -e '.safeToPatch == false and .reasonCode == "malformed-markers"' >/dev/null
+
+mkdir "$fixture/config/hypr/nonregular.lua"
+nonregular=$("$root/scripts/bridge-control" inspect --config "$fixture/config/hypr/nonregular.lua" --state-dir "$fixture/state")
+printf '%s\n' "$nonregular" | jq -e '.safeToPatch == false and .reasonCode == "non-regular"' >/dev/null
