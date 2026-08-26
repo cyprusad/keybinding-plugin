@@ -3,7 +3,7 @@
 | Task | Status | Commit | Notes |
 |---|---|---|---|
 | 01 — Repository and plugin skeleton | Complete | 2ae6a48 | Manifest, loadable entry points, bar/panel lifecycle, smoke harness, and validations pass. |
-| 02 — Catalog generator | Blocked | — | Offline fixtures pass; live read-only validation requires an active Wayland/Hyprland session (`hyprctl binds` unavailable). |
+| 02 — Catalog generator | Blocked | 88e1679 | Offline fixtures pass; live read-only validation requires an active Wayland/Hyprland session (`hyprctl binds` unavailable). |
 | 03 — Configuration inspector | Pending | — | |
 | 04 — Transactional patcher | Pending | — | |
 | 05 — Lua bridge | Pending | — | |
@@ -24,4 +24,4 @@
 |---|---|
 | `c284cd1` | Add approved engineering plan. |
 | `2ae6a48` | Add Task 01 plugin skeleton and shell smoke harness. |
-| pending | Add Task 02 offline catalog generator, fixtures, and tests; commit hash recorded after commit. |
+| `88e1679` | Add Task 02 offline catalog generator, fixtures, and tests. |
