@@ -15,7 +15,7 @@
 | 11 — Gamification and recommendations | Complete | c057362 | Deterministic XP/levels/streaks/quests, canonical recommendations, availability filtering, 100-day streak coverage, and real bar/panel progress values. |
 | 12 — Full Dojo overlay | Complete (manual gate passed) | f234331 | Full browsing/practice/progress/settings overlay; responsive layout, close affordance, keyboard navigation, search refocus, and menu-surface styling verified manually. |
 | 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
-| 14 — Integration, privacy, and performance | In progress (manual gate pending) | 75d6433 | Complete automated all-suite, schema, privacy/static, and fixture-containment checks; live release evidence remains. |
+| 14 — Integration, privacy, and performance | In progress (manual gate in progress) | 4530df8 | Automated suite passes; manual release Steps 1–9 pass, including privacy, reload, lock suppression, and reset recovery. Remaining final matrix/performance checks are documented in RELEASE_TESTS.md. |
 | 15 — Documentation and release | Pending | — | |
 
 ## Commit log
@@ -55,3 +55,17 @@
 | `f234331` | Match binding result rows to the Practice menu background; manual Task 12 gate passed. |
 | `b799d8a` | Record Task 12 completion and its full overlay commit trail. |
 | `75d6433` | Add the Task 14 all-suite runner and release-gate automation. |
+| `03302ac` | Add Task 14 release evidence and the manual-gate checklist. |
+| `90bbfd1` | Explain local data storage and privacy in Settings. |
+| `0ffc0de` | Record release-gate preflight. |
+| `d3f7838` | Record local data inspection. |
+| `3d62a9b` | Record tracking round-trip verification. |
+| `7efc421` | Record ordinary typing privacy verification. |
+| `eb4e95a` | Fix stats writer input closure so aggregate data persists. |
+| `fdf297f` | Record aggregate tracking evidence. |
+| `f0d72f5` | Capture exact stats release evidence. |
+| `73a830f` | Record guide settings verification. |
+| `f7fcae5` | Record shell and Hyprland reload recovery. |
+| `1863dfd` | Record lock-screen suppression. |
+| `e0b5435` | Make local-data reset actionable during pending stats flushes. |
+| `4530df8` | Record stats reset and recovery verification. |

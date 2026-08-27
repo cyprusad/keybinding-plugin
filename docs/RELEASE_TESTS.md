@@ -72,27 +72,27 @@ development session as a product failure; the models themselves pass.
 
 | Check | Result | Evidence/notes |
 |---|---|---|
-| Install and enable from a clean checkout | Pending | Manual/live gate |
-| Browse-only catalog before consent | Pending | Manual/live gate |
-| One-click enable and disable | Pending | Use a controlled config and record hashes |
+| Install and enable from a clean checkout | Passed manually | Plugin enabled; `hyprctl configerrors` clean |
+| Browse-only catalog before consent | Passed manually | Browse-only behavior confirmed before re-enabling tracking |
+| One-click enable and disable | Passed manually | Tracking disabled and re-enabled through the panel/consent flow |
 | Git-managed symlink target | Pending | Use a controlled test config when available |
-| Shell restart and plugin reload | Pending | Verify no stale surface or focus grab |
-| Hyprland reload and catalog regeneration | Pending | `hyprctl configerrors` must remain empty |
+| Shell restart and plugin reload | Passed manually | Guide and overlay returned normally after shell restart |
+| Hyprland reload and catalog regeneration | Passed manually | Reload recovery passed with clean config errors |
 | Focused-monitor guide routing | Pending | Test monitor focus changes |
-| Delay values and fullscreen suppression | Pending | Test every configured value |
-| Lock/credential suppression | Pending | Use only safe test surfaces |
+| Delay values and fullscreen suppression | Passed manually | All delay choices and fullscreen toggle verified |
+| Lock/credential suppression | Partially passed manually | Lock-screen suppression passed; credential-prompt surface remains pending |
 | Representative bindings and release/submap cases | Pending | At least 50 safe bindings where available |
-| Overlay navigation and practice completion | Passed manually in Task 12; final release retest pending | |
+| Overlay navigation and practice completion | Passed manually in Task 12 | Final release retest remains optional before Task 15 |
 | Stats flush/reload and reset recovery | Passed manually | Previous stats archived; fresh empty stats file verified |
 
 ## Privacy, performance, and non-interference
 
-Pending live verification:
+Remaining live verification:
 
-- Disposable text-field tests for prose, shell metacharacters, a synthetic
-  password, and unmatched application shortcuts.
-- Confirm no raw key log, dispatcher argument, entered text, window title,
-  application identifier, network request, or unmatched custom event is stored.
+- Unmatched application shortcuts and a final review that no raw key log,
+  dispatcher argument, entered text, window title, application identifier,
+  network request, or unmatched custom event is stored. Ordinary typing,
+  metacharacters, and a synthetic password already passed manually.
 - At least 100 Super-down latency samples with p95 below 50 ms.
 - Five-minute idle bridge/service CPU average below 0.2% attributable CPU.
 - Sustained synthetic stream with no unbounded queue/model growth.
