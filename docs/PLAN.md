@@ -522,6 +522,30 @@ Keep event ingestion behind one service function so a future exact event can rep
 
 Voice search may later add a local transcription adapter that returns text to the existing catalog search and practice queue. It must never execute transcript text as a command and must remain optional.
 
+## 13.1 Deferred alternative: context-aware guide ranking
+
+The current Task 11 gamification and deterministic recommendation design remains
+the implementation target through the 0.1 release. After the current plan is
+complete, evaluate an alternative experience that makes the Super Guide more
+contextual and may reduce or remove explicit XP, levels, quests, and streaks.
+
+The alternative would rank the visible top bindings using two signals:
+
+1. Aggregate local usage history, including recency and frequency.
+2. The active workspace/window context and, where safely observable, the
+   focused pane or application context at the moment the guide opens.
+
+Examples include prioritizing split-pane, navigation, and terminal actions in a
+terminal context, while prioritizing application-launch and browser actions in
+a general or browser context. Ranking must remain deterministic, explainable,
+and bounded so the guide stays useful even with no history or no context.
+
+Before implementation, define the context capability matrix, privacy boundary,
+fallback ordering, cold-start behavior, and an opt-out. Window titles, entered
+text, commands, and raw context events must not be persisted; context should be
+used transiently or reduced to a documented coarse category. This alternative
+must be designed and reviewed separately rather than pulled into Tasks 12–15.
+
 ## 14. Required validation commands
 
 Every implementation task runs the checks relevant to its files. Before release, all of these must pass:
