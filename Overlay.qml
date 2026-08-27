@@ -293,7 +293,7 @@ Item {
           height: Style.space(32)
           spacing: Style.space(10)
           Text {
-            text: "KEYBIND DOJO · FULL-SCREEN OVERLAY"
+            text: "KEYBIND DOJO"
             color: Color.menu.selectedText
             font.family: Style.font.family
             font.pixelSize: Style.font.heading
@@ -309,16 +309,16 @@ Item {
           }
           Item { width: Math.max(0, parent.width - 300); height: 1 }
           Button {
-            text: "Close (Esc)"
+            text: "Close overlay (Esc)"
             background: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.06)
             foreground: Color.menu.text
             onClicked: root.close()
           }
           Text {
-            text: "Esc close · Tab navigate · " + root.focusLabel()
+            text: "ESC closes overlay · Tab navigates · " + root.focusLabel()
             color: Color.menu.text
-            opacity: 0.62
-            font.pixelSize: Style.font.caption
+            opacity: 0.88
+            font.pixelSize: Style.font.bodySmall
             anchors.verticalCenter: parent.verticalCenter
           }
         }
