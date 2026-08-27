@@ -40,6 +40,9 @@ Captured from the development machine on 2026-08-27:
   `1`, and a completed daily quest for `2026-08-27`.
 - **Step 6 — Guide settings and fullscreen behavior: PASS.** User verified
   all delay choices and confirmed fullscreen suppression toggles correctly.
+- **Step 7 — Shell and Hyprland reload recovery: PASS.** User verified the
+  plugin survived an Omarchy shell restart and Hyprland reload with clean
+  config errors, normal guide lifecycle, and a usable full overlay.
 
 ## Automated results
 
