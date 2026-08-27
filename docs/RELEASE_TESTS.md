@@ -78,7 +78,7 @@ development session as a product failure; the models themselves pass.
 | Install and enable from a clean checkout | Passed manually | Plugin enabled; `hyprctl configerrors` clean |
 | Browse-only catalog before consent | Passed manually | Browse-only behavior confirmed before re-enabling tracking |
 | One-click enable and disable | Passed manually | Tracking disabled and re-enabled through the panel/consent flow |
-| Git-managed symlink target | Pending | Use a controlled test config when available |
+| Git-managed symlink target | Not applicable live | Real config is a regular non-Git file; automated onboarding fixtures cover symlink/Git behavior |
 | Shell restart and plugin reload | Passed manually | Guide and overlay returned normally after shell restart |
 | Hyprland reload and catalog regeneration | Passed manually | Reload recovery passed with clean config errors |
 | Focused-monitor guide routing | Passed manually | Dual-monitor check: guide appears only on the focused workspace's monitor |
