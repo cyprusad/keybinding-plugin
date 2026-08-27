@@ -72,6 +72,14 @@ Panel {
       ? Object.keys(root.service.stats.bindings).length : 0
   }
 
+  function questSummary() {
+    if (!root.service || !root.service.dailyQuest) return "None available"
+    var quest = root.service.dailyQuest
+    var binding = root.service.bindingForId(quest.bindingId)
+    var label = binding ? String(binding.description || binding.combo || quest.bindingId) : quest.bindingId
+    return label + (quest.completed ? " (complete)" : "")
+  }
+
   onBarChanged: syncService()
   Component.onCompleted: syncService()
 
@@ -323,6 +331,8 @@ Panel {
               anchors.margins: Style.space(8)
               spacing: Style.space(3)
               Text { text: "Tracked bindings: " + root.trackedBindingCount(); color: Color.foreground; font.pixelSize: Style.font.caption }
+              Text { text: "Level: " + (root.service && root.service.currentLevel ? root.service.currentLevel.name : "Initiate") + " · XP: " + (root.service ? Number(root.service.stats.totalXp || 0) : 0); color: Color.foreground; font.pixelSize: Style.font.caption }
+              Text { text: "Daily quest: " + root.questSummary(); color: Color.foreground; font.pixelSize: Style.font.caption; wrapMode: Text.WordWrap }
               Text { text: "Persistence: " + (root.service ? root.service.statsState : "unavailable"); color: Color.foreground; font.pixelSize: Style.font.caption }
               Text { text: "Session events: " + (root.service ? root.service.observedEventCount : 0); color: Color.foreground; font.pixelSize: Style.font.caption }
             }

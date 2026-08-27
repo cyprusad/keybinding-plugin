@@ -14,7 +14,8 @@ BarWidget {
   readonly property string statusMark: !service || service.integrationState === "disabled"
     ? " ·" : service.integrationState === "error" ? " !" : service.integrationState === "disconnected" ? " ?" : ""
   readonly property string tooltipSummary: service && service.integrationState === "enabled"
-    ? "Keybind Dojo · streak " + currentStreak
+    ? "Keybind Dojo · " + (service.currentLevel ? service.currentLevel.name : "Initiate")
+      + " · " + Number(service.stats.totalXp || 0) + " XP · streak " + currentStreak
     : "Set up Keybind Dojo"
 
   function syncService() {

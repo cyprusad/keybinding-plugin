@@ -49,6 +49,8 @@ function normalizedBinding(raw) {
   if (!validCodeList(raw.xkbCodes)) return null
   if (typeof raw.trackable !== "boolean" || typeof raw.guideEligible !== "boolean") return null
   if (raw.repeat !== undefined && typeof raw.repeat !== "boolean") return null
+  if (raw.available !== undefined && typeof raw.available !== "boolean") return null
+  if (raw.unavailable !== undefined && typeof raw.unavailable !== "boolean") return null
 
   return {
     id: raw.id,
@@ -63,7 +65,9 @@ function normalizedBinding(raw) {
     dispatcherKind: raw.dispatcherKind,
     trackable: raw.trackable,
     guideEligible: raw.guideEligible,
-    repeat: raw.repeat === true
+    repeat: raw.repeat === true,
+    available: raw.available !== false,
+    unavailable: raw.unavailable === true
   }
 }
 

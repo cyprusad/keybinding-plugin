@@ -4,6 +4,7 @@ import Quickshell.Hyprland
 import Quickshell.Io
 import "ServiceModel.js" as Model
 import "Stats.js" as Stats
+import "Recommendations.js" as Recommendations
 
 Item {
   id: root
@@ -71,6 +72,9 @@ Item {
   readonly property bool integrationMutationRunning: integrationMutationProcess.running
   readonly property bool statsWriteRunning: statsWriteProcess.running
   readonly property bool statsRecoveryRunning: statsArchiveProcess.running
+  readonly property var currentLevel: Stats.levelForXp(stats.totalXp)
+  readonly property int currentStreak: Math.max(0, Number(stats.streak || 0))
+  readonly property var dailyQuest: dailyQuestForToday()
 
   function protocolPayload(event) {
     if (!event || String(event.name || "") !== "custom") return ""
@@ -186,7 +190,21 @@ Item {
     root.observedProtocolKeys = keys
     Qt.callLater(function() { root.observedProtocolKeys = ({}) })
 
-    var next = Stats.recordObservation(stats, bindingId, Date.now() / 1000)
+    var timestamp = Date.now() / 1000
+    var today = Stats.dateKey(timestamp)
+    var prepared = Stats.normalize(stats).stats
+    var questId = Recommendations.chooseDailyQuest(catalog, prepared, today)
+    if (!prepared.dailyQuest || prepared.dailyQuest.date !== today
+        || !catalog.byId[prepared.dailyQuest.bindingId]) {
+      prepared.dailyQuest = questId ? {
+        date: today, bindingId: questId, completed: false
+      } : null
+    }
+    var next = Stats.recordObservation(prepared, bindingId, timestamp)
+    next.streak = Recommendations.recalculateStreak(next, today)
+    if (Recommendations.qualifiesForDay(next, today)
+        && (!next.lastQualifiedDay || today > next.lastQualifiedDay))
+      next.lastQualifiedDay = today
     if (JSON.stringify(next) === JSON.stringify(stats)) return false
     stats = next
     statsDirty = true
@@ -196,9 +214,21 @@ Item {
   }
 
   function recommendations(limit) {
-    // Scoring and persistence belong to later tasks. Keep this return type
-    // stable so consumers can be implemented independently.
-    return []
+    return Recommendations.recommendBindings(catalog, stats, limit,
+      Stats.dateKey(Date.now() / 1000))
+  }
+
+  function dailyQuestForToday() {
+    if (!statsLoaded || !catalog) return null
+    var today = Stats.dateKey(Date.now() / 1000)
+    var id = Recommendations.chooseDailyQuest(catalog, stats, today)
+    if (!id) return null
+    if (stats.dailyQuest && stats.dailyQuest.date === today
+        && stats.dailyQuest.bindingId === id)
+      return {
+        date: today, bindingId: id, completed: stats.dailyQuest.completed === true
+      }
+    return { date: today, bindingId: id, completed: false }
   }
 
   function openGuide() { guideVisible = true }

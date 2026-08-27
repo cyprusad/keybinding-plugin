@@ -10,6 +10,10 @@ var BINDING_KEYS = ["count", "firstUsed", "lastUsed", "daily"]
 var QUEST_KEYS = ["date", "bindingId", "completed"]
 var DAILY_LIMIT = 90
 
+function validOpaqueId(value) {
+  return typeof value === "string" && ID_RE.test(value)
+}
+
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value)
 }
@@ -65,6 +69,30 @@ function emptyStats() {
     lastQualifiedDay: null,
     bindings: {},
     dailyQuest: null
+  }
+}
+
+var LEVELS = [
+  { index: 0, name: "Initiate", threshold: 0 },
+  { index: 1, name: "Apprentice", threshold: 200 },
+  { index: 2, name: "Tiler", threshold: 600 },
+  { index: 3, name: "Navigator", threshold: 1200 },
+  { index: 4, name: "Omarchist", threshold: 2000 },
+  { index: 5, name: "Sensei", threshold: 3500 }
+]
+
+function levelForXp(totalXp) {
+  var xp = isNonNegativeInteger(totalXp) ? totalXp : 0
+  var selected = LEVELS[0]
+  for (var i = 0; i < LEVELS.length; i++) {
+    if (xp >= LEVELS[i].threshold) selected = LEVELS[i]
+  }
+  return {
+    index: selected.index,
+    name: selected.name,
+    threshold: selected.threshold,
+    nextThreshold: selected.index + 1 < LEVELS.length
+      ? LEVELS[selected.index + 1].threshold : null
   }
 }
 
@@ -158,6 +186,12 @@ function recordObservation(stats, bindingId, timestamp) {
   if (!ID_RE.test(id) || !validTimestamp(timestamp)) return next
 
   var entry = next.bindings[id]
+  var firstEver = !entry || entry.count === 0
+  var day = dateKey(timestamp)
+  var previousDayCount = entry && entry.daily ? Number(entry.daily[day] || 0) : 0
+  var earnedXp = firstEver ? 50 : 0
+  if (previousDayCount === 0) earnedXp += 10
+  else if (previousDayCount <= 10) earnedXp += 2
   if (!entry) {
     entry = { count: 0, firstUsed: 0, lastUsed: 0, daily: {} }
     next.bindings[id] = entry
@@ -165,9 +199,15 @@ function recordObservation(stats, bindingId, timestamp) {
   if (entry.firstUsed === 0) entry.firstUsed = timestamp
   entry.lastUsed = timestamp
   entry.count += 1
-  var day = dateKey(timestamp)
   entry.daily[day] = Number(entry.daily[day] || 0) + 1
   pruneDaily(entry.daily)
+  if (next.dailyQuest && next.dailyQuest.date === day
+      && next.dailyQuest.bindingId === id && next.dailyQuest.completed === false) {
+    next.dailyQuest.completed = true
+    earnedXp += 25
+  }
+  next.totalXp += earnedXp
+  next.currentLevel = levelForXp(next.totalXp).index
   return next
 }
 
