@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+runtime_dir=${XDG_RUNTIME_DIR:-}
+wayland_socket=${runtime_dir:+$runtime_dir/${WAYLAND_DISPLAY:-}}
+
+# The model tests are graphical Qt tests. Keep the repository's shell suite
+# usable in headless CI while running them whenever a real Wayland socket is
+# available (as on the developer's Omarchy session).
+if [ -z "$wayland_socket" ] || [ ! -S "$wayland_socket" ]; then
+  echo "service QML tests skipped: no accessible Wayland socket" >&2
+  exit 0
+fi
+
+QT_QPA_PLATFORM=wayland qmltestrunner -input "$root/tests/qml" -o -,txt

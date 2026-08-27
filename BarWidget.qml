@@ -7,7 +7,13 @@ BarWidget {
 
   moduleName: "io.github.sai.keybind-dojo"
 
+  property var service: null
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
+
+  function syncService() {
+    service = bar && bar.shell && typeof bar.shell.serviceFor === "function"
+      ? bar.shell.serviceFor(moduleName) : null
+  }
 
   function open() {
     if (panelLoader.item) panelLoader.item.open()
@@ -28,6 +34,9 @@ BarWidget {
 
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
+
+  onBarChanged: syncService()
+  Component.onCompleted: syncService()
 
   Loader {
     id: panelLoader

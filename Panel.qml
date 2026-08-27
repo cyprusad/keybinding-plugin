@@ -10,6 +10,12 @@ Panel {
 
   property var anchorItem: null
   property var hostWidget: null
+  property var service: null
+
+  function syncService() {
+    service = bar && bar.shell && typeof bar.shell.serviceFor === "function"
+      ? bar.shell.serviceFor(moduleName) : null
+  }
 
   function open() {
     controller.show()
@@ -27,6 +33,9 @@ Panel {
   function closeForPopoutSwitch() {
     close()
   }
+
+  onBarChanged: syncService()
+  Component.onCompleted: syncService()
 
   KeyboardPanel {
     id: panel

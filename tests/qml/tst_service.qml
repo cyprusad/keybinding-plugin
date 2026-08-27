@@ -1,0 +1,119 @@
+import QtQuick 2.15
+import QtTest 1.3
+import "../../ServiceModel.js" as Model
+
+TestCase {
+  name: "KeybindDojoServiceModel"
+
+  function id(letter) { return "sha256:" + Array(65).join(letter) }
+
+  function validCatalog() {
+    var binding = {
+      id: id("b"),
+      combo: "SUPER + RETURN",
+      modifiers: ["SUPER"],
+      key: "RETURN",
+      xkbCodes: [36],
+      description: "Terminal",
+      category: "applications",
+      phase: "press",
+      submap: "",
+      dispatcherKind: "exec",
+      trackable: true,
+      guideEligible: true,
+      repeat: false
+    }
+    var release = JSON.parse(JSON.stringify(binding))
+    release.id = id("c")
+    release.phase = "release"
+    return {
+      schemaVersion: 1,
+      generatedAt: 1,
+      sourceHash: id("a"),
+      bindings: [binding, release]
+    }
+  }
+
+  function test_validCatalogAndLookup() {
+    var result = Model.normalizeCatalog(validCatalog())
+    verify(result.ok)
+    compare(result.catalog.bindings.length, 2)
+    compare(result.catalog.byId[id("b")].description, "Terminal")
+  }
+
+  function test_catalogRejectsMalformedInputs() {
+    verify(!Model.normalizeCatalog("not json").ok)
+    var wrongSchema = validCatalog()
+    wrongSchema.schemaVersion = 2
+    verify(!Model.normalizeCatalog(wrongSchema).ok)
+
+    var duplicate = validCatalog()
+    duplicate.bindings.push(duplicate.bindings[0])
+    verify(!Model.normalizeCatalog(duplicate).ok)
+
+    var badBinding = validCatalog()
+    badBinding.bindings[0].category = "invented"
+    verify(!Model.normalizeCatalog(badBinding).ok)
+
+    var badTypes = validCatalog()
+    badTypes.bindings[0].trackable = "true"
+    verify(!Model.normalizeCatalog(badTypes).ok)
+  }
+
+  function test_everyValidProtocolForm() {
+    var catalog = Model.normalizeCatalog(validCatalog()).catalog
+    compare(Model.parseProtocol("keybind-dojo:v1:super:down", catalog).phase, "down")
+    compare(Model.parseProtocol("keybind-dojo:v1:super:up", catalog).phase, "up")
+    compare(Model.parseProtocol("keybind-dojo:v1:mods:SUPER_SHIFT_CTRL_ALT", catalog).modifiers, "SUPER_SHIFT_CTRL_ALT")
+    var press = Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":press", catalog)
+    verify(press.ok)
+    verify(press.known)
+    compare(press.phase, "press")
+    var release = Model.parseProtocol("keybind-dojo:v1:match:" + id("c") + ":release", catalog)
+    verify(release.ok)
+    compare(release.phase, "release")
+  }
+
+  function test_protocolRejectsMalformedAndUnknownForms() {
+    var catalog = Model.normalizeCatalog(validCatalog()).catalog
+    verify(!Model.parseProtocol("keybind-dojo:v2:super:down", catalog).ok)
+    verify(!Model.parseProtocol("keybind-dojo:v1:super:down:extra", catalog).ok)
+    verify(!Model.parseProtocol("keybind-dojo:v1:mods:SHIFT", catalog).ok)
+    verify(!Model.parseProtocol("keybind-dojo:v1:mods:SUPER_CTRL_SHIFT", catalog).ok)
+    verify(!Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":press:extra", catalog).ok)
+    verify(!Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":release", catalog).ok)
+    var unknown = Model.parseProtocol("keybind-dojo:v1:match:" + id("d") + ":press", catalog)
+    verify(unknown.ok)
+    verify(!unknown.known)
+  }
+
+  function test_settingsAndShellLookup() {
+    compare(Model.normalizeDelay(0), 0)
+    compare(Model.normalizeDelay(80), 80)
+    compare(Model.normalizeDelay("150"), 150)
+    compare(Model.normalizeDelay("disabled"), -1)
+    compare(Model.normalizeDelay(99), 0)
+    compare(Model.normalizeFullscreen(true), true)
+    compare(Model.normalizeFullscreen("true"), false)
+
+    var config = { bar: { layout: { left: [], center: [], right: [
+      { id: "io.github.sai.keybind-dojo", guideDelayMs: 150, showInFullscreen: true }
+    ] } } }
+    var settings = Model.settingsFor(config, "io.github.sai.keybind-dojo")
+    compare(settings.guideDelayMs, 150)
+    compare(settings.showInFullscreen, true)
+    compare(Model.settingsFor({}, "io.github.sai.keybind-dojo").guideDelayMs, undefined)
+  }
+
+  function test_fullscreenAndEventClassification() {
+    compare(Model.parseActiveWindow('{"fullscreen":true}').fullscreen, true)
+    compare(Model.parseActiveWindow('{"fullscreen":2}').fullscreen, true)
+    compare(Model.parseActiveWindow('{"fullscreen":0}').fullscreen, false)
+    verify(!Model.parseActiveWindow('{"fullscreen":"1"}').ok)
+    verify(!Model.parseActiveWindow('{"class":"kitty"}').ok)
+    verify(Model.isCatalogChangeEvent("configreloaded"))
+    verify(Model.isCatalogChangeEvent("activelayout"))
+    verify(Model.isFullscreenEvent("activewindowv2"))
+    verify(!Model.isFullscreenEvent("custom"))
+  }
+}
