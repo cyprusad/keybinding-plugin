@@ -452,8 +452,8 @@ Item {
                     BorderSurface {
                       width: Math.min(parent.width, Style.space(240))
                       height: Style.space(24)
-                      color: "transparent"
-                      borderSpec: Border.flat(Color.menu.border, Math.max(1, Style.space(1)))
+                      color: Color.menu.background
+                      borderSpec: Border.surfaceSpec("menu", "border", Color.menu.border, Math.max(1, Style.space(1)))
                       radius: Style.cornerRadius
                       Text { anchors.fill: parent; anchors.leftMargin: Style.space(6); text: modelData.combo; color: Color.menu.selectedText; font.pixelSize: Style.font.bodySmall; font.bold: true; elide: Text.ElideRight; verticalAlignment: Text.AlignVCenter }
                     }
