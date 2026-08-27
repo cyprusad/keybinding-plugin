@@ -48,6 +48,9 @@ Captured from the development machine on 2026-08-27:
 - **Step 9 — Stats reset and recovery: PASS.** User confirmed that clearing
   local data produced a recovery archive for the previous stats and wrote a
   fresh stats file with empty profile data.
+- **Step 10 — Focused-monitor routing: PASS.** User verified on a dual-monitor
+  setup that the guide appears only on the monitor containing the focused
+  workspace/window.
 
 ## Automated results
 
@@ -78,7 +81,7 @@ development session as a product failure; the models themselves pass.
 | Git-managed symlink target | Pending | Use a controlled test config when available |
 | Shell restart and plugin reload | Passed manually | Guide and overlay returned normally after shell restart |
 | Hyprland reload and catalog regeneration | Passed manually | Reload recovery passed with clean config errors |
-| Focused-monitor guide routing | Pending | Test monitor focus changes |
+| Focused-monitor guide routing | Passed manually | Dual-monitor check: guide appears only on the focused workspace's monitor |
 | Delay values and fullscreen suppression | Passed manually | All delay choices and fullscreen toggle verified |
 | Lock/credential suppression | Partially passed manually | Lock-screen suppression passed; credential-prompt surface remains pending |
 | Representative bindings and release/submap cases | Pending | At least 50 safe bindings where available |
