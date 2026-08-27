@@ -16,7 +16,7 @@
 | 12 — Full Dojo overlay | Complete (manual gate passed) | f234331 | Full browsing/practice/progress/settings overlay; responsive layout, close affordance, keyboard navigation, search refocus, and menu-surface styling verified manually. |
 | 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
 | 14 — Integration, privacy, and performance | Complete (manual gate passed) | 98fcd92 | Automated suite and live release evidence pass; manual lock/privacy/reset/focused-monitor checks pass, with the 1Password app prompt documented outside the detection boundary. |
-| 15 — Documentation and release | Pending | — | |
+| 15 — Documentation and release | In progress (draft documentation) | — | README, security, troubleshooting, license, and changelog drafted; UX polish and final release smoke test remain. |
 
 ## Commit log
 
