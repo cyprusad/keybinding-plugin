@@ -625,6 +625,39 @@ Item {
                 text: "Show in fullscreen: " + (service.showInFullscreen ? "On" : "Off")
                 onClicked: service.setShowInFullscreen(!service.showInFullscreen)
               }
+              Text { text: "Local data & privacy"; color: Color.menu.selectedText; font.pixelSize: Style.font.body; font.bold: true }
+              Text {
+                width: parent.width
+                text: "Stored locally in: " + service.stateDir
+                color: Color.menu.text
+                opacity: 0.78
+                font.pixelSize: Style.font.caption
+                wrapMode: Text.WrapAnywhere
+              }
+              Text {
+                width: parent.width
+                text: "Stored: opaque binding IDs, aggregate counts, first/last observed times, daily totals (up to 90 days), XP, streaks, and daily quest state."
+                color: Color.menu.text
+                opacity: 0.78
+                font.pixelSize: Style.font.caption
+                wrapMode: Text.WordWrap
+              }
+              Text {
+                width: parent.width
+                text: "Not stored: raw keypress logs, typed text or passwords, commands, window titles, application names, or network data. Stats are private (directory 0700, files 0600)."
+                color: Color.menu.text
+                opacity: 0.78
+                font.pixelSize: Style.font.caption
+                wrapMode: Text.WordWrap
+              }
+              Text {
+                width: parent.width
+                text: "Clear local data archives the current stats file for recovery, then starts a fresh profile."
+                color: Color.menu.text
+                opacity: 0.78
+                font.pixelSize: Style.font.caption
+                wrapMode: Text.WordWrap
+              }
               Row {
                 spacing: Style.space(8)
                 Button { text: "Recheck integration"; onClicked: service.inspectIntegration() }

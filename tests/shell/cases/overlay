@@ -17,4 +17,6 @@ grep -q 'onActiveFocusChanged: if (root.opened && !activeFocus)' "$root/Overlay.
 grep -q 'color: Color.menu.background' "$root/Overlay.qml"
 grep -q 'function focusSearch()' "$root/Overlay.qml"
 grep -q 'event.text === "/"' "$root/Overlay.qml"
+grep -q 'Local data & privacy' "$root/Overlay.qml"
+grep -q 'raw keypress logs' "$root/Overlay.qml"
 echo "overlay static smoke passed"
