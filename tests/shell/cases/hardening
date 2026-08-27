@@ -1,0 +1,132 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+fixture=$(mktemp -d)
+trap 'rm -rf "$fixture"' EXIT
+home="$fixture/home"
+config_dir="$home/.config/hypr"
+state="$fixture/state"
+mkdir -p "$config_dir"
+export HOME="$home"
+
+inspect_reason() {
+  "$root/scripts/bridge-control" inspect --config "$1" --state-dir "$state" | jq -r '.reasonCode'
+}
+
+worktree="$home/repo with ü;[safe]"
+mkdir -p "$worktree"
+git -C "$worktree" init -q
+target="$worktree/hyprland.lua"
+printf 'require("default.hypr.omarchy")\n' > "$target"
+logical="$config_dir/link.lua"
+ln -s "$target" "$logical"
+inspect=$("$root/scripts/bridge-control" inspect --config "$logical" --state-dir "$state")
+printf '%s\n' "$inspect" | jq -e '.safeToPatch == true and .symlinked == true and .gitManaged == true and .reasonCode == "ok"' >/dev/null
+hash=$(printf '%s\n' "$inspect" | jq -r '.currentHash')
+enabled=$("$root/scripts/bridge-control" enable --config "$logical" --state-dir "$state" --expected-hash "$hash" --no-live-reload)
+printf '%s\n' "$enabled" | jq -e '.ok == true and .changed == true' >/dev/null
+grep -q 'Keybind Dojo managed bridge' "$target"
+printf '%s\n' "$($root/scripts/bridge-control inspect --config "$logical" --state-dir "$state")" \
+  | jq -e '.backups | length == 1 and .[0].currentHash != null' >/dev/null
+
+parent_real="$home/parent-real"
+mkdir -p "$parent_real/hypr"
+printf 'return {}\n' > "$parent_real/hypr/parent.lua"
+ln -s "$parent_real" "$home/.config-parent"
+parent_logical="$home/.config-parent/hypr/parent.lua"
+printf '%s\n' "$("$root/scripts/bridge-control" inspect --config "$parent_logical" --state-dir "$state")" \
+  | jq -e '.safeToPatch == true and (.resolvedPath | endswith("/parent-real/hypr/parent.lua"))' >/dev/null
+
+retarget_a="$home/retarget-a.lua"
+retarget_b="$home/retarget-b.lua"
+printf 'return { "a" }\n' > "$retarget_a"
+printf 'return { "b" }\n' > "$retarget_b"
+retarget="$config_dir/retarget.lua"
+ln -s "$retarget_a" "$retarget"
+retarget_hash=$("$root/scripts/bridge-control" inspect --config "$retarget" --state-dir "$state" | jq -r '.currentHash')
+ln -sf "$retarget_b" "$retarget"
+if "$root/scripts/bridge-control" enable --config "$retarget" --state-dir "$state" --expected-hash "$retarget_hash" --no-live-reload >/dev/null 2>&1; then
+  echo "retargeted file was patched" >&2
+  exit 1
+fi
+! grep -q 'Keybind Dojo managed bridge' "$retarget_b"
+
+"$root/scripts/bridge-control" disable --config "$logical" --state-dir "$state" --expected-hash "$("$root/scripts/bridge-control" inspect --config "$logical" --state-dir "$state" | jq -r '.currentHash')" --no-live-reload >/dev/null
+grep -q 'require("default.hypr.omarchy")' "$target"
+! grep -q 'Keybind Dojo managed bridge' "$target"
+
+inode_config="$home/inode.lua"
+printf 'return {}\n' > "$inode_config"
+inode_hash=$("$root/scripts/bridge-control" inspect --config "$inode_config" --state-dir "$state" | jq -r '.currentHash')
+cp "$inode_config" "$fixture/equivalent"
+mv "$fixture/equivalent" "$inode_config"
+"$root/scripts/bridge-control" enable --config "$inode_config" --state-dir "$state" --expected-hash "$inode_hash" --no-live-reload >/dev/null
+"$root/scripts/bridge-control" disable --config "$inode_config" --state-dir "$state" --expected-hash "$("$root/scripts/bridge-control" inspect --config "$inode_config" --state-dir "$state" | jq -r '.currentHash')" --no-live-reload >/dev/null
+changed_hash=$("$root/scripts/bridge-control" inspect --config "$inode_config" --state-dir "$state" | jq -r '.currentHash')
+printf 'return { "changed" }\n' > "$fixture/different"
+mv "$fixture/different" "$inode_config"
+if "$root/scripts/bridge-control" enable --config "$inode_config" --state-dir "$state" --expected-hash "$changed_hash" --no-live-reload >/dev/null 2>&1; then
+  echo "changed inode content was patched" >&2
+  exit 1
+fi
+
+begin='-- >>> Keybind Dojo managed bridge >>>'
+end='-- <<< Keybind Dojo managed bridge <<<'
+partial="$home/partial.lua"
+printf '%s\n' "$begin" > "$partial"
+[ "$(inspect_reason "$partial")" = malformed-markers ]
+printf '%s\n%s\n' "$begin" "$begin" > "$partial"
+[ "$(inspect_reason "$partial")" = duplicate-markers ]
+printf '%s\n%s\n' "$end" "$begin" > "$partial"
+[ "$(inspect_reason "$partial")" = malformed-markers ]
+printf '%s\n%s\n%s\n' "$begin" "$end" "$begin" > "$partial"
+[ "$(inspect_reason "$partial")" = duplicate-markers ]
+
+special="$home/special.lua"
+printf 'return { -- café\r\n}\r\n' > "$special"
+[ "$(inspect_reason "$special")" = ok ]
+printf 'return {}' > "$special"
+[ "$(inspect_reason "$special")" = ok ]
+
+hard="$home/hard.lua"
+printf 'return {}\n' > "$hard"
+ln "$hard" "$home/hard-copy.lua"
+[ "$(inspect_reason "$hard")" = multiple-hardlinks ]
+rm "$home/hard-copy.lua"
+chmod 444 "$hard"
+[ "$(inspect_reason "$hard")" = not-writable ]
+chmod 600 "$hard"
+outside="$fixture/outside.lua"
+printf 'return {}\n' > "$outside"
+[ "$(inspect_reason "$outside")" = outside-safe-root ]
+
+unsafe_state="$fixture/unsafe-state"
+mkdir "$unsafe_state"
+chmod 755 "$unsafe_state"
+if printf '%s' '{"schemaVersion":1}' | python3 "$root/scripts/stats-store" write --path "$unsafe_state/stats.json" --recovery-dir "$unsafe_state/recovery" >/dev/null 2>&1; then
+  echo "unsafe state directory accepted" >&2
+  exit 1
+fi
+if "$root/scripts/bridge-control" enable --config "$inode_config" --state-dir "$unsafe_state" --expected-hash "$(sha256sum "$inode_config" | awk '{print "sha256:" $1}')" --no-live-reload >/dev/null 2>"$fixture/state.err"; then
+  echo "unsafe controller state directory accepted" >&2
+  exit 1
+fi
+grep -q 'unsafe-state-directory' "$fixture/state.err"
+
+fake_bin="$fixture/bin"
+mkdir "$fake_bin"
+ln -s "$(command -v python3)" "$fake_bin/python3"
+if PATH="$fake_bin" "$root/scripts/bridge-control" enable --config "$inode_config" --state-dir "$fixture/missing-luac" --expected-hash "$(sha256sum "$inode_config" | awk '{print "sha256:" $1}')" --no-live-reload >/dev/null 2>"$fixture/luac.err"; then
+  echo "missing luac unexpectedly enabled" >&2
+  exit 1
+fi
+grep -q 'missing-luac' "$fixture/luac.err"
+ln -s "$(command -v luac)" "$fake_bin/luac"
+if PATH="$fake_bin" "$root/scripts/bridge-control" enable --config "$inode_config" --state-dir "$fixture/missing-hyprctl" --expected-hash "$(sha256sum "$inode_config" | awk '{print "sha256:" $1}')" >/dev/null 2>"$fixture/hyprctl.err"; then
+  echo "missing hyprctl unexpectedly enabled" >&2
+  exit 1
+fi
+grep -q 'missing-hyprctl' "$fixture/hyprctl.err"
+
+echo "hardening fixtures passed"

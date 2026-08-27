@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 import fcntl
+import shutil
 from pathlib import Path
 
 BEGIN = "-- >>> Keybind Dojo managed bridge >>>"
@@ -34,6 +35,44 @@ def output(value, error=False):
 def fail(code, message):
     output({"ok": False, "code": code, "message": message}, True)
     raise SystemExit(1)
+
+
+def prepare_state_dir(path):
+    try:
+        if path.exists():
+            info = path.stat()
+            if not stat.S_ISDIR(info.st_mode):
+                fail("unsafe-state-directory", "state path is not a directory")
+            if info.st_uid != os.getuid() or stat.S_IMODE(info.st_mode) & 0o077:
+                fail("unsafe-state-directory", "state directory ownership or permissions are unsafe")
+        else:
+            path.mkdir(parents=True, exist_ok=True)
+        os.chmod(path, 0o700)
+    except OSError as exc:
+        fail("unsafe-state-directory", str(exc))
+
+
+def backup_list(state_dir):
+    if not state_dir:
+        return []
+    backup_root = Path(state_dir) / "backups"
+    try:
+        entries = [item for item in backup_root.iterdir() if item.is_dir()]
+    except OSError:
+        return []
+    entries.sort(key=lambda item: (item.stat().st_mtime_ns, item.name), reverse=True)
+    result = []
+    for item in entries:
+        metadata = item / "metadata.json"
+        details = {"path": str(item), "currentHash": None}
+        try:
+            details["createdAt"] = int(item.stat().st_mtime)
+            value = json.loads(metadata.read_text(encoding="utf-8"))
+            if isinstance(value, dict): details["currentHash"] = value.get("currentHash")
+        except (OSError, ValueError):
+            pass
+        result.append(details)
+    return result
 
 
 def default_config():
@@ -88,8 +127,10 @@ def marker_state(text):
     begins, ends = [m.start() for m in re.finditer(re.escape(BEGIN), text)], [m.start() for m in re.finditer(re.escape(END), text)]
     if not begins and not ends:
         return "absent", None
-    if len(begins) != 1 or len(ends) != 1:
+    if len(begins) > 1 or len(ends) > 1:
         return "invalid", "duplicate-markers"
+    if len(begins) != 1 or len(ends) != 1:
+        return "invalid", "malformed-markers"
     start, finish = begins[0], ends[0]
     if finish < start or text.find("\n", finish) == -1 and finish + len(END) != len(text):
         return "invalid", "malformed-markers"
@@ -113,7 +154,10 @@ def insertion(text):
                 final_return = index
         depth += line.count("{") - line.count("}")
     if final_return is not None:
-        return "".join(lines[:final_return]) + BLOCK + ("" if not lines[:final_return] or lines[final_return - 1].endswith("\n") else "\n") + "".join(lines[final_return:])
+        prefix = "".join(lines[:final_return])
+        if prefix and not prefix.endswith("\n"):
+            prefix += "\n"
+        return prefix + BLOCK + "\n" + "".join(lines[final_return:])
     if text and not text.endswith("\n"):
         text += "\n"
     return text + BLOCK + "\n"
@@ -153,6 +197,7 @@ def inspect(logical, state_dir):
         "device": None,
         "inode": None,
         "hardLinks": None,
+        "backups": backup_list(state_dir),
     }
     target, error = resolve_path(logical)
     if error:
@@ -218,10 +263,13 @@ def inspect(logical, state_dir):
 def mutate(command, args):
     if not args.expected_hash:
         fail("invalid-arguments", "--expected-hash is required")
+    if not shutil.which("luac"):
+        fail("missing-luac", "luac is required for safe configuration validation")
+    if not args.no_live_reload and not shutil.which("hyprctl"):
+        fail("missing-hyprctl", "hyprctl is required for live configuration reload")
     logical = args.config or default_config()
     state_dir = args.state_dir or default_state()
-    state_dir.mkdir(parents=True, exist_ok=True)
-    os.chmod(state_dir, 0o700)
+    prepare_state_dir(state_dir)
     lock_path = state_dir / "bridge-control.lock"
     with lock_path.open("a+") as lock:
         os.chmod(lock_path, 0o600)

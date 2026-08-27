@@ -381,10 +381,13 @@ Item {
     }
     integrationDetails = parsed
     if (parsed.managedBlockState === "present") integrationState = "enabled"
-    else if (parsed.managedBlockState === "absent")
+    else if (parsed.managedBlockState === "absent") {
       integrationState = (integrationState === "enabled" || integrationState === "disconnected")
         ? "disconnected" : "disabled"
-    else integrationState = "error"
+      guideVisible = false
+      activeModifiers = ""
+      highlightedBindingId = ""
+    } else integrationState = "error"
     return integrationState !== "error"
   }
 
