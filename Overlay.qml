@@ -439,7 +439,7 @@ Item {
                 required property var modelData
                 width: bindingList.width
                 height: Style.space(52)
-                color: index === root.selectedIndex ? Color.menu.selectedBackground : Color.menu.background
+                color: Color.menu.background
                 border.width: index === root.selectedIndex && root.focusIndex === 5 ? Math.max(1, Style.space(1)) : 0
                 border.color: Color.menu.selectedBorder
                 radius: Style.cornerRadius
