@@ -166,6 +166,7 @@ Item {
 
             Row {
               width: parent.width
+              height: Style.space(22)
               spacing: Style.space(3)
 
               Text {
@@ -192,14 +193,18 @@ Item {
               id: cardsFlow
               width: parent.width
               spacing: Style.space(2)
-              height: childrenRect.height
+              height: Math.max(Style.space(52), childrenRect.height)
 
               Repeater {
                 model: root.cards.items
                 delegate: Item {
                   required property var modelData
-                  width: Math.min(Style.space(180), Math.max(Style.space(96), Math.floor((cardsFlow.width - Style.space(10)) / 6)))
-                  height: Style.space(8)
+                  // Four readable lanes are the baseline; Flow adds more
+                  // lanes on wide displays and fewer on narrow ones. The
+                  // previous six-column minimum made cards too narrow for
+                  // ordinary descriptions.
+                  width: Math.min(Style.space(300), Math.max(Style.space(180), Math.floor((cardsFlow.width - Style.space(6)) / 4)))
+                  height: Style.space(52)
 
                   BorderSurface {
                     anchors.fill: parent
@@ -225,7 +230,7 @@ Item {
                         color: modelData.id === root.renderedHighlightId
                           ? Color.menu.selectedText : Color.menu.text
                         font.family: Style.font.family
-                        font.pixelSize: Style.font.caption
+                        font.pixelSize: Style.font.bodySmall
                         font.bold: true
                         elide: Text.ElideRight
                         maximumLineCount: 1
@@ -236,9 +241,10 @@ Item {
                         text: String(modelData.description || "")
                         color: Color.menu.text
                         font.family: Style.font.family
-                        font.pixelSize: Style.font.caption
+                        font.pixelSize: Style.font.bodySmall
                         elide: Text.ElideRight
-                        maximumLineCount: 1
+                        maximumLineCount: 2
+                        wrapMode: Text.WordWrap
                         clip: true
                       }
                     }
@@ -247,15 +253,26 @@ Item {
               }
             }
 
-            Text {
+            BorderSurface {
+              width: parent.width
+              height: Style.space(30)
               visible: root.cards.more > 0
-              text: "+" + root.cards.more + " more"
-              color: Color.menu.text
-              font.family: Style.font.family
-              font.pixelSize: Style.font.caption
+              color: Color.menu.background
+              borderSpec: Border.surfaceSpec("menu", "border", Color.menu.border, Math.max(1, Style.space(1)))
+              radius: Style.cornerRadius
+
+              Text {
+                anchors.centerIn: parent
+                text: "+" + root.cards.more + " more"
+                color: Color.menu.text
+                font.family: Style.font.family
+                font.pixelSize: Style.font.bodySmall
+              }
             }
 
-            Row {
+            Flow {
+              width: parent.width
+              height: Style.space(24)
               visible: root.service && root.service.activeModifiers === "SUPER"
               spacing: Style.space(4)
               Text { text: "Shift " + root.lanes.SHIFT; color: Color.menu.text; font.family: Style.font.family; font.pixelSize: Style.font.caption }
