@@ -28,6 +28,7 @@ Item {
 
   property string catalogState: "loading"
   property string statsState: "ready"
+  property string manualSnippet: ""
   property string lastProtocolError: ""
   property int bridgeEventCount: 0
   property var sessionDiagnostics: ({
@@ -55,6 +56,9 @@ Item {
 
   readonly property string generatorPath: localPath(Qt.resolvedUrl("scripts/generate-catalog"))
   readonly property string controllerPath: localPath(Qt.resolvedUrl("scripts/bridge-control"))
+  readonly property bool catalogGenerationRunning: catalogGenerationProcess.running
+  readonly property bool integrationInspectRunning: integrationInspectProcess.running
+  readonly property bool integrationMutationRunning: integrationMutationProcess.running
 
   function protocolPayload(event) {
     if (!event || String(event.name || "") !== "custom") return ""
@@ -240,6 +244,18 @@ Item {
     return integrationState !== "error"
   }
 
+  function applyManualSnippet(raw, exitCode) {
+    if (exitCode !== 0) return false
+    try {
+      var parsed = JSON.parse(String(raw || ""))
+      if (parsed && parsed.ok === true && typeof parsed.snippet === "string") {
+        manualSnippet = parsed.snippet
+        return true
+      }
+    } catch (e) {}
+    return false
+  }
+
   function inspectIntegration() {
     if (integrationInspectProcess.running || controllerPath === "") return false
     integrationInspectProcess.command = [controllerPath, "inspect"]
@@ -357,6 +373,13 @@ Item {
     onExited: root.applyIntegrationResult(integrationInspectStdout.text, exitCode)
   }
 
+  Process {
+    id: manualSnippetProcess
+    running: false
+    stdout: StdioCollector { id: manualSnippetStdout; waitForEnd: true }
+    onExited: root.applyManualSnippet(manualSnippetStdout.text, exitCode)
+  }
+
   property string integrationMutationAction: ""
   Process {
     id: integrationMutationProcess
@@ -448,6 +471,8 @@ Item {
     root.syncSettings()
     root.refreshSuppressionServices()
     root.inspectIntegration()
+    manualSnippetProcess.command = [root.controllerPath, "manual-snippet"]
+    manualSnippetProcess.running = true
     root.regenerateCatalog()
     root.requestFullscreenRefresh()
   })

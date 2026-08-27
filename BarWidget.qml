@@ -9,6 +9,13 @@ BarWidget {
 
   property var service: null
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
+  readonly property int currentStreak: service && service.stats
+    ? Math.max(0, Number(service.stats.currentStreak || service.stats.streak || 0)) : 0
+  readonly property string statusMark: !service || service.integrationState === "disabled"
+    ? " ·" : service.integrationState === "error" ? " !" : service.integrationState === "disconnected" ? " ?" : ""
+  readonly property string tooltipSummary: service && service.integrationState === "enabled"
+    ? "Keybind Dojo · streak " + currentStreak
+    : "Set up Keybind Dojo"
 
   function syncService() {
     service = bar && bar.shell && typeof bar.shell.serviceFor === "function"
@@ -54,7 +61,9 @@ BarWidget {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "Dojo"
+    text: "󰌌" + (root.currentStreak > 0 ? " " + root.currentStreak : "") + root.statusMark
+    tooltipText: root.tooltipSummary
+    fontSize: Style.font.body
     labelVisible: true
     onPressed: function(button) {
       if (button === Qt.LeftButton) root.toggle()

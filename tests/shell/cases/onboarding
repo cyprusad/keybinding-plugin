@@ -1,0 +1,49 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+fixture=$(mktemp -d)
+trap 'rm -rf "$fixture"' EXIT
+
+# The normal onboarding fixture is a user-owned regular Hyprland config.
+mkdir -p "$fixture/home/.config/hypr"
+config="$fixture/home/.config/hypr/hyprland.lua"
+printf 'require("default.hypr.omarchy")\n' > "$config"
+inspect=$(HOME="$fixture/home" "$root/scripts/bridge-control" inspect --config "$config" --state-dir "$fixture/state")
+printf '%s\n' "$inspect" | jq -e '.safeToPatch == true and .reasonCode == "ok" and .proposedDiff != "" and .currentHash != null' >/dev/null
+hash=$(printf '%s\n' "$inspect" | jq -r .currentHash)
+
+# The displayed hash is the consent boundary: a changed file must be refused.
+printf '# changed after preview\n' >> "$config"
+if HOME="$fixture/home" "$root/scripts/bridge-control" enable --config "$config" --state-dir "$fixture/state" --expected-hash "$hash" --no-live-reload 2>"$fixture/changed.err"; then
+  exit 1
+fi
+grep -q 'changed-since-inspect' "$fixture/changed.err"
+
+# A Git-managed symlink is safe when its resolved target remains user-owned.
+mkdir -p "$fixture/home/repo"
+printf 'require("default.hypr.omarchy")\n' > "$fixture/home/repo/hyprland.lua"
+git -C "$fixture/home/repo" init -q
+ln -s "$fixture/home/repo/hyprland.lua" "$fixture/home/.config/hypr/git.lua"
+symlink=$("$root/scripts/bridge-control" inspect --config "$fixture/home/.config/hypr/git.lua" --state-dir "$fixture/git-state")
+printf '%s\n' "$symlink" | jq -e '.safeToPatch == true and .symlinked == true and .gitManaged == true and (.gitRoot | endswith("/repo"))' >/dev/null
+
+# A target outside HOME and a Git root is intentionally browse-only.
+mkdir -p "$fixture/outside"
+printf 'require("default.hypr.omarchy")\n' > "$fixture/outside/hyprland.lua"
+unsafe=$(HOME="$fixture/home" "$root/scripts/bridge-control" inspect --config "$fixture/outside/hyprland.lua" --state-dir "$fixture/unsafe-state")
+printf '%s\n' "$unsafe" | jq -e '.safeToPatch == false and .reasonCode == "outside-safe-root" and .proposedDiff != ""' >/dev/null
+
+# Fixture-mode enable/disable covers the successful controller transitions.
+fresh="$fixture/home/.config/hypr/fresh.lua"
+printf 'require("default.hypr.omarchy")\n' > "$fresh"
+fresh_hash=$(HOME="$fixture/home" "$root/scripts/bridge-control" inspect --config "$fresh" | jq -r .currentHash)
+enabled=$(HOME="$fixture/home" "$root/scripts/bridge-control" enable --config "$fresh" --state-dir "$fixture/enable-state" --expected-hash "$fresh_hash" --no-live-reload)
+printf '%s\n' "$enabled" | jq -e '.ok == true and .changed == true' >/dev/null
+enabled_hash=$(printf '%s\n' "$enabled" | jq -r .newHash)
+disabled=$(HOME="$fixture/home" "$root/scripts/bridge-control" disable --config "$fresh" --state-dir "$fixture/enable-state" --expected-hash "$enabled_hash" --no-live-reload)
+printf '%s\n' "$disabled" | jq -e '.ok == true and .changed == true' >/dev/null
+test "$(cat "$fresh")" = 'require("default.hypr.omarchy")'
+
+snippet=$("$root/scripts/bridge-control" manual-snippet)
+printf '%s\n' "$snippet" | jq -e '.ok == true and (.snippet | contains("Keybind Dojo managed bridge"))' >/dev/null
