@@ -2,7 +2,7 @@
 
 Status: approved design, implementation not started  
 Target: Omarchy Quattro with Hyprland 0.56.2 or newer  
-Plugin ID: `io.github.sai.keybind-dojo`  
+Plugin ID: `io.github.cyprusad.keybind-dojo`
 License: MIT
 
 ## 1. Product definition
@@ -96,10 +96,10 @@ The final manifest is:
 ```json
 {
   "schemaVersion": 1,
-  "id": "io.github.sai.keybind-dojo",
+  "id": "io.github.cyprusad.keybind-dojo",
   "name": "Keybind Dojo",
   "version": "0.1.0",
-  "author": "Sai",
+  "author": "cyprusad",
   "license": "MIT",
   "description": "A local-first, gamified Omarchy keybinding guide.",
   "kinds": ["bar-widget", "service", "overlay"],

@@ -17,7 +17,7 @@ Write a concise user README containing:
 - Install command:
 
   ```sh
-  omarchy plugin add https://github.com/sai/keybind-dojo.git --enable
+  omarchy plugin add https://github.com/cyprusad/keybinding-plugin.git --enable
   ```
 
 - One-click consent explanation: the button edits the resolved Hyprland Lua target automatically after showing the exact diff.

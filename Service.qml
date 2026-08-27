@@ -9,7 +9,7 @@ Item {
 
   signal bindingMatched(string bindingId)
 
-  readonly property string moduleName: "io.github.sai.keybind-dojo"
+  readonly property string moduleName: "io.github.cyprusad.keybind-dojo"
   property var shell: null
   property var manifest: null
 

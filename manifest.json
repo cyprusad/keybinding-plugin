@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "io.github.sai.keybind-dojo",
+  "id": "io.github.cyprusad.keybind-dojo",
   "name": "Keybind Dojo",
   "version": "0.1.0",
-  "author": "Sai",
+  "author": "cyprusad",
   "license": "MIT",
   "description": "A local-first, gamified Omarchy keybinding guide.",
   "kinds": ["bar-widget", "service", "overlay"],

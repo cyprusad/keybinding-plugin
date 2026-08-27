@@ -97,12 +97,12 @@ TestCase {
     compare(Model.normalizeFullscreen("true"), false)
 
     var config = { bar: { layout: { left: [], center: [], right: [
-      { id: "io.github.sai.keybind-dojo", guideDelayMs: 150, showInFullscreen: true }
+      { id: "io.github.cyprusad.keybind-dojo", guideDelayMs: 150, showInFullscreen: true }
     ] } } }
-    var settings = Model.settingsFor(config, "io.github.sai.keybind-dojo")
+    var settings = Model.settingsFor(config, "io.github.cyprusad.keybind-dojo")
     compare(settings.guideDelayMs, 150)
     compare(settings.showInFullscreen, true)
-    compare(Model.settingsFor({}, "io.github.sai.keybind-dojo").guideDelayMs, undefined)
+    compare(Model.settingsFor({}, "io.github.cyprusad.keybind-dojo").guideDelayMs, undefined)
   }
 
   function test_fullscreenAndEventClassification() {

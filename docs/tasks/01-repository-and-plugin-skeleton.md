@@ -18,7 +18,7 @@ Create the smallest valid Omarchy plugin structure and test harness without impl
 1. Add the exact `manifest.json` contract from the plan.
 2. Add minimal loadable entry points:
    - `Service.qml`: an `Item` accepting `shell` and `manifest`.
-   - `BarWidget.qml`: a valid `BarWidget` with module name `io.github.sai.keybind-dojo` and a text/icon button.
+   - `BarWidget.qml`: a valid `BarWidget` with module name `io.github.cyprusad.keybind-dojo` and a text/icon button.
    - `Panel.qml`: a keyboard-closeable anchored panel loaded by the bar widget.
    - `Overlay.qml`: a hidden overlay implementing `open(payloadJson)` and `close()`.
    - `SuperGuide.qml`: a non-visible placeholder component; do not create a layer-shell window yet.

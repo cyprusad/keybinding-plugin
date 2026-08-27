@@ -6,8 +6,8 @@ import qs.Ui
 Panel {
   id: root
 
-  moduleName: "io.github.sai.keybind-dojo"
-  ipcTarget: "io.github.sai.keybind-dojo"
+  moduleName: "io.github.cyprusad.keybind-dojo"
+  ipcTarget: "io.github.cyprusad.keybind-dojo"
   manageIpc: false
 
   property var anchorItem: null

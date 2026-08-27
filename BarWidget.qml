@@ -5,7 +5,7 @@ import qs.Ui
 BarWidget {
   id: root
 
-  moduleName: "io.github.sai.keybind-dojo"
+  moduleName: "io.github.cyprusad.keybind-dojo"
 
   property var service: null
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
