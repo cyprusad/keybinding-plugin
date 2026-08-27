@@ -43,6 +43,8 @@ Captured from the development machine on 2026-08-27:
 - **Step 7 — Shell and Hyprland reload recovery: PASS.** User verified the
   plugin survived an Omarchy shell restart and Hyprland reload with clean
   config errors, normal guide lifecycle, and a usable full overlay.
+- **Step 8 — Lock-screen suppression: PASS.** User confirmed the guide stayed
+  hidden while the session was locked and returned normally after unlock.
 
 ## Automated results
 
