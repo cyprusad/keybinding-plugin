@@ -51,6 +51,9 @@ Captured from the development machine on 2026-08-27:
 - **Step 10 — Focused-monitor routing: PASS.** User verified on a dual-monitor
   setup that the guide appears only on the monitor containing the focused
   workspace/window.
+- **Step 11 — Unmatched application shortcut privacy: PASS.** User tested a
+  Ctrl-only shortcut in a disposable input surface; the plugin state remained
+  empty and no typed content was stored.
 
 ## Automated results
 
@@ -92,10 +95,10 @@ development session as a product failure; the models themselves pass.
 
 Remaining live verification:
 
-- Unmatched application shortcuts and a final review that no raw key log,
-  dispatcher argument, entered text, window title, application identifier,
-  network request, or unmatched custom event is stored. Ordinary typing,
-  metacharacters, and a synthetic password already passed manually.
+- Final review that no raw key log, dispatcher argument, entered text, window
+  title, application identifier, network request, or unmatched custom event is
+  stored. Ordinary typing, metacharacters, a synthetic password, and an
+  unmatched Ctrl-only shortcut passed manually.
 - At least 100 Super-down latency samples with p95 below 50 ms.
 - Five-minute idle bridge/service CPU average below 0.2% attributable CPU.
 - Sustained synthetic stream with no unbounded queue/model growth.
