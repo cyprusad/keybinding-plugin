@@ -5,9 +5,26 @@ root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 cases="$root/tests/shell/cases"
 
 pattern=${1-}
+run_all=false
+if [ "$pattern" = all ]; then
+  run_all=true
+  pattern=
+fi
+
+before_status=$(git -C "$root" status --porcelain)
 for test in "$cases"/*; do
   [ -f "$test" ] || continue
   [ -x "$test" ] || continue
+  [ "$run_all" = true ] && [ "$(basename "$test")" = all ] && continue
   [ -z "$pattern" ] || case "$(basename "$test")" in *"$pattern"*) ;; *) continue ;; esac
   "$test"
 done
+
+if [ "$run_all" = true ]; then
+  after_status=$(git -C "$root" status --porcelain)
+  [ "$before_status" = "$after_status" ] || {
+    echo "test suite changed tracked worktree state" >&2
+    git -C "$root" status --short >&2
+    exit 1
+  }
+fi

@@ -1,0 +1,67 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+runtime_files="$root/bridge.lua $root/Service.qml $root/Panel.qml $root/Overlay.qml $root/SuperGuide.qml $root/BarWidget.qml $root/ServiceModel.js $root/Stats.js $root/Recommendations.js $root/GuideModel.js $root/scripts/bridge-control $root/scripts/generate-catalog $root/scripts/stats-store"
+
+for entry in manifest.json BarWidget.qml Panel.qml Overlay.qml Service.qml SuperGuide.qml bridge.lua ServiceModel.js Stats.js Recommendations.js GuideModel.js scripts/bridge-control scripts/generate-catalog scripts/stats-store; do
+  test -f "$root/$entry"
+done
+
+jq -e '
+  .schemaVersion == 1 and
+  .id == "io.github.cyprusad.keybind-dojo" and
+  .name == "Keybind Dojo" and
+  .version == "0.1.0" and
+  .author == "cyprusad" and
+  .license == "MIT" and
+  (.kinds == ["bar-widget", "service", "overlay"]) and
+  (.entryPoints.barWidget == "BarWidget.qml") and
+  (.entryPoints.service == "Service.qml") and
+  (.entryPoints.overlay == "Overlay.qml")
+' "$root/manifest.json" >/dev/null
+if grep -Fq 'io.github.sai' "$root/manifest.json" || grep -Eq '"author"[[:space:]]*:[[:space:]]*"sai"' "$root/manifest.json"; then
+  echo "manifest contains the retired author identity" >&2
+  exit 1
+fi
+
+qmllint -I /usr/share/omarchy/shell \
+  "$root/BarWidget.qml" "$root/Panel.qml" "$root/Overlay.qml" \
+  "$root/Service.qml" "$root/SuperGuide.qml"
+luac -p "$root/bridge.lua"
+
+# Runtime code must not contain network clients, privilege escalation, dynamic
+# evaluation, or shell command injection helpers.
+if rg -n -i '(^|[^[:alnum:]_])(curl|wget|socat|nc|netcat|pkexec|sudo|doas|eval)([^[:alnum:]_]|$)|https?://|urllib|requests' $runtime_files; then
+  echo "forbidden runtime API or network client found" >&2
+  exit 1
+fi
+
+# The input callback is deliberately constant-time and must not do I/O,
+# process creation, or file operations.
+callback=$(mktemp)
+trap 'rm -f "$callback"' EXIT
+sed -n '/hl.on("input.keyboard.key"/,/^end)/p' "$root/bridge.lua" > "$callback"
+if rg -n 'io\.|os\.|require\("socket|hyprctl|Process|File|open\(|write\(|read\(' "$callback"; then
+  echo "input callback contains I/O or process work" >&2
+  exit 1
+fi
+
+# Verify generated catalog JSON/Lua remain schema-safe and never persist
+# dispatcher arguments.
+out=$(mktemp -d)
+trap 'rm -rf "$out"; rm -f "$callback"' EXIT
+"$root/scripts/generate-catalog" \
+  --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" \
+  --keymap-file "$root/tests/fixtures/catalog-keymap.txt" \
+  --output-dir "$out" >/dev/null
+jq -e '
+  .schemaVersion == 1 and
+  (.sourceHash | startswith("sha256:")) and
+  (.bindings | length == 6) and
+  all(.bindings[]; (.id | startswith("sha256:")) and (.xkbCodes | type == "array") and (has("arg") | not) and (has("argument") | not))
+' "$out/catalog.json" >/dev/null
+luac -p "$out/bridge-catalog.lua"
+! grep -Fq 'secret' "$out/bridge-catalog.lua"
+
+echo "release gate static checks passed"
