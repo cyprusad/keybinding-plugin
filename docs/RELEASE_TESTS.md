@@ -36,7 +36,8 @@ Captured from the development machine on 2026-08-27:
   content or raw-event file appeared in plugin state.
 - **Step 5 — Live guide and aggregate tracking: PASS.** User confirmed the
   guide returned after re-enabling tracking and that a matched shortcut created
-  `stats.json` with three tracked opaque binding IDs and streak `1`.
+  `stats.json` with three tracked opaque binding IDs, total XP `227`, streak
+  `1`, and a completed daily quest for `2026-08-27`.
 
 ## Automated results
 
