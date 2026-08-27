@@ -11,7 +11,7 @@
 | 07 — Production service | Complete | c4023c6 | Strict catalog/protocol service, async regeneration and bridge inspection, inline settings, lock/polkit state, debounced fullscreen queries, and QML model tests pass. |
 | 08 — Instant Super Guide | Complete | dce6e24 | Pre-created per-screen visual guide, focused-monitor routing, delay/suppression behavior, exact filtering, truncation, highlight timing, and guide model tests pass. |
 | 09 — Bar widget and onboarding | Complete (manual gate passed) | dd3b60c | Bar status/streak tooltip, consent preview, exact diff/hash boundary, fixture safety tests, settings panel, readable guide layout, and live consent flow pass. Full access to truncated bindings remains Task 12. |
-| 10 — Aggregate persistence | Pending | — | |
+| 10 — Aggregate persistence | Complete | e45f586 | Validated aggregate stats, 90-day local buckets, duplicate-turn suppression, atomic 0600 writes, corruption/reset recovery, five-copy retention, and panel data reset confirmation. Pure and storage fixtures pass; existing Wayland guide QML runner still aborts in this session. |
 | 11 — Gamification and recommendations | Pending | — | |
 | 12 — Full Dojo overlay | Pending | — | |
 | 13 — Dotfiles and failure hardening | Pending | — | |
@@ -40,3 +40,4 @@
 | `dce6e24` | Implement the Task 08 instant Super Guide and its focus/filtering test suite. |
 | `2171c07` | Implement the Task 09 bar widget, onboarding consent preview, settings panel, and fixture safety tests; pause before live consent. |
 | `dd3b60c` | Finish Task 09 presentation fixes and record the live manual consent gate as passed. |
+| `e45f586` | Add aggregate usage persistence, recovery storage, reset confirmation, and Task 10 tests. |
