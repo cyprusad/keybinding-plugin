@@ -13,7 +13,7 @@
 | 09 — Bar widget and onboarding | Complete (manual gate passed) | dd3b60c | Bar status/streak tooltip, consent preview, exact diff/hash boundary, fixture safety tests, settings panel, readable guide layout, and live consent flow pass. Full access to truncated bindings remains Task 12. |
 | 10 — Aggregate persistence | Complete | e45f586 | Validated aggregate stats, 90-day local buckets, duplicate-turn suppression, atomic 0600 writes, corruption/reset recovery, five-copy retention, and panel data reset confirmation. Pure and storage fixtures pass; existing Wayland guide QML runner still aborts in this session. |
 | 11 — Gamification and recommendations | Complete | c057362 | Deterministic XP/levels/streaks/quests, canonical recommendations, availability filtering, 100-day streak coverage, and real bar/panel progress values. |
-| 12 — Full Dojo overlay | Pending | — | |
+| 12 — Full Dojo overlay | Complete (manual gate passed) | f234331 | Full browsing/practice/progress/settings overlay; responsive layout, close affordance, keyboard navigation, search refocus, and menu-surface styling verified manually. |
 | 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
 | 14 — Integration, privacy, and performance | Pending | — | |
 | 15 — Documentation and release | Pending | — | |
@@ -44,3 +44,12 @@
 | `ce34f8f` | Record Task 10 completion in the progress checklist. |
 | `c057362` | Add deterministic gamification, streaks, quests, recommendations, and real progress surfaces. |
 | `c368aaa` | Harden integration/recovery paths and add the Task 13 scenario matrix. |
+| `2b7fb92` | Implement the full Dojo overlay shell and static smoke test. |
+| `1b99c95` | Harden overlay styling, keycap surfaces, and shortcut interception. |
+| `59b2d2a` | Clarify the overlay close affordance and Escape guidance. |
+| `cd486b4` | Make the close control and Escape keycap visibly explicit; simplify search text. |
+| `e0ca7aa` | Make Tab focus navigation wrap and show the active tab target. |
+| `833f6ca` | Stabilize overlay keyboard focus and align binding keycaps with menu surfaces. |
+| `2a252b3` | Add `/` and `Ctrl+F` keyboard shortcuts to refocus search. |
+| `3ebe8f5` | Match binding keycaps to the Practice menu surface. |
+| `f234331` | Match binding result rows to the Practice menu background; manual Task 12 gate passed. |
