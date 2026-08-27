@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Atomic local storage and recovery helper for Keybind Dojo statistics."""
+import argparse
+import hashlib
+import json
+import os
+import stat
+import sys
+import tempfile
+from datetime import datetime, timezone
+from pathlib import Path
+
+
+def emit(value, error=False):
+    print(json.dumps(value, ensure_ascii=False, separators=(",", ":")),
+          file=sys.stderr if error else sys.stdout)
+
+
+def fail(code, message):
+    emit({"ok": False, "code": code, "message": message}, error=True)
+    raise SystemExit(1)
+
+
+def prepare_directory(path):
+    path.mkdir(parents=True, exist_ok=True)
+    os.chmod(path, 0o700)
+
+
+def atomic_write(path, text):
+    prepare_directory(path.parent)
+    fd, temporary = tempfile.mkstemp(prefix=".keybind-dojo-stats.", dir=path.parent)
+    try:
+        os.fchmod(fd, stat.S_IRUSR | stat.S_IWUSR)
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        os.chmod(path, 0o600)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def recovery_name(path, content):
+    digest = hashlib.sha256(content).hexdigest()
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    candidate = path / ("stats-" + stamp + "-" + digest + ".json")
+    suffix = 1
+    while candidate.exists():
+        candidate = path / ("stats-" + stamp + "-" + digest + "-" + str(suffix) + ".json")
+        suffix += 1
+    return candidate, digest
+
+
+def archive(source, recovery_dir):
+    if not source.exists():
+        emit({"ok": True, "archived": False, "path": None})
+        return
+    try:
+        content = source.read_bytes()
+        prepare_directory(recovery_dir)
+        destination, digest = recovery_name(recovery_dir, content)
+        os.replace(source, destination)
+        os.chmod(destination, 0o600)
+        emit({"ok": True, "archived": True, "path": str(destination), "sha256": "sha256:" + digest})
+    except OSError as exc:
+        fail("recovery-failed", str(exc))
+
+
+def write_stats(path):
+    raw = sys.stdin.read()
+    try:
+        value = json.loads(raw)
+    except (TypeError, ValueError) as exc:
+        fail("invalid-json", str(exc))
+    if not isinstance(value, dict) or value.get("schemaVersion") != 1:
+        fail("invalid-stats", "stats payload must be schemaVersion 1")
+    atomic_write(path, json.dumps(value, ensure_ascii=False, indent=2) + "\n")
+    emit({"ok": True, "path": str(path), "mode": "0600"})
+
+
+def prune_recovery(path, keep):
+    files = sorted(
+        (item for item in path.glob("stats-*.json") if item.is_file()),
+        key=lambda item: (item.stat().st_mtime_ns, item.name),
+    )
+    for item in files[:-keep]:
+        item.unlink()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", choices=["write", "archive"])
+    parser.add_argument("--path", type=Path, required=True)
+    parser.add_argument("--recovery-dir", type=Path, required=True)
+    parser.add_argument("--keep", type=int, default=0)
+    args = parser.parse_args()
+    if args.command == "write":
+        write_stats(args.path)
+    else:
+        archive(args.path, args.recovery_dir)
+        if args.keep > 0 and args.recovery_dir.exists():
+            try:
+                prune_recovery(args.recovery_dir, args.keep)
+            except OSError as exc:
+                fail("recovery-prune-failed", str(exc))
+
+
+if __name__ == "__main__":
+    main()

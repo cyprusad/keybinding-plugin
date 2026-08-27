@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import "ServiceModel.js" as Model
+import "Stats.js" as Stats
 
 Item {
   id: root
@@ -16,7 +17,7 @@ Item {
   property string integrationState: "disabled"
   property var integrationDetails: ({})
   property var catalog: null
-  property var stats: ({})
+  property var stats: Stats.emptyStats()
   property bool guideVisible: false
   property string activeModifiers: ""
   property string highlightedBindingId: ""
@@ -27,7 +28,13 @@ Item {
   property bool activeWindowFullscreen: false
 
   property string catalogState: "loading"
-  property string statsState: "ready"
+  property string statsState: "loading"
+  property bool statsLoaded: false
+  property bool statsDirty: false
+  property bool statsArchivePending: false
+  property string statsArchiveAction: ""
+  property string statsWriteOutput: ""
+  property var observedProtocolKeys: ({})
   property string manualSnippet: ""
   property string lastProtocolError: ""
   property int bridgeEventCount: 0
@@ -56,9 +63,14 @@ Item {
 
   readonly property string generatorPath: localPath(Qt.resolvedUrl("scripts/generate-catalog"))
   readonly property string controllerPath: localPath(Qt.resolvedUrl("scripts/bridge-control"))
+  readonly property string statsStorePath: localPath(Qt.resolvedUrl("scripts/stats-store"))
+  readonly property string statsPath: stateDir + "/stats.json"
+  readonly property string statsRecoveryDir: stateDir + "/recovery"
   readonly property bool catalogGenerationRunning: catalogGenerationProcess.running
   readonly property bool integrationInspectRunning: integrationInspectProcess.running
   readonly property bool integrationMutationRunning: integrationMutationProcess.running
+  readonly property bool statsWriteRunning: statsWriteProcess.running
+  readonly property bool statsRecoveryRunning: statsArchiveProcess.running
 
   function protocolPayload(event) {
     if (!event || String(event.name || "") !== "custom") return ""
@@ -106,6 +118,7 @@ Item {
         return false
       }
       highlightedBindingId = parsed.id
+      root.recordStatsObservation(parsed.id, parsed.phase)
       bindingMatched(parsed.id)
       return true
     }
@@ -163,6 +176,25 @@ Item {
     return catalog && catalog.byId ? (catalog.byId[key] || null) : null
   }
 
+  function recordStatsObservation(bindingId, phase) {
+    if (!statsLoaded || !catalog || !catalog.byId || !catalog.byId[bindingId]) return false
+    var key = String(bindingId) + ":" + String(phase)
+    if (root.observedProtocolKeys[key] === true) return false
+    var keys = {}
+    for (var observed in root.observedProtocolKeys) keys[observed] = true
+    keys[key] = true
+    root.observedProtocolKeys = keys
+    Qt.callLater(function() { root.observedProtocolKeys = ({}) })
+
+    var next = Stats.recordObservation(stats, bindingId, Date.now() / 1000)
+    if (JSON.stringify(next) === JSON.stringify(stats)) return false
+    stats = next
+    statsDirty = true
+    if (!statsFlushTimer.running && !statsWriteProcess.running && !statsArchiveProcess.running)
+      statsFlushTimer.start()
+    return true
+  }
+
   function recommendations(limit) {
     // Scoring and persistence belong to later tasks. Keep this return type
     // stable so consumers can be implemented independently.
@@ -171,7 +203,89 @@ Item {
 
   function openGuide() { guideVisible = true }
   function closeGuide() { guideVisible = false }
-  function clearLocalData() { return false }
+  function clearLocalData(confirmed) {
+    if (confirmed !== true || !statsLoaded || statsWriteProcess.running || statsArchiveProcess.running)
+      return false
+    stats = Stats.emptyStats()
+    statsDirty = true
+    statsState = "ready"
+    statsArchiveAction = "reset"
+    statsArchiveProcess.command = ["python3", statsStorePath, "archive",
+      "--path", statsPath, "--recovery-dir", statsRecoveryDir, "--keep", "5"]
+    statsArchiveProcess.running = true
+    return true
+  }
+
+  function parseStatsResult(raw) {
+    try { return JSON.parse(String(raw || "")) } catch (e) { return null }
+  }
+
+  function finishStatsArchive(raw, exitCode) {
+    var result = parseStatsResult(raw)
+    if (exitCode !== 0 || !result || result.ok !== true) {
+      statsArchivePending = false
+      statsState = "error"
+      return false
+    }
+    statsArchivePending = false
+    var action = statsArchiveAction
+    statsArchiveAction = ""
+    if (action === "corrupt") {
+      statsState = "recovered"
+      statsDirty = true
+    }
+    if (!statsWriteProcess.running && statsDirty) flushStatsNow()
+    return true
+  }
+
+  function loadStats(raw) {
+    if (statsLoaded) return statsState !== "error"
+    var result = Stats.normalize(raw)
+    if (result.ok) {
+      stats = result.stats
+      statsState = "ready"
+      statsLoaded = true
+      return true
+    }
+
+    stats = Stats.emptyStats()
+    statsState = "recovered"
+    statsLoaded = true
+    statsArchiveAction = "corrupt"
+    statsArchivePending = true
+    statsArchiveProcess.command = ["python3", statsStorePath, "archive",
+      "--path", statsPath, "--recovery-dir", statsRecoveryDir]
+    statsArchiveProcess.running = true
+    return false
+  }
+
+  function initializeMissingStats() {
+    if (statsLoaded) return
+    stats = Stats.emptyStats()
+    statsState = "ready"
+    statsLoaded = true
+  }
+
+  function flushStatsNow() {
+    if (!statsLoaded || !statsDirty || statsWriteProcess.running || statsArchiveProcess.running)
+      return false
+    statsFlushTimer.stop()
+    statsWriteOutput = ""
+    statsWriteProcess.command = ["python3", statsStorePath, "write",
+      "--path", statsPath, "--recovery-dir", statsRecoveryDir]
+    statsWriteProcess.running = true
+    return true
+  }
+
+  function finishStatsWrite(raw, exitCode) {
+    var result = parseStatsResult(raw)
+    if (exitCode !== 0 || !result || result.ok !== true) {
+      statsState = "error"
+      return false
+    }
+    statsDirty = false
+    return true
+  }
 
   function settingsEntry() {
     return Model.settingsFor(shell ? shell.shellConfig : null, root.moduleName)
@@ -347,6 +461,38 @@ Item {
     }
   }
 
+  FileView {
+    id: statsFile
+    path: root.statsPath
+    watchChanges: false
+    printErrors: false
+    onLoaded: root.loadStats(text())
+    onLoadFailed: root.initializeMissingStats()
+  }
+
+  Timer {
+    id: statsFlushTimer
+    interval: 5000
+    repeat: false
+    onTriggered: root.flushStatsNow()
+  }
+
+  Process {
+    id: statsArchiveProcess
+    running: false
+    stdout: StdioCollector { id: statsArchiveStdout; waitForEnd: true }
+    onExited: root.finishStatsArchive(statsArchiveStdout.text, exitCode)
+  }
+
+  Process {
+    id: statsWriteProcess
+    running: false
+    stdinEnabled: true
+    stdout: StdioCollector { id: statsWriteStdout; waitForEnd: true }
+    onStarted: write(JSON.stringify(root.stats))
+    onExited: root.finishStatsWrite(statsWriteStdout.text, exitCode)
+  }
+
   Process {
     id: catalogGenerationProcess
     running: false
@@ -476,6 +622,8 @@ Item {
     root.regenerateCatalog()
     root.requestFullscreenRefresh()
   })
+
+  Component.onDestruction: root.flushStatsNow()
 
   onShellChanged: Qt.callLater(function() {
     root.syncSettings()

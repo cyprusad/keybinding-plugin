@@ -15,6 +15,7 @@ Panel {
   property var service: null
   property var preview: ({})
   property bool confirmDisable: false
+  property bool confirmClear: false
 
   readonly property bool onboarding: !service || service.integrationState !== "enabled"
   readonly property string displayedHash: preview && typeof preview.currentHash === "string"
@@ -65,6 +66,11 @@ Panel {
   }
 
   function delayValue(index) { return [0, 80, 150, 250, -1][index] }
+
+  function trackedBindingCount() {
+    return root.service && root.service.stats && root.service.stats.bindings
+      ? Object.keys(root.service.stats.bindings).length : 0
+  }
 
   onBarChanged: syncService()
   Component.onCompleted: syncService()
@@ -316,7 +322,8 @@ Panel {
               anchors.fill: parent
               anchors.margins: Style.space(8)
               spacing: Style.space(3)
-              Text { text: "Stats and recommendations arrive with Tasks 10–11."; color: Color.foreground; font.pixelSize: Style.font.caption }
+              Text { text: "Tracked bindings: " + root.trackedBindingCount(); color: Color.foreground; font.pixelSize: Style.font.caption }
+              Text { text: "Persistence: " + (root.service ? root.service.statsState : "unavailable"); color: Color.foreground; font.pixelSize: Style.font.caption }
               Text { text: "Session events: " + (root.service ? root.service.observedEventCount : 0); color: Color.foreground; font.pixelSize: Style.font.caption }
             }
           }
@@ -328,9 +335,13 @@ Panel {
           }
           Button {
             width: parent.width
-            text: "Clear local data"
-            enabled: false
-            tooltipText: "Available when aggregate persistence is implemented"
+            text: root.confirmClear ? "Confirm clear local data" : "Clear local data"
+            enabled: !!root.service && root.service.statsLoaded
+              && !root.service.statsWriteRunning && !root.service.statsRecoveryRunning
+            onClicked: {
+              if (!root.confirmClear) root.confirmClear = true
+              else if (root.service.clearLocalData(true)) root.confirmClear = false
+            }
           }
         }
       }
