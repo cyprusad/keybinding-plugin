@@ -292,34 +292,65 @@ Item {
           width: parent.width
           height: Style.space(32)
           spacing: Style.space(10)
-          Text {
-            text: "KEYBIND DOJO"
-            color: Color.menu.selectedText
-            font.family: Style.font.family
-            font.pixelSize: Style.font.heading
-            font.bold: true
+          Item {
+            width: Math.max(0, parent.width - closeButton.implicitWidth - escapeAffordance.implicitWidth - Style.space(20))
+            height: parent.height
+            Text {
+              id: titleText
+              text: "KEYBIND DOJO"
+              color: Color.menu.selectedText
+              font.family: Style.font.family
+              font.pixelSize: Style.font.heading
+              font.bold: true
+            }
+            Text {
+              anchors.left: titleText.right
+              anchors.leftMargin: Style.space(10)
+              anchors.verticalCenter: parent.verticalCenter
+              text: root.service ? "Learn your actual shortcuts" : "Loading service…"
+              color: Color.menu.text
+              opacity: 0.72
+              font.family: Style.font.family
+              font.pixelSize: Style.font.caption
+            }
           }
-          Text {
-            text: root.service ? "Learn your actual shortcuts" : "Loading service…"
-            color: Color.menu.text
-            opacity: 0.72
-            font.family: Style.font.family
-            font.pixelSize: Style.font.caption
-            anchors.verticalCenter: parent.verticalCenter
-          }
-          Item { width: Math.max(0, parent.width - 300); height: 1 }
           Button {
-            text: "Close overlay (Esc)"
+            id: closeButton
+            text: "Close overlay"
+            bordered: true
+            focusable: true
             background: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.06)
             foreground: Color.menu.text
+            tooltipText: "Escape also closes this overlay"
             onClicked: root.close()
           }
-          Text {
-            text: "ESC closes overlay · Tab navigates · " + root.focusLabel()
-            color: Color.menu.text
-            opacity: 0.88
-            font.pixelSize: Style.font.bodySmall
+          Row {
+            id: escapeAffordance
+            spacing: Style.space(5)
             anchors.verticalCenter: parent.verticalCenter
+            BorderSurface {
+              width: Style.space(34)
+              height: Style.space(24)
+              color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.12)
+              borderSpec: Border.surfaceSpec("menu", "border", Color.menu.border, Math.max(1, Style.space(1)))
+              radius: Style.cornerRadius
+              Text {
+                anchors.centerIn: parent
+                text: "Esc"
+                color: Color.menu.text
+                font.family: Style.font.family
+                font.pixelSize: Style.font.bodySmall
+                font.bold: true
+              }
+            }
+            Text {
+              text: "to close"
+              color: Color.menu.text
+              opacity: 0.88
+              font.family: Style.font.family
+              font.pixelSize: Style.font.bodySmall
+              anchors.verticalCenter: parent.verticalCenter
+            }
           }
         }
 
@@ -358,7 +389,7 @@ Item {
               Text {
                 anchors.fill: parent
                 anchors.margins: Style.space(8)
-                text: root.searchText === "" ? "Search combo or description…" : "Search: " + root.searchText
+                text: root.searchText === "" ? "Search combo or description…" : root.searchText
                 color: Color.menu.text
                 opacity: root.searchText === "" ? 0.58 : 1
                 font.pixelSize: Style.font.body
