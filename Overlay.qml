@@ -239,6 +239,11 @@ Item {
     if (focusIndex < 0) focusIndex += targetCount
   }
 
+  function retainKeyboardFocus() {
+    if (!opened) return
+    Qt.callLater(function() { keyCatcher.forceActiveFocus() })
+  }
+
   function focusLabel() {
     if (focusIndex === 0) return "Search"
     if (focusIndex <= 4) return tabs[focusIndex - 1]
@@ -320,7 +325,6 @@ Item {
             id: closeButton
             text: "Close overlay"
             bordered: true
-            focusable: true
             background: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.06)
             foreground: Color.menu.text
             tooltipText: "Escape also closes this overlay"
@@ -367,7 +371,7 @@ Item {
               text: modelData
               selected: root.currentTab === modelData
               hasCursor: root.focusIndex === 1 + index
-              onClicked: root.setTab(modelData)
+              onClicked: { root.setTab(modelData); root.retainKeyboardFocus() }
             }
           }
         }
@@ -397,6 +401,10 @@ Item {
                 opacity: root.searchText === "" ? 0.58 : 1
                 font.pixelSize: Style.font.body
                 verticalAlignment: Text.AlignVCenter
+              }
+              MouseArea {
+                anchors.fill: parent
+                onClicked: { root.focusIndex = 0; root.retainKeyboardFocus() }
               }
             }
 
@@ -439,7 +447,7 @@ Item {
                     BorderSurface {
                       width: Math.min(parent.width, Style.space(240))
                       height: Style.space(24)
-                      color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.08)
+                      color: "transparent"
                       borderSpec: Border.flat(Color.menu.border, Math.max(1, Style.space(1)))
                       radius: Style.cornerRadius
                       Text { anchors.fill: parent; anchors.leftMargin: Style.space(6); text: modelData.combo; color: Color.menu.selectedText; font.pixelSize: Style.font.bodySmall; font.bold: true; elide: Text.ElideRight; verticalAlignment: Text.AlignVCenter }
@@ -644,8 +652,10 @@ Item {
       id: keyCatcher
       anchors.fill: parent
       z: 3
-      focus: true
+      focus: root.opened
+      activeFocusOnTab: false
       Keys.priority: Keys.BeforeItem
+      onActiveFocusChanged: if (root.opened && !activeFocus) root.retainKeyboardFocus()
       Keys.onPressed: function(event) {
         if (event.key === Qt.Key_Escape) {
           root.close()
@@ -662,22 +672,27 @@ Item {
         } else if (event.key === Qt.Key_Right && root.focusIndex >= 1 && root.focusIndex <= 4) {
           root.setTab(root.tabs[Math.min(3, root.tabs.indexOf(root.currentTab) + 1)])
           event.accepted = true
-        } else if (event.key === Qt.Key_Up) {
+        } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+          if (root.focusIndex >= 1 && root.focusIndex <= 4) {
+            root.setTab(root.tabs[root.focusIndex - 1])
+            event.accepted = true
+          }
+        } else if (event.key === Qt.Key_Up && root.focusIndex === 5) {
           root.selectResult(-1)
           event.accepted = true
-        } else if (event.key === Qt.Key_Down) {
+        } else if (event.key === Qt.Key_Down && root.focusIndex === 5) {
           root.selectResult(1)
           event.accepted = true
-        } else if (event.key === Qt.Key_PageUp) {
+        } else if (event.key === Qt.Key_PageUp && root.focusIndex === 5) {
           root.selectResult(-8)
           event.accepted = true
-        } else if (event.key === Qt.Key_PageDown) {
+        } else if (event.key === Qt.Key_PageDown && root.focusIndex === 5) {
           root.selectResult(8)
           event.accepted = true
-        } else if (event.key === Qt.Key_Home) {
+        } else if (event.key === Qt.Key_Home && root.focusIndex === 5) {
           root.selectAbsolute(0)
           event.accepted = true
-        } else if (event.key === Qt.Key_End) {
+        } else if (event.key === Qt.Key_End && root.focusIndex === 5) {
           root.selectAbsolute(999999)
           event.accepted = true
         } else if (event.key === Qt.Key_Backspace && root.focusIndex === 0) {
