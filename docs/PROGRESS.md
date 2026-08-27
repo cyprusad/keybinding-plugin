@@ -12,9 +12,9 @@
 | 08 — Instant Super Guide | Complete | dce6e24 | Pre-created per-screen visual guide, focused-monitor routing, delay/suppression behavior, exact filtering, truncation, highlight timing, and guide model tests pass. |
 | 09 — Bar widget and onboarding | Complete (manual gate passed) | dd3b60c | Bar status/streak tooltip, consent preview, exact diff/hash boundary, fixture safety tests, settings panel, readable guide layout, and live consent flow pass. Full access to truncated bindings remains Task 12. |
 | 10 — Aggregate persistence | Complete | e45f586 | Validated aggregate stats, 90-day local buckets, duplicate-turn suppression, atomic 0600 writes, corruption/reset recovery, five-copy retention, and panel data reset confirmation. Pure and storage fixtures pass; existing Wayland guide QML runner still aborts in this session. |
-| 11 — Gamification and recommendations | Pending | — | |
+| 11 — Gamification and recommendations | Complete | c057362 | Deterministic XP/levels/streaks/quests, canonical recommendations, availability filtering, 100-day streak coverage, and real bar/panel progress values. |
 | 12 — Full Dojo overlay | Pending | — | |
-| 13 — Dotfiles and failure hardening | Pending | — | |
+| 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
 | 14 — Integration, privacy, and performance | Pending | — | |
 | 15 — Documentation and release | Pending | — | |
 
@@ -41,3 +41,6 @@
 | `2171c07` | Implement the Task 09 bar widget, onboarding consent preview, settings panel, and fixture safety tests; pause before live consent. |
 | `dd3b60c` | Finish Task 09 presentation fixes and record the live manual consent gate as passed. |
 | `e45f586` | Add aggregate usage persistence, recovery storage, reset confirmation, and Task 10 tests. |
+| `ce34f8f` | Record Task 10 completion in the progress checklist. |
+| `c057362` | Add deterministic gamification, streaks, quests, recommendations, and real progress surfaces. |
+| `c368aaa` | Harden integration/recovery paths and add the Task 13 scenario matrix. |
