@@ -28,6 +28,9 @@ Captured from the development machine on 2026-08-27:
   file is present. `stats.json` has not been created yet, which is expected
   before the first persisted tracked observation. The controller `backups`
   directory reports `755`, but remains protected by its parent `700` directory.
+- **Step 3 — Tracking round trip: PASS.** User disabled tracking through the
+  panel, confirmed browse-only behavior, then re-enabled it through the review
+  and consent flow; Hyprland remained error-free and the guide returned.
 
 ## Automated results
 
