@@ -38,6 +38,8 @@ Captured from the development machine on 2026-08-27:
   guide returned after re-enabling tracking and that a matched shortcut created
   `stats.json` with three tracked opaque binding IDs, total XP `227`, streak
   `1`, and a completed daily quest for `2026-08-27`.
+- **Step 6 — Guide settings and fullscreen behavior: PASS.** User verified
+  all delay choices and confirmed fullscreen suppression toggles correctly.
 
 ## Automated results
 
