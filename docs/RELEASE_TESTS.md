@@ -14,7 +14,7 @@ Captured from the development machine on 2026-08-27:
 |---|---|
 | Omarchy | `4.0.1-1` |
 | Quickshell | `0.3.1` |
-| Plugin commit | `75d6433` |
+| Plugin commit used for live checks | `e0b5435` |
 | Hyprland version/commit | Pending live capture; `hyprctl` was unavailable from the agent shell session. |
 | Active XKB layouts | Pending live capture. |
 | Monitor count/scales | Pending live capture. |
