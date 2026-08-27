@@ -545,6 +545,9 @@ fallback ordering, cold-start behavior, and an opt-out. Window titles, entered
 text, commands, and raw context events must not be persisted; context should be
 used transiently or reduced to a documented coarse category. This alternative
 must be designed and reviewed separately rather than pulled into Tasks 12–15.
+The existing Omarchy Learn experience should be evaluated as a complementary
+reference so Keybind Dojo focuses on live, context-aware guidance instead of
+duplicating static learning material.
 
 ## 14. Required validation commands
 

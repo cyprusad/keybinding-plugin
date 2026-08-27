@@ -293,7 +293,7 @@ Item {
           height: Style.space(32)
           spacing: Style.space(10)
           Text {
-            text: "KEYBIND DOJO"
+            text: "KEYBIND DOJO · FULL-SCREEN OVERLAY"
             color: Color.menu.selectedText
             font.family: Style.font.family
             font.pixelSize: Style.font.heading
@@ -308,6 +308,12 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
           }
           Item { width: Math.max(0, parent.width - 300); height: 1 }
+          Button {
+            text: "Close (Esc)"
+            background: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.06)
+            foreground: Color.menu.text
+            onClicked: root.close()
+          }
           Text {
             text: "Esc close · Tab navigate · " + root.focusLabel()
             color: Color.menu.text
@@ -396,7 +402,14 @@ Item {
                   spacing: Style.space(10)
                   Column {
                     width: Math.min(Style.space(260), parent.width * 0.32)
-                    Text { width: parent.width; text: modelData.combo; color: Color.menu.selectedText; font.pixelSize: Style.font.bodySmall; font.bold: true; elide: Text.ElideRight }
+                    BorderSurface {
+                      width: Math.min(parent.width, Style.space(240))
+                      height: Style.space(24)
+                      color: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.08)
+                      borderSpec: Border.flat(Color.menu.border, Math.max(1, Style.space(1)))
+                      radius: Style.cornerRadius
+                      Text { anchors.fill: parent; anchors.leftMargin: Style.space(6); text: modelData.combo; color: Color.menu.selectedText; font.pixelSize: Style.font.bodySmall; font.bold: true; elide: Text.ElideRight; verticalAlignment: Text.AlignVCenter }
+                    }
                     Text { width: parent.width; text: modelData.category; color: Color.menu.text; opacity: 0.6; font.pixelSize: Style.font.caption }
                   }
                   Text { width: parent.width * 0.42; text: modelData.description; color: Color.menu.text; font.pixelSize: Style.font.bodySmall; elide: Text.ElideRight; anchors.verticalCenter: parent.verticalCenter }
@@ -452,6 +465,8 @@ Item {
                     }
                     Button {
                       text: root.revealed[modelData] === true && root.bindingForId(modelData) ? root.bindingForId(modelData).combo : "Reveal combo"
+                      background: Qt.rgba(Color.menu.text.r, Color.menu.text.g, Color.menu.text.b, 0.08)
+                      foreground: Color.menu.text
                       onClicked: root.toggleReveal(modelData)
                     }
                     Button { text: "Skip today"; onClicked: root.skipPractice(modelData) }
@@ -637,6 +652,10 @@ Item {
         } else if (event.text && root.focusIndex === 0
                    && (event.modifiers === Qt.NoModifier || event.modifiers === Qt.ShiftModifier)) {
           root.appendSearch(event.text)
+          event.accepted = true
+        } else if (event.modifiers & Qt.MetaModifier) {
+          // Keep compositor shortcuts from firing while the exclusive Dojo
+          // surface is open; users can dismiss explicitly with Escape.
           event.accepted = true
         }
       }
