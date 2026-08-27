@@ -23,6 +23,11 @@ Captured from the development machine on 2026-08-27:
 
 - **Step 1 — Preflight: PASS.** User confirmed the plugin is enabled and
   `hyprctl configerrors` is clean.
+- **Step 2 — Local data inspection: PASS.** User confirmed the state directory
+  is `700`, present data files and lock are `600`, and no unexpected raw-event
+  file is present. `stats.json` has not been created yet, which is expected
+  before the first persisted tracked observation. The controller `backups`
+  directory reports `755`, but remains protected by its parent `700` directory.
 
 ## Automated results
 
