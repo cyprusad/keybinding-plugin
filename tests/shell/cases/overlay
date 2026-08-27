@@ -1,0 +1,14 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+qmllint -I /usr/share/omarchy/shell "$root/Overlay.qml" "$root/Service.qml"
+grep -q 'WlrKeyboardFocus.Exclusive' "$root/Overlay.qml"
+grep -q 'Bindings.*Practice.*Progress.*Settings' "$root/Overlay.qml" || {
+  echo "overlay tab contract is missing" >&2
+  exit 1
+}
+grep -q 'function open(payload)' "$root/Overlay.qml"
+grep -q 'function close()' "$root/Overlay.qml"
+grep -q 'function toggle()' "$root/Overlay.qml"
+echo "overlay static smoke passed"
