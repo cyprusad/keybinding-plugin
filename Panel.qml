@@ -69,6 +69,13 @@ Panel {
   onBarChanged: syncService()
   Component.onCompleted: syncService()
 
+  Timer {
+    interval: 250
+    repeat: true
+    running: root.service === null
+    onTriggered: root.syncService()
+  }
+
   Connections {
     target: root.service
     ignoreUnknownSignals: true

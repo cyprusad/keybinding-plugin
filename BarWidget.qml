@@ -22,6 +22,8 @@ BarWidget {
       ? bar.shell.serviceFor(moduleName) : null
   }
 
+  onServiceChanged: if (panelLoader.item) panelLoader.item.service = service
+
   function open() {
     if (panelLoader.item) panelLoader.item.open()
   }
@@ -45,6 +47,13 @@ BarWidget {
   onBarChanged: syncService()
   Component.onCompleted: syncService()
 
+  Timer {
+    interval: 250
+    repeat: true
+    running: root.service === null
+    onTriggered: root.syncService()
+  }
+
   Loader {
     id: panelLoader
     active: true
@@ -54,6 +63,7 @@ BarWidget {
       item.bar = root.bar
       item.anchorItem = button
       item.hostWidget = root
+      item.service = root.service
     }
   }
 
