@@ -244,6 +244,11 @@ Item {
     Qt.callLater(function() { keyCatcher.forceActiveFocus() })
   }
 
+  function focusSearch() {
+    focusIndex = 0
+    retainKeyboardFocus()
+  }
+
   function focusLabel() {
     if (focusIndex === 0) return "Search"
     if (focusIndex <= 4) return tabs[focusIndex - 1]
@@ -404,7 +409,7 @@ Item {
               }
               MouseArea {
                 anchors.fill: parent
-                onClicked: { root.focusIndex = 0; root.retainKeyboardFocus() }
+                onClicked: root.focusSearch()
               }
             }
 
@@ -659,6 +664,10 @@ Item {
       Keys.onPressed: function(event) {
         if (event.key === Qt.Key_Escape) {
           root.close()
+          event.accepted = true
+        } else if ((event.key === Qt.Key_F && (event.modifiers & Qt.ControlModifier))
+                   || (event.text === "/" && event.modifiers === Qt.NoModifier)) {
+          root.focusSearch()
           event.accepted = true
         } else if (event.key === Qt.Key_Tab) {
           root.moveFocus(event.modifiers & Qt.ShiftModifier ? -1 : 1)
