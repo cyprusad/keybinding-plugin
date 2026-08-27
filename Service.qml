@@ -7,6 +7,8 @@ import "ServiceModel.js" as Model
 Item {
   id: root
 
+  signal bindingMatched(string bindingId)
+
   readonly property string moduleName: "io.github.sai.keybind-dojo"
   property var shell: null
   property var manifest: null
@@ -81,6 +83,7 @@ Item {
       if (parsed.phase === "down") {
         pendingSuperReceivedMs = Date.now()
         activeModifiers = "SUPER"
+        highlightedBindingId = ""
         guideVisible = true
       } else {
         activeModifiers = ""
@@ -99,6 +102,7 @@ Item {
         return false
       }
       highlightedBindingId = parsed.id
+      bindingMatched(parsed.id)
       return true
     }
     return false

@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
+runtime_dir=${XDG_RUNTIME_DIR:-}
+wayland_socket=${runtime_dir:+$runtime_dir/${WAYLAND_DISPLAY:-}}
+
+if [ -z "$wayland_socket" ] || [ ! -S "$wayland_socket" ]; then
+  echo "guide QML tests skipped: no accessible Wayland socket" >&2
+  exit 0
+fi
+
+QT_QPA_PLATFORM=wayland qmltestrunner -input "$root/tests/qml/tst_guide.qml" -o -,txt

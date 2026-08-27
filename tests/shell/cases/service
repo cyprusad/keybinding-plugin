@@ -13,4 +13,4 @@ if [ -z "$wayland_socket" ] || [ ! -S "$wayland_socket" ]; then
   exit 0
 fi
 
-QT_QPA_PLATFORM=wayland qmltestrunner -input "$root/tests/qml" -o -,txt
+QT_QPA_PLATFORM=wayland qmltestrunner -input "$root/tests/qml/tst_service.qml" -o -,txt
