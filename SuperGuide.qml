@@ -148,9 +148,9 @@ Item {
         BorderSurface {
           id: surface
           anchors {
-            top: true
-            left: true
-            right: true
+            top: parent.top
+            left: parent.left
+            right: parent.right
             margins: Style.space(4)
           }
           implicitHeight: content.implicitHeight + Style.space(4) * 2

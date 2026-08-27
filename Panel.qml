@@ -229,7 +229,8 @@ Panel {
             spacing: Style.space(8)
             Button {
               text: "Recheck"
-              onClicked: { root.service.inspectIntegration(); root.refreshPreview() }
+              enabled: !!root.service
+              onClicked: if (root.service) { root.service.inspectIntegration(); root.refreshPreview() }
             }
             Button {
               text: "Copy manual snippet"
@@ -273,7 +274,7 @@ Panel {
               model: ["Instant", "80 ms", "150 ms", "250 ms", "Off"]
               Button {
                 required property int index
-                text: modelData
+                text: ["Instant", "80 ms", "150 ms", "250 ms", "Off"][index]
                 selected: root.service && root.service.guideDelayMs === root.delayValue(index)
                 onClicked: root.service.setGuideDelayMs(root.delayValue(index))
               }
