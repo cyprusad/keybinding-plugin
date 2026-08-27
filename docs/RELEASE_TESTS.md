@@ -45,6 +45,9 @@ Captured from the development machine on 2026-08-27:
   config errors, normal guide lifecycle, and a usable full overlay.
 - **Step 8 — Lock-screen suppression: PASS.** User confirmed the guide stayed
   hidden while the session was locked and returned normally after unlock.
+- **Step 9 — Stats reset and recovery: PASS.** User confirmed that clearing
+  local data produced a recovery archive for the previous stats and wrote a
+  fresh stats file with empty profile data.
 
 ## Automated results
 
@@ -80,7 +83,7 @@ development session as a product failure; the models themselves pass.
 | Lock/credential suppression | Pending | Use only safe test surfaces |
 | Representative bindings and release/submap cases | Pending | At least 50 safe bindings where available |
 | Overlay navigation and practice completion | Passed manually in Task 12; final release retest pending | |
-| Stats flush/reload and reset recovery | Pending | Manual/live gate |
+| Stats flush/reload and reset recovery | Passed manually | Previous stats archived; fresh empty stats file verified |
 
 ## Privacy, performance, and non-interference
 
