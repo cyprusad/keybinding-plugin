@@ -31,6 +31,9 @@ Captured from the development machine on 2026-08-27:
 - **Step 3 — Tracking round trip: PASS.** User disabled tracking through the
   panel, confirmed browse-only behavior, then re-enabled it through the review
   and consent flow; Hyprland remained error-free and the guide returned.
+- **Step 4 — Ordinary typing privacy: PASS.** User entered prose, shell
+  metacharacters, and a synthetic password in a disposable text field; no
+  content or raw-event file appeared in plugin state.
 
 ## Automated results
 
