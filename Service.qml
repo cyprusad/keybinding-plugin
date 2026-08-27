@@ -522,7 +522,10 @@ Item {
     running: false
     stdinEnabled: true
     stdout: StdioCollector { id: statsWriteStdout; waitForEnd: true }
-    onStarted: write(JSON.stringify(root.stats))
+    onStarted: {
+      write(JSON.stringify(root.stats))
+      stdinEnabled = false
+    }
     onExited: root.finishStatsWrite(statsWriteStdout.text, exitCode)
   }
 
