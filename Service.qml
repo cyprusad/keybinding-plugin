@@ -32,6 +32,7 @@ Item {
   property string statsState: "loading"
   property bool statsLoaded: false
   property bool statsDirty: false
+  property bool statsResetPending: false
   property bool statsArchivePending: false
   property string statsArchiveAction: ""
   property string statsWriteOutput: ""
@@ -233,8 +234,8 @@ Item {
 
   function openGuide() { guideVisible = true }
   function closeGuide() { guideVisible = false }
-  function clearLocalData(confirmed) {
-    if (confirmed !== true || !statsLoaded || statsWriteProcess.running || statsArchiveProcess.running)
+  function beginClearLocalData() {
+    if (!statsLoaded || statsWriteProcess.running || statsArchiveProcess.running)
       return false
     stats = Stats.emptyStats()
     statsDirty = true
@@ -244,6 +245,16 @@ Item {
       "--path", statsPath, "--recovery-dir", statsRecoveryDir, "--keep", "5"]
     statsArchiveProcess.running = true
     return true
+  }
+
+  function clearLocalData(confirmed) {
+    if (confirmed !== true || !statsLoaded || statsArchiveProcess.running)
+      return false
+    if (statsWriteProcess.running) {
+      statsResetPending = true
+      return true
+    }
+    return beginClearLocalData()
   }
 
   function parseStatsResult(raw) {
@@ -311,9 +322,14 @@ Item {
     var result = parseStatsResult(raw)
     if (exitCode !== 0 || !result || result.ok !== true) {
       statsState = "error"
+      statsResetPending = false
       return false
     }
     statsDirty = false
+    if (statsResetPending) {
+      statsResetPending = false
+      beginClearLocalData()
+    }
     return true
   }
 

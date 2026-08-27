@@ -347,7 +347,7 @@ Panel {
             width: parent.width
             text: root.confirmClear ? "Confirm clear local data" : "Clear local data"
             enabled: !!root.service && root.service.statsLoaded
-              && !root.service.statsWriteRunning && !root.service.statsRecoveryRunning
+              && !root.service.statsRecoveryRunning
             onClicked: {
               if (!root.confirmClear) root.confirmClear = true
               else if (root.service.clearLocalData(true)) root.confirmClear = false

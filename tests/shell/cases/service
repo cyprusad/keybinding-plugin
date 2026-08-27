@@ -5,3 +5,5 @@ root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
 env -u DISPLAY QT_QPA_PLATFORM=minimal QT_QPA_PLATFORMTHEME= \
   qmltestrunner -input "$root/tests/qml/tst_service.qml" -o -,txt
 grep -q 'stdinEnabled = false' "$root/Service.qml"
+grep -q 'statsResetPending' "$root/Service.qml"
+grep -q 'beginClearLocalData' "$root/Service.qml"

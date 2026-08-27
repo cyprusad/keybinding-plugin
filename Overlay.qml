@@ -652,7 +652,9 @@ Item {
               }
               Text {
                 width: parent.width
-                text: "Clear local data archives the current stats file for recovery, then starts a fresh profile."
+                text: service.statsResetPending ? "Saving current stats before reset…"
+                  : service.statsRecoveryRunning ? "Archiving current stats for recovery…"
+                  : "Clear local data archives the current stats file for recovery, then starts a fresh profile."
                 color: Color.menu.text
                 opacity: 0.78
                 font.pixelSize: Style.font.caption
@@ -665,7 +667,7 @@ Item {
               }
               Button {
                 text: root.confirmClear ? "Confirm clear local data" : "Clear local data"
-                enabled: service.statsLoaded && !service.statsWriteRunning && !service.statsRecoveryRunning
+                enabled: service.statsLoaded && !service.statsRecoveryRunning
                 onClicked: {
                   if (!root.confirmClear) root.confirmClear = true
                   else if (service.clearLocalData(true)) root.confirmClear = false
