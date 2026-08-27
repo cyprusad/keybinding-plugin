@@ -11,4 +11,6 @@ grep -q 'Bindings.*Practice.*Progress.*Settings' "$root/Overlay.qml" || {
 grep -q 'function open(payload)' "$root/Overlay.qml"
 grep -q 'function close()' "$root/Overlay.qml"
 grep -q 'function toggle()' "$root/Overlay.qml"
+grep -q 'focusIndex = (focusIndex + delta) % targetCount' "$root/Overlay.qml"
+grep -q 'hasCursor: root.focusIndex === 1 + index' "$root/Overlay.qml"
 echo "overlay static smoke passed"

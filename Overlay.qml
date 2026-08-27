@@ -234,7 +234,9 @@ Item {
   }
 
   function moveFocus(delta) {
-    focusIndex = Math.max(0, Math.min(5, focusIndex + delta))
+    var targetCount = 6
+    focusIndex = (focusIndex + delta) % targetCount
+    if (focusIndex < 0) focusIndex += targetCount
   }
 
   function focusLabel() {
@@ -364,6 +366,7 @@ Item {
               required property string modelData
               text: modelData
               selected: root.currentTab === modelData
+              hasCursor: root.focusIndex === 1 + index
               onClicked: root.setTab(modelData)
             }
           }
