@@ -88,10 +88,12 @@ Panel {
     owner: root.hostWidget || root
     bar: root.bar
     open: root.opened
-    centerOnBar: true
+    // Follow the clicked widget along the bar; this places a top-right panel
+    // below the top-right icon instead of moving it to the screen's corner.
+    centerOnBar: false
     focusTarget: keyCatcher
-    contentWidth: panel.fittedContentWidth(Style.space(500))
-    contentHeight: panel.fittedContentHeight(Style.space(570))
+    contentWidth: panel.fittedContentWidth(Style.space(560))
+    contentHeight: panel.fittedContentHeight(Style.space(640))
 
     PanelKeyCatcher {
       id: keyCatcher
@@ -274,7 +276,7 @@ Panel {
 
           PanelSectionHeader { text: "Guide"; width: parent.width }
           Text { width: parent.width; text: "Delay"; color: Color.foreground; font.pixelSize: Style.font.caption; font.bold: true }
-          Row {
+          Flow {
             width: parent.width
             spacing: Style.space(4)
             Repeater {
@@ -290,7 +292,12 @@ Panel {
           Row {
             width: parent.width
             spacing: Style.space(10)
-            Text { anchors.verticalCenter: parent.verticalCenter; text: "Show in fullscreen"; color: Color.foreground; font.pixelSize: Style.font.caption }
+            Text {
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Show in fullscreen: " + (root.service && root.service.showInFullscreen ? "On" : "Off")
+              color: Color.foreground
+              font.pixelSize: Style.font.caption
+            }
             ToggleSwitch {
               checked: root.service && root.service.showInFullscreen
               onToggled: root.service.setShowInFullscreen(!checked)
