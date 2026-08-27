@@ -9,7 +9,7 @@
 | 05 — Lua bridge | Complete | 6bc16ab | Fail-closed bridge, exact protocol matching, modifier state, duplicate-load guard, and mock stress tests pass. |
 | 06 — Live feasibility gate | Complete | 75ef370 | Live bridge PASS: 267-match matrix, physical lifecycle/chord checks, p95 1 ms, 0.1600% five-minute Quickshell CPU ceiling, identical bind metadata, and byte-identical cleanup. |
 | 07 — Production service | Complete | c4023c6 | Strict catalog/protocol service, async regeneration and bridge inspection, inline settings, lock/polkit state, debounced fullscreen queries, and QML model tests pass. |
-| 08 — Instant Super Guide | Pending | — | |
+| 08 — Instant Super Guide | Complete | dce6e24 | Pre-created per-screen visual guide, focused-monitor routing, delay/suppression behavior, exact filtering, truncation, highlight timing, and guide model tests pass. |
 | 09 — Bar widget and onboarding | Pending | — | |
 | 10 — Aggregate persistence | Pending | — | |
 | 11 — Gamification and recommendations | Pending | — | |
@@ -37,3 +37,4 @@
 | `af08db5` | Correct the bar widget properties found during live validation. |
 | `75ef370` | Record the Task 06 PASS and add the 267-entry live catalog matrix. |
 | `c4023c6` | Implement the Task 07 production service and its protocol/catalog test suite. |
+| `dce6e24` | Implement the Task 08 instant Super Guide and its focus/filtering test suite. |
