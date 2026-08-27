@@ -19,6 +19,11 @@ Captured from the development machine on 2026-08-27:
 | Active XKB layouts | Pending live capture. |
 | Monitor count/scales | Pending live capture. |
 
+## Manual progress
+
+- **Step 1 — Preflight: PASS.** User confirmed the plugin is enabled and
+  `hyprctl configerrors` is clean.
+
 ## Automated results
 
 Passed:
