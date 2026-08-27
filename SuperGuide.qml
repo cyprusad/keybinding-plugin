@@ -128,11 +128,8 @@ Item {
           modelData ? modelData.name : "",
           root.focusedScreenName())
         color: "transparent"
-        implicitHeight: surface.implicitHeight + Style.space(4)
+        implicitHeight: surface.y + surface.implicitHeight + Style.space(4)
         exclusionMode: ExclusionMode.Ignore
-        margins {
-          top: GuideModel.barOffset(root.barPosition, root.barSize, root.barHidden)
-        }
         anchors { top: true; left: true; right: true }
 
         WlrLayershell.namespace: "keybind-dojo-guide"
@@ -147,8 +144,8 @@ Item {
 
         BorderSurface {
           id: surface
+          y: GuideModel.barOffset(root.barPosition, root.barSize, root.barHidden)
           anchors {
-            top: parent.top
             left: parent.left
             right: parent.right
             margins: Style.space(4)

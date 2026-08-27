@@ -61,7 +61,10 @@ BarWidget {
     visible: false
     onLoaded: {
       item.bar = root.bar
-      item.anchorItem = button
+      // Anchor to the registered bar-widget surface. It has the reliable
+      // QsWindow relationship used by KeyboardPanel even when the nested
+      // visual button is incubated before the bar finishes configuring it.
+      item.anchorItem = root
       item.hostWidget = root
       item.service = root.service
     }

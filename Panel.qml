@@ -84,9 +84,9 @@ Panel {
 
   KeyboardPanel {
     id: panel
-    anchorItem: root.anchorItem
+    anchorItem: root.hostWidget || root.anchorItem
     owner: root.hostWidget || root
-    bar: root.bar
+    bar: root.bar || (root.hostWidget ? root.hostWidget.bar : null)
     open: root.opened
     // Follow the clicked widget along the bar; this places a top-right panel
     // below the top-right icon instead of moving it to the screen's corner.
