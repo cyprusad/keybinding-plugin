@@ -54,6 +54,11 @@ Captured from the development machine on 2026-08-27:
 - **Step 11 — Unmatched application shortcut privacy: PASS.** User tested a
   Ctrl-only shortcut in a disposable input surface; the plugin state remained
   empty and no typed content was stored.
+- **Step 12 — Application credential surface scope: NOT APPLICABLE.** User
+  tested a 1Password unlock prompt without entering a secret. The guide
+  remained available because 1Password is an independent application surface,
+  not Omarchy’s lock or Polkit credential surface; the plugin does not inspect
+  arbitrary password fields or application identity.
 
 ## Automated results
 
@@ -86,7 +91,7 @@ development session as a product failure; the models themselves pass.
 | Hyprland reload and catalog regeneration | Passed manually | Reload recovery passed with clean config errors |
 | Focused-monitor guide routing | Passed manually | Dual-monitor check: guide appears only on the focused workspace's monitor |
 | Delay values and fullscreen suppression | Passed manually | All delay choices and fullscreen toggle verified |
-| Lock/credential suppression | Partially passed manually | Lock-screen suppression passed; credential-prompt surface remains pending |
+| Lock/credential suppression | Passed with scope noted | Lock-screen suppression passed; 1Password app prompt is outside the Omarchy/Polkit detection boundary |
 | Representative bindings and release/submap cases | Pending | At least 50 safe bindings where available |
 | Overlay navigation and practice completion | Passed manually in Task 12 | Final release retest remains optional before Task 15 |
 | Stats flush/reload and reset recovery | Passed manually | Previous stats archived; fresh empty stats file verified |
