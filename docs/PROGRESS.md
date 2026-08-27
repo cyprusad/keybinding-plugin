@@ -15,7 +15,7 @@
 | 11 — Gamification and recommendations | Complete | c057362 | Deterministic XP/levels/streaks/quests, canonical recommendations, availability filtering, 100-day streak coverage, and real bar/panel progress values. |
 | 12 — Full Dojo overlay | Complete (manual gate passed) | f234331 | Full browsing/practice/progress/settings overlay; responsive layout, close affordance, keyboard navigation, search refocus, and menu-surface styling verified manually. |
 | 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
-| 14 — Integration, privacy, and performance | Pending | — | |
+| 14 — Integration, privacy, and performance | In progress (manual gate pending) | 75d6433 | Complete automated all-suite, schema, privacy/static, and fixture-containment checks; live release evidence remains. |
 | 15 — Documentation and release | Pending | — | |
 
 ## Commit log
@@ -53,3 +53,5 @@
 | `2a252b3` | Add `/` and `Ctrl+F` keyboard shortcuts to refocus search. |
 | `3ebe8f5` | Match binding keycaps to the Practice menu surface. |
 | `f234331` | Match binding result rows to the Practice menu background; manual Task 12 gate passed. |
+| `b799d8a` | Record Task 12 completion and its full overlay commit trail. |
+| `75d6433` | Add the Task 14 all-suite runner and release-gate automation. |
