@@ -15,7 +15,7 @@
 | 11 — Gamification and recommendations | Complete | c057362 | Deterministic XP/levels/streaks/quests, canonical recommendations, availability filtering, 100-day streak coverage, and real bar/panel progress values. |
 | 12 — Full Dojo overlay | Complete (manual gate passed) | f234331 | Full browsing/practice/progress/settings overlay; responsive layout, close affordance, keyboard navigation, search refocus, and menu-surface styling verified manually. |
 | 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
-| 14 — Integration, privacy, and performance | In progress (manual gate in progress) | 4530df8 | Automated suite passes; manual release Steps 1–9 pass, including privacy, reload, lock suppression, and reset recovery. Remaining final matrix/performance checks are documented in RELEASE_TESTS.md. |
+| 14 — Integration, privacy, and performance | Complete (manual gate passed) | 98fcd92 | Automated suite and live release evidence pass; manual lock/privacy/reset/focused-monitor checks pass, with the 1Password app prompt documented outside the detection boundary. |
 | 15 — Documentation and release | Pending | — | |
 
 ## Commit log

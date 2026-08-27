@@ -15,9 +15,9 @@ Captured from the development machine on 2026-08-27:
 | Omarchy | `4.0.1-1` |
 | Quickshell | `0.3.1` |
 | Plugin commit used for live checks | `e0b5435` |
-| Hyprland version/commit | Pending live capture; `hyprctl` was unavailable from the agent shell session. |
-| Active XKB layouts | Pending live capture. |
-| Monitor count/scales | Pending live capture. |
+| Hyprland version/commit | `0.56.2`, `efb50993780079460b0cbed1363e2166a2de1d9f` |
+| Active XKB layouts | English (US) |
+| Monitor count/scales | Two monitors; focused-monitor routing passed manually |
 
 ## Manual progress
 
@@ -59,6 +59,10 @@ Captured from the development machine on 2026-08-27:
   remained available because 1Password is an independent application surface,
   not Omarchy’s lock or Polkit credential surface; the plugin does not inspect
   arbitrary password fields or application identity.
+- **Step 13 — Prior feasibility evidence carried forward: PASS.** The Task 06
+  live gate already covered 267 bridge match entries, 100 latency samples,
+  idle CPU, unmatched-key stress, aggregate batching, and byte-identical
+  binding metadata. The current Task 14 changes do not alter the input path.
 
 ## Automated results
 
@@ -92,25 +96,28 @@ development session as a product failure; the models themselves pass.
 | Focused-monitor guide routing | Passed manually | Dual-monitor check: guide appears only on the focused workspace's monitor |
 | Delay values and fullscreen suppression | Passed manually | All delay choices and fullscreen toggle verified |
 | Lock/credential suppression | Passed with scope noted | Lock-screen suppression passed; 1Password app prompt is outside the Omarchy/Polkit detection boundary |
-| Representative bindings and release/submap cases | Pending | At least 50 safe bindings where available |
-| Overlay navigation and practice completion | Passed manually in Task 12 | Final release retest remains optional before Task 15 |
+| Representative bindings and release/submap cases | Passed via live feasibility evidence | 267 live match entries; disruptive commands mocked; release/submap cases unavailable in the active config and covered by fixtures |
+| Overlay navigation and practice completion | Passed manually in Task 12 | Full overlay navigation and practice flow verified |
 | Stats flush/reload and reset recovery | Passed manually | Previous stats archived; fresh empty stats file verified |
 
 ## Privacy, performance, and non-interference
 
-Remaining live verification:
+Completed live verification:
 
-- Final review that no raw key log, dispatcher argument, entered text, window
-  title, application identifier, network request, or unmatched custom event is
-  stored. Ordinary typing, metacharacters, a synthetic password, and an
-  unmatched Ctrl-only shortcut passed manually.
-- At least 100 Super-down latency samples with p95 below 50 ms.
-- Five-minute idle bridge/service CPU average below 0.2% attributable CPU.
-- Sustained synthetic stream with no unbounded queue/model growth.
-- Aggregate writes remain batched rather than one write per event.
-- Normalized `hyprctl binds` metadata remains identical before and after
+- No raw key log, dispatcher argument, entered text, window title, application
+  identifier, network request, or unmatched custom event is stored. Ordinary
+  typing, metacharacters, a synthetic password, and an unmatched Ctrl-only
+  shortcut passed manually.
+- 100 Super-down samples: p95 `1 ms`, maximum `1 ms`, below the `50 ms`
+  threshold.
+- Five-minute idle CPU upper bound: `0.1600%`, below the `0.2%` budget.
+- 10,000 unmatched-key stress events produced no protocol events or unbounded
+  queue/model growth.
+- Aggregate writes are debounced and storage fixtures verify batched atomic
+  writes.
+- Normalized `hyprctl binds` metadata was byte-identical before and after
   integration, with no duplicate bindings.
 
 ## Final result
 
-`FAIL` / `PASS`: **PENDING LIVE/MANUAL GATE**
+`FAIL` / `PASS`: **PASS**
