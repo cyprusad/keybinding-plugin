@@ -185,7 +185,11 @@ Panel {
     centerOnBar: false
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(560))
-    contentHeight: panel.fittedContentHeight(contentColumn.implicitHeight, Style.space(640))
+    // The scroll view has its own inset in addition to KeyboardPanel's card
+    // padding. Include it so the compact sizing never clips the final CTA.
+    contentHeight: panel.fittedContentHeight(
+      contentColumn.implicitHeight + Style.spacing.popupPadding * 2,
+      Style.space(640))
 
     PanelKeyCatcher {
       id: keyCatcher
