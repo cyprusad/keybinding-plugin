@@ -230,6 +230,9 @@ Item {
                 font.family: Style.font.family
                 font.pixelSize: Style.font.caption
                 font.bold: true
+                fontSizeMode: Text.HorizontalFit
+                minimumPixelSize: 8
+                elide: Text.ElideNone
               }
               Text {
                 text: root.expanded ? "all " + guideWindow.guideLayout.total + " bindings"

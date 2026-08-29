@@ -96,6 +96,8 @@ TestCase {
       compare(expanded.items[fixed].x, collapsed.items[fixed].x)
       compare(expanded.items[fixed].y, collapsed.items[fixed].y)
     }
+    compare(expanded.items[collapsed.items.length].x, collapsed.overflow.x)
+    compare(expanded.items[collapsed.items.length].width, collapsed.overflow.width)
     verify(expanded.height < 1440 * 0.45)
 
     var alternateLane = GuideModel.canopyLayout(cards.slice(0, 25), { width: 2560, height: 1440 }, false)

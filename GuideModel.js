@@ -89,7 +89,7 @@ function canopyMetrics(viewport, expanded) {
   columns = clamp(columns, 5, expanded === true ? 12 : 9)
   if (columns % 2 === 0 && columns > 5) columns -= 1
   var cornerWidth = Math.round(compact * 0.78)
-  var moreWidth = Math.round(compact * 1.45)
+  var moreWidth = compact
   var secondaryLeftCount = Math.ceil(Math.max(0, columns - 1) / 2)
   var outerSecondaryLeft = width / 2 - moreWidth / 2 - gap
     - (compact + gap) * secondaryLeftCount
@@ -161,7 +161,7 @@ function collapsedCanopyLayout(source, metrics) {
   append(placements, placeCentered(source, 0, crown, metrics, 0, "primary", 1))
 
   var center = metrics.width / 2
-  var moreWidth = Math.round(metrics.cardWidth * 1.45)
+  var moreWidth = metrics.cardWidth
   var secondCount = crown - 1
   var secondY = metrics.cardHeight + metrics.gap
   var cursor = crown

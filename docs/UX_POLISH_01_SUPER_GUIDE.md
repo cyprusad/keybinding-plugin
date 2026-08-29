@@ -105,6 +105,8 @@ readable card width. Narrow displays retain the smaller two-pair wing.
 The collapsed canopy is a fixed visual frame: hover expansion never moves a
 visible card. The first new binding fills the former overflow center; the rest
 balance across open interior space between the fixed left and right wings.
+The overflow affordance uses the same dimensions as a binding card, so its
+replacement does not cause a width jump when hover reveals the first entry.
 Modifier lanes that already fit retain that same frame rather than switching to
 a separate centered-grid layout. This preserves the eye's anchors while making
 the previously hidden choices available.
