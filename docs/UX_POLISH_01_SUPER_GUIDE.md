@@ -197,7 +197,7 @@ Text should remain substantially more opaque than a faded surface. Decorative
 transparency must never make a binding unreadable.
 
 When the plain Super lane is visible, the header itself gives the terse next
-step: “hold Super · add Shift / Ctrl / Alt.” There is no footer, no separate
+step: “HOLD SUPER · ADD SHIFT / CTRL / ALT.” There is no footer, no separate
 lane control, and no binding counts competing with the shortcuts.
 
 Internal modifier masks are never shown verbatim. For example, `SUPER_SHIFT`

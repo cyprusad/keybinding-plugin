@@ -235,8 +235,8 @@ Item {
                 elide: Text.ElideNone
               }
               Text {
-                text: root.expanded ? "all " + guideWindow.guideLayout.total + " bindings"
-                  : root.frozenMask === "SUPER" ? "hold Super · add Shift / Ctrl / Alt"
+                text: root.expanded ? "ALL " + guideWindow.guideLayout.total + " BINDINGS"
+                  : root.frozenMask === "SUPER" ? "HOLD SUPER · ADD SHIFT / CTRL / ALT"
                     : root.displayMask(root.frozenMask)
                 color: Color.menu.text
                 opacity: 0.84
