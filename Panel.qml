@@ -22,6 +22,7 @@ Panel {
     ? preview.currentHash : ""
   readonly property string displayedDiff: preview && typeof preview.proposedDiff === "string"
     ? preview.proposedDiff : ""
+  readonly property string bridgeSourceUrl: "https://github.com/cyprusad/omakeez/blob/main/bridge.lua"
   readonly property bool enableReady: !!root.service && root.preview
     && root.preview.safeToPatch === true && root.displayedHash !== ""
     && !root.service.integrationMutationRunning
@@ -141,6 +142,10 @@ Panel {
 
   function enableIntegration() {
     if (root.enableReady) root.service.enableIntegration(root.displayedHash)
+  }
+
+  function openBridgeSource() {
+    Qt.openUrlExternally(root.bridgeSourceUrl)
   }
 
   function delayValue(index) { return [0, 80, 150, 250, -1][index] }
@@ -301,11 +306,28 @@ Panel {
           Text {
             width: parent.width
             visible: root.displayedDiff !== ""
-            text: "This is the small bridge change Omakeez would make. Red lines are the old managed block and green lines are its replacement: both sides show one change, not two bridges."
+            text: "This is the small bridge Omakeez would add to your Hyprland file. Red and green lines show the standard diff format: removed lines and added lines."
             color: Color.foreground
             opacity: 0.78
             font.pixelSize: Style.font.caption
             wrapMode: Text.WordWrap
+          }
+
+          Text {
+            width: parent.width
+            visible: root.displayedDiff !== ""
+            text: "View bridge source on GitHub"
+            color: Color.accent
+            font.pixelSize: Style.font.caption
+            font.underline: bridgeSourceMouse.containsMouse
+
+            MouseArea {
+              id: bridgeSourceMouse
+              anchors.fill: parent
+              hoverEnabled: true
+              cursorShape: Qt.PointingHandCursor
+              onClicked: root.openBridgeSource()
+            }
           }
 
           BorderSurface {
