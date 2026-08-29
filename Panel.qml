@@ -22,6 +22,9 @@ Panel {
     ? preview.currentHash : ""
   readonly property string displayedDiff: preview && typeof preview.proposedDiff === "string"
     ? preview.proposedDiff : ""
+  readonly property bool enableReady: !!root.service && root.preview
+    && root.preview.safeToPatch === true && root.displayedHash !== ""
+    && !root.service.integrationMutationRunning
 
   function htmlEscape(value) {
     return String(value || "").replace(/&/g, "&amp;")
@@ -82,7 +85,6 @@ Panel {
 
   function statusText() {
     if (!service) return "Service unavailable; browse-only mode"
-    if (service.catalogGenerationRunning) return "Generating keybinding catalog…"
     if (service.integrationMutationRunning || service.integrationState === "enabling") return "Patching configuration…"
     if (service.integrationInspectRunning) return "Verifying integration status…"
     if (service.integrationState === "error") return "Integration error: " + pathValue("reasonCode")
@@ -95,6 +97,10 @@ Panel {
     if (!service) return "Service unavailable"
     if (service.integrationMutationRunning) return "Working…"
     return "Enable tracking and visual keybinding guide"
+  }
+
+  function enableIntegration() {
+    if (root.enableReady) root.service.enableIntegration(root.displayedHash)
   }
 
   function delayValue(index) { return [0, 80, 150, 250, -1][index] }
@@ -145,6 +151,7 @@ Panel {
       id: keyCatcher
       anchors.fill: parent
       onCloseRequested: root.close()
+      onReturnRequested: root.enableIntegration()
     }
 
     Flickable {
@@ -192,6 +199,15 @@ Panel {
 
           PanelSectionHeader { text: "Configuration review"; width: parent.width }
 
+          Text {
+            width: parent.width
+            text: "Omakeez checks the Hyprland file it would update. This confirms the real target, symlink and Git safety, and that the managed bridge can be added without disturbing your existing bindings."
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
+
           BorderSurface {
             width: parent.width
             implicitHeight: detailsColumn.implicitHeight + Style.space(16)
@@ -222,6 +238,16 @@ Panel {
             color: Color.foreground
             font.pixelSize: Style.font.caption
             font.bold: true
+          }
+
+          Text {
+            width: parent.width
+            visible: root.displayedDiff !== ""
+            text: "This is the small bridge change Omakeez would make. Red lines are the old managed block and green lines are its replacement: both sides show one change, not two bridges."
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
           }
 
           BorderSurface {
@@ -256,7 +282,7 @@ Panel {
 
           Text {
             width: parent.width
-            text: "The button edits the resolved target, preserves the symlink, validates Hyprland, and keeps a rollback backup. No elevated privileges are offered."
+            text: "Only the managed bridge block changes. Existing bindings remain intact; Hyprland is validated and a rollback backup is kept."
             color: Color.foreground
             opacity: 0.78
             font.pixelSize: Style.font.caption
@@ -266,9 +292,10 @@ Panel {
           Button {
             width: parent.width
             text: root.enableLabel()
-            enabled: !!root.service && root.preview && root.preview.safeToPatch === true
-              && root.displayedHash !== "" && !root.service.integrationMutationRunning
-            onClicked: root.service.enableIntegration(root.displayedHash)
+            selected: root.enableReady
+            focusable: true
+            enabled: root.enableReady
+            onClicked: root.enableIntegration()
           }
 
           Text {
