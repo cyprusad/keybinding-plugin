@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | 81f61ca | The ranked canopy follows the familiar `SUPER+K` order from center outward, resolves physical `code:N` bindings through the active XKB keymap, and uses wide-screen corner caps to expose two additional low-priority shortcuts. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | 7b5974a | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses wide-screen corner caps to expose two additional low-priority shortcuts. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log
@@ -85,3 +85,4 @@
 | `815a533` | Add a theme-aware Super Guide contrast gradient and legible two-line cards. |
 | `fea4f41` | Mirror Omarchy's `SUPER+K` ordering and resolve physical code bindings through XKB. |
 | `81f61ca` | Add wide-screen Super Guide corner caps for two more low-priority bindings. |
+| `7b5974a` | Alternate the Super Guide secondary row outward from the overflow pill. |
