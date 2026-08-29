@@ -8,7 +8,11 @@ grep -q 'GuideModel.canopyLayout' "$root/SuperGuide.qml"
 grep -q 'Util.alpha(Color.menu.background' "$root/SuperGuide.qml"
 grep -q 'gradient: Gradient' "$root/SuperGuide.qml"
 grep -q 'fontSizeMode: Text.HorizontalFit' "$root/SuperGuide.qml"
-grep -q 'PRESS SHIFT, CTRL, OR ALT FOR MORE SHORTCUTS' "$root/SuperGuide.qml"
+grep -q 'hold Super · add Shift / Ctrl / Alt' "$root/SuperGuide.qml"
+if grep -q 'laneSummary' "$root/SuperGuide.qml"; then
+  echo "shortcut lane guidance belongs in the header, not a footer" >&2
+  exit 1
+fi
 grep -q 'HoverHandler' "$root/SuperGuide.qml"
 grep -q 'overflowHoverTimer' "$root/SuperGuide.qml"
 grep -q 'item: overflowPill.visible && !root.expanded ? overflowPill : null' "$root/SuperGuide.qml"

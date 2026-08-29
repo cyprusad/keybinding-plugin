@@ -187,10 +187,9 @@ pixels:
 Text should remain substantially more opaque than a faded surface. Decorative
 transparency must never make a binding unreadable.
 
-When the plain Super lane is visible, the lane summary is an instruction, not
-opaque telemetry: “Press Shift, Ctrl, or Alt for more shortcuts,” followed by
-explicit `+ SHIFT`, `+ CTRL`, and `+ ALT` pills with their available binding
-counts.
+When the plain Super lane is visible, the header itself gives the terse next
+step: “hold Super · add Shift / Ctrl / Alt.” There is no footer, no separate
+lane control, and no binding counts competing with the shortcuts.
 
 ## 6. Ranking and position stability
 

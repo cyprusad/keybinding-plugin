@@ -206,7 +206,6 @@ Item {
           y: GuideModel.barOffset(root.barPosition, root.barSize, root.barHidden) + Style.space(4)
           width: Math.max(1, parent.width - Style.space(8))
           height: headerChip.height + Style.space(5) + deckCanvas.height
-            + (laneSummary.visible ? Style.space(5) + laneSummary.height : 0)
 
           BorderSurface {
             id: headerChip
@@ -231,7 +230,8 @@ Item {
               }
               Text {
                 text: root.expanded ? "all " + guideWindow.guideLayout.total + " bindings"
-                  : root.frozenMask === "SUPER" ? "hold Super" : root.frozenMask
+                  : root.frozenMask === "SUPER" ? "hold Super · add Shift / Ctrl / Alt"
+                    : root.frozenMask
                 color: Color.menu.text
                 opacity: 0.84
                 font.family: Style.font.family
@@ -349,54 +349,6 @@ Item {
             }
           }
 
-          Column {
-            id: laneSummary
-            visible: root.frozenMask === "SUPER"
-            y: deckCanvas.y + deckCanvas.height + Style.space(5)
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: Style.space(3)
-
-            Text {
-              anchors.horizontalCenter: parent.horizontalCenter
-              text: "PRESS SHIFT, CTRL, OR ALT FOR MORE SHORTCUTS"
-              color: Color.menu.text
-              opacity: 0.74
-              font.family: Style.font.family
-              font.pixelSize: Style.font.caption
-              font.bold: true
-            }
-
-            Row {
-              anchors.horizontalCenter: parent.horizontalCenter
-              spacing: Style.space(5)
-
-              Repeater {
-                model: [
-                  { label: "SHIFT", count: root.lanes.SHIFT },
-                  { label: "CTRL", count: root.lanes.CTRL },
-                  { label: "ALT", count: root.lanes.ALT }
-                ]
-                delegate: BorderSurface {
-                  required property var modelData
-                  implicitWidth: laneLabel.implicitWidth + Style.space(10)
-                  implicitHeight: Style.space(20)
-                  color: Util.alpha(Color.menu.background, 0.62)
-                  borderSpec: Border.surfaceSpec("menu", "border", Util.alpha(Color.menu.border, 0.72),
-                    Math.max(1, Style.space(1)))
-                  radius: Style.cornerRadius
-                  Text {
-                    id: laneLabel
-                    anchors.centerIn: parent
-                    text: "+ " + modelData.label + " · " + modelData.count
-                    color: Color.menu.text
-                    font.family: Style.font.family
-                    font.pixelSize: Style.font.caption
-                    opacity: 0.88
-                  }
-                }
-              }
-            }
-          }
         }
       }
     }
