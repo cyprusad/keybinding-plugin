@@ -78,6 +78,13 @@ TestCase {
     compare(corners[0].y, collapsed.overflow.y)
     verify(corners[0].x > collapsed.metrics.margin)
     verify(corners[1].x + corners[1].width < 2560 - collapsed.metrics.margin)
+    var outerSecondaryLeft = 2560
+    for (var secondary = 0; secondary < collapsed.items.length; secondary++) {
+      var item = collapsed.items[secondary]
+      if (item.tier === "secondary" && item.x < collapsed.overflow.x)
+        outerSecondaryLeft = Math.min(outerSecondaryLeft, item.x)
+    }
+    compare(corners[0].x + corners[0].width + collapsed.metrics.gap, outerSecondaryLeft)
 
     var expanded = GuideModel.canopyLayout(cards, { width: 2560, height: 1440 }, true)
     compare(expanded.visibleCount, 38)
