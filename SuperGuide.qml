@@ -235,8 +235,8 @@ Item {
                 elide: Text.ElideNone
               }
               Text {
-                text: root.expanded ? "ALL " + guideWindow.guideLayout.total + " BINDINGS"
-                  : root.frozenMask === "SUPER" ? "HOLD SUPER · ADD SHIFT / CTRL / ALT"
+                text: root.expanded ? "All " + guideWindow.guideLayout.total + " bindings"
+                  : root.frozenMask === "SUPER" ? "Hold SUPER · Add SHIFT / CTRL / ALT"
                     : root.displayMask(root.frozenMask)
                 color: Color.menu.text
                 opacity: 0.84
@@ -289,11 +289,11 @@ Item {
 
                   Text {
                     width: parent.width
-                    height: Math.max(1, (parent.height - parent.spacing) * 0.46)
+                    height: Math.max(1, (parent.height - parent.spacing) * 0.52)
                     text: modelData.binding.combo
                     color: highlighted ? Color.menu.selectedText : Color.menu.text
                     font.family: Style.font.family
-                    font.pixelSize: Math.max(9, Style.font.caption - 1)
+                    font.pixelSize: Math.max(10, Style.font.caption + 1)
                     font.bold: true
                     fontSizeMode: Text.HorizontalFit
                     minimumPixelSize: 8
@@ -305,12 +305,12 @@ Item {
 
                   Text {
                     width: parent.width
-                    height: Math.max(1, parent.height - parent.spacing - (parent.height - parent.spacing) * 0.46)
+                    height: Math.max(1, parent.height - parent.spacing - (parent.height - parent.spacing) * 0.52)
                     text: modelData.binding.description
                     color: highlighted ? Color.menu.selectedText : Color.menu.text
-                    opacity: highlighted ? 1 : 0.92
+                    opacity: highlighted ? 1 : 0.88
                     font.family: Style.font.family
-                    font.pixelSize: Math.max(9, Style.font.caption - 1)
+                    font.pixelSize: Math.max(8, Style.font.caption - 1)
                     fontSizeMode: Text.HorizontalFit
                     minimumPixelSize: 8
                     elide: Text.ElideNone
