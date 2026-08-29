@@ -119,6 +119,28 @@ their declared configuration (for example `tmux list-keys`) when the matching
 application is focused. It should be a reference-only integration: no raw
 application keystroke observation, no tracking, and no command execution.
 
+Omarchy's Learn menu already supplies two useful read-only sources:
+
+- `omarchy-menu-tmux-keybindings --print` starts an isolated temporary Tmux
+  server, reads the resolved user configuration, and prints annotated bindings.
+- `omarchy-menu-herdr-keybindings --print` combines Herdr defaults with the
+  user's TOML overrides and prints the resulting bindings.
+
+Keybind Dojo should treat these as provider adapters, not scrape their menu UI.
+The same adapter shape can support future applications:
+
+```text
+provider id + label + availability/context predicate
+  -> read-only binding records { combo, description, mode/context }
+  -> visual cards in the focused application's guide/overlay
+```
+
+Providers may enrich the catalog for browsing and visual reference, but they
+never enter the Hyprland bridge match table. This preserves the distinction
+between global Hyprland shortcuts and application-local documentation. A later
+provider registry can load built-in adapters plus explicitly installed local
+provider descriptors, with validation and no network access.
+
 ## Manual gates
 
 - Consent preview clearly explains the allowlisted input observer and default
