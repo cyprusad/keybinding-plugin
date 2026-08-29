@@ -155,20 +155,27 @@ function append(destination, values) {
   for (var i = 0; i < values.length; i++) destination.push(values[i])
 }
 
-function moundLayout(items, metrics) {
+function filledCanopyLayout(items, metrics) {
   var placements = []
+  var source = Array.isArray(items) ? items : []
   var index = 0
-  var row = 0
   var crown = metrics.crownColumns
-  var widths = [crown, crown, Math.max(3, crown - 2), Math.max(3, crown - 4),
-    Math.max(1, crown - 6), 1]
   var step = metrics.cardHeight + metrics.gap
-  while (index < items.length) {
-    var count = Math.min(widths[Math.min(row, widths.length - 1)], items.length - index)
-    append(placements, placeCentered(items, index, count, metrics,
-      row * step, "mound", 1))
+  var topCount = Math.min(crown, source.length)
+  append(placements, placeCentered(source, index, topCount, metrics, 0, "primary", 1))
+  index += topCount
+
+  // Use complete, nearly even rows under the crown. This makes a filled
+  // terrace instead of a sparse grid or a downward-tapering tail.
+  var remaining = source.length - index
+  var rowCount = remaining > 0 ? Math.ceil(remaining / (crown + 2)) : 0
+  var base = rowCount > 0 ? Math.floor(remaining / rowCount) : 0
+  var extra = rowCount > 0 ? remaining % rowCount : 0
+  for (var row = 0; row < rowCount; row++) {
+    var count = base + (row < extra ? 1 : 0)
+    append(placements, placeCentered(source, index, count, metrics,
+      (row + 1) * step, "mound", 1))
     index += count
-    row += 1
   }
   return {
     items: placements,
@@ -176,7 +183,7 @@ function moundLayout(items, metrics) {
     total: items.length,
     visibleCount: items.length,
     expanded: false,
-    height: Math.max(metrics.cardHeight, row * step - metrics.gap),
+    height: Math.max(metrics.cardHeight, (rowCount + 1) * step - metrics.gap),
     overflow: null,
     metrics: metrics
   }
@@ -264,24 +271,43 @@ function collapsedCanopyLayout(source, metrics) {
 }
 
 function expandedCanopyLayout(source, metrics, collapsed) {
-  if (collapsed.more === 0) return moundLayout(source, metrics)
+  if (collapsed.more === 0) return filledCanopyLayout(source, metrics)
 
-  var placements = collapsed.items.slice()
-  var cursor = collapsed.visibleCount
+  var placements = []
+  var used = {}
   var crown = metrics.crownColumns
-  var widths = [1, Math.max(3, crown - 2), Math.max(3, crown - 4),
-    Math.max(3, crown - 6), 1]
   var step = metrics.cardHeight + metrics.gap
-  var row = 0
-  var height = collapsed.height
-  while (cursor < source.length) {
-    var count = Math.min(widths[Math.min(row, widths.length - 1)], source.length - cursor)
-    append(placements, placeCentered(source, cursor, count, metrics,
-      (row + 1) * step, "mound", 1))
-    cursor += count
-    height = Math.max(height, (row + 2) * step - metrics.gap)
-    row += 1
+  var i
+
+  // Keep the primary crown and the entire familiar second row fixed. Only
+  // lower-priority wings are repacked to make the expanded footprint solid.
+  for (i = 0; i < collapsed.items.length; i++) {
+    var existing = collapsed.items[i]
+    if (existing.tier !== "primary" && existing.tier !== "secondary" && existing.tier !== "corner") continue
+    placements.push(existing)
+    used[existing.binding.id] = true
   }
+
+  var remaining = []
+  for (i = 0; i < source.length; i++)
+    if (used[source[i].id] !== true) remaining.push(source[i])
+
+  // The first remaining binding fills the old +MORE center without disturbing
+  // the surrounding secondary cards. Complete lower rows then follow.
+  var centerBinding = remaining.shift()
+  if (centerBinding) append(placements, placeCentered([centerBinding], 0, 1, metrics,
+    step, "mound", 1))
+
+  var rowCount = remaining.length > 0 ? Math.ceil(remaining.length / (crown + 2)) : 0
+  var base = rowCount > 0 ? Math.floor(remaining.length / rowCount) : 0
+  var extra = rowCount > 0 ? remaining.length % rowCount : 0
+  for (var row = 0, cursor = 0; row < rowCount; row++) {
+    var count = base + (row < extra ? 1 : 0)
+    append(placements, placeCentered(remaining, cursor, count, metrics,
+      (row + 2) * step, "mound", 1))
+    cursor += count
+  }
+  var height = Math.max(metrics.cardHeight, (rowCount + 2) * step - metrics.gap)
   return {
     items: placements,
     more: 0,
@@ -302,7 +328,7 @@ function canopyLayout(items, viewport, expanded) {
   if (expanded === true) return expandedCanopyLayout(source, metrics, collapsed)
   // Lanes that already fit should still read as a canopy, never as a generic
   // centered grid.
-  return collapsed.more === 0 ? moundLayout(source, metrics) : collapsed
+  return collapsed.more === 0 ? filledCanopyLayout(source, metrics) : collapsed
 }
 
 function laneCounts(catalog) {
