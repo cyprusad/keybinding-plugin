@@ -168,7 +168,9 @@ Item {
           modelData ? modelData.name : "",
           root.focusedScreenName())
         color: "transparent"
-        implicitHeight: guideContent.y + guideContent.height + Style.space(4)
+        // Keep a little extra window height for the gradient to dissolve
+        // into the desktop instead of ending in a visible horizontal edge.
+        implicitHeight: guideContent.y + guideContent.height + Style.space(80)
         exclusionMode: ExclusionMode.Ignore
         anchors { top: true; left: true; right: true }
 
@@ -180,6 +182,26 @@ Item {
         // state is sticky, so cards themselves never need an input region.
         mask: Region {
           item: overflowPill.visible && !root.expanded ? overflowPill : null
+        }
+
+        // Theme-native contrast shield: intentionally opaque behind the
+        // primary cards, then progressively transparent below the guide.
+        // This makes text readable over a terminal or bright application
+        // without requiring compositor-specific blur configuration.
+        Rectangle {
+          id: guideBackdrop
+          x: 0
+          y: 0
+          width: parent.width
+          height: guideContent.y + guideContent.height + Style.space(80)
+          z: -1
+          gradient: Gradient {
+            orientation: Gradient.Vertical
+            GradientStop { position: 0.0; color: Util.alpha(Color.menu.background, 0.96) }
+            GradientStop { position: 0.28; color: Util.alpha(Color.menu.background, 0.88) }
+            GradientStop { position: 0.66; color: Util.alpha(Color.menu.background, 0.48) }
+            GradientStop { position: 1.0; color: Util.alpha(Color.menu.background, 0.0) }
+          }
         }
 
         readonly property var guideLayout: GuideModel.canopyLayout(root.frozenCards, {
@@ -268,50 +290,40 @@ Item {
                 }
                 Behavior on color { ColorAnimation { duration: 120 } }
 
-                Row {
+                Column {
                   anchors.fill: parent
                   anchors.margins: Style.space(4)
-                  spacing: Style.space(5)
+                  spacing: Style.space(1)
 
-                  BorderSurface {
-                    id: comboKeycap
-                    width: Math.min(parent.width * 0.5,
-                      Math.max(Style.space(48), comboLabel.implicitWidth + Style.space(8)))
-                    height: parent.height
-                    color: highlighted ? Util.alpha(Color.menu.selectedText, 0.13)
-                      : Util.alpha(Color.menu.text, 0.08)
-                    borderSpec: Border.none()
-                    radius: Style.cornerRadius
-
-                    Text {
-                      id: comboLabel
-                      anchors {
-                        left: parent.left
-                        right: parent.right
-                        verticalCenter: parent.verticalCenter
-                        margins: Style.space(4)
-                      }
-                      text: modelData.binding.combo
-                      color: highlighted ? Color.menu.selectedText : Color.menu.text
-                      font.family: Style.font.family
-                      font.pixelSize: Style.font.caption
-                      font.bold: true
-                      elide: Text.ElideRight
-                      maximumLineCount: 1
-                      horizontalAlignment: Text.AlignHCenter
-                    }
+                  Text {
+                    width: parent.width
+                    height: Math.max(1, (parent.height - parent.spacing) * 0.46)
+                    text: modelData.binding.combo
+                    color: highlighted ? Color.menu.selectedText : Color.menu.text
+                    font.family: Style.font.family
+                    font.pixelSize: Math.max(9, Style.font.caption - 1)
+                    font.bold: true
+                    fontSizeMode: Text.HorizontalFit
+                    minimumPixelSize: 8
+                    elide: Text.ElideNone
+                    maximumLineCount: 1
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                   }
 
                   Text {
-                    width: Math.max(1, parent.width - comboKeycap.width - parent.spacing)
-                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width
+                    height: Math.max(1, parent.height - parent.spacing - (parent.height - parent.spacing) * 0.46)
                     text: modelData.binding.description
                     color: highlighted ? Color.menu.selectedText : Color.menu.text
                     opacity: highlighted ? 1 : 0.92
                     font.family: Style.font.family
-                    font.pixelSize: Style.font.caption
-                    elide: Text.ElideRight
+                    font.pixelSize: Math.max(9, Style.font.caption - 1)
+                    fontSizeMode: Text.HorizontalFit
+                    minimumPixelSize: 8
+                    elide: Text.ElideNone
                     maximumLineCount: 1
+                    horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                   }
                 }

@@ -94,7 +94,9 @@ function canopyMetrics(viewport, expanded) {
   return {
     width: width,
     cardWidth: compact,
-    cardHeight: expanded === true ? 30 : 34,
+    // A two-line card keeps the complete shortcut and its purpose legible
+    // without making the canopy any wider.
+    cardHeight: expanded === true ? 42 : 46,
     gap: gap,
     margin: margin,
     crownColumns: columns

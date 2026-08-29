@@ -58,6 +58,7 @@ TestCase {
     verify(collapsed.visibleCount > 12)
     verify(collapsed.more > 0)
     verify(collapsed.overflow !== null)
+    verify(collapsed.metrics.cardHeight >= 46)
     compare(collapsed.items[0].x + collapsed.items[0].width / 2, 1280)
     compare(collapsed.items[1].y, collapsed.items[2].y)
     compare(collapsed.items[1].x + collapsed.items[2].x + collapsed.items[1].width, 2560)

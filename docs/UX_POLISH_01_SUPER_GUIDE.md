@@ -246,6 +246,20 @@ The default implementation requires no Hyprland config mutation:
 - Keep the small title and modifier summaries as floating micro-pills.
 - Do not hard-code white, black, purple, or screenshot-specific colors.
 
+### Iteration: contrast shield and legible card hierarchy
+
+Live review found that a fully transparent canopy can visually collide with a
+terminal or a visually busy application. The implemented baseline is therefore
+a theme-native vertical gradient behind the guide: near-opaque at the header
+and primary cards, then progressively transparent below the final row. It uses
+`Color.menu.background`, so bright and dark themes preserve their intended
+contrast rather than receiving a fixed grey overlay.
+
+Each card uses its full width for two single-line rows: the shortcut is first,
+and the plain-language description is second. Horizontal fitting can shrink a
+rare long label slightly, but truncation ellipses are avoided. This retains the
+approved canopy geometry while making the guide's instructional text usable.
+
 ### Optional feasibility spike: true backdrop blur
 
 Translucent QML surfaces are feasible now; true blur of arbitrary desktop
@@ -431,4 +445,3 @@ UX Polish 01 is complete when:
 - Context-aware application/workspace/pane ranking from `PLAN.md` section 13.1.
 - Binding execution from the guide.
 - Automatic Hyprland appearance edits solely to enable blur.
-

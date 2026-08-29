@@ -6,6 +6,8 @@ env -u DISPLAY QT_QPA_PLATFORM=minimal QT_QPA_PLATFORMTHEME= \
   qmltestrunner -input "$root/tests/qml/tst_guide.qml" -o -,txt
 grep -q 'GuideModel.canopyLayout' "$root/SuperGuide.qml"
 grep -q 'Util.alpha(Color.menu.background' "$root/SuperGuide.qml"
+grep -q 'gradient: Gradient' "$root/SuperGuide.qml"
+grep -q 'fontSizeMode: Text.HorizontalFit' "$root/SuperGuide.qml"
 grep -q 'HoverHandler' "$root/SuperGuide.qml"
 grep -q 'overflowHoverTimer' "$root/SuperGuide.qml"
 grep -q 'item: overflowPill.visible && !root.expanded ? overflowPill : null' "$root/SuperGuide.qml"
