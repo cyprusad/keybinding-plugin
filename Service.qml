@@ -559,7 +559,7 @@ Item {
       }
       if (root.catalogRegenerationPending) {
         root.catalogRegenerationPending = false
-        root.catalogChangeTimer.restart()
+        catalogChangeTimer.restart()
       }
     }
   }
@@ -623,7 +623,7 @@ Item {
     stdout: StdioCollector { id: fullscreenStdout; waitForEnd: true }
     onExited: {
       root.recordFullscreenResult(fullscreenStdout.text, exitCode)
-      if (root.fullscreenQueryPending) root.fullscreenQueryTimer.restart()
+      if (root.fullscreenQueryPending) fullscreenQueryTimer.restart()
     }
   }
 

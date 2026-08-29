@@ -7,3 +7,7 @@ env -u DISPLAY QT_QPA_PLATFORM=minimal QT_QPA_PLATFORMTHEME= \
 grep -q 'stdinEnabled = false' "$root/Service.qml"
 grep -q 'statsResetPending' "$root/Service.qml"
 grep -q 'beginClearLocalData' "$root/Service.qml"
+if rg -q 'root\.(catalogChangeTimer|fullscreenQueryTimer)' "$root/Service.qml"; then
+  echo "QML timer IDs must not be accessed through root" >&2
+  exit 1
+fi
