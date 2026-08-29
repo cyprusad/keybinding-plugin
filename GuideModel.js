@@ -98,7 +98,8 @@ function canopyMetrics(viewport, expanded) {
     margin: margin,
     crownColumns: columns,
     cornerWidth: Math.round(compact * 0.78),
-    cornerCaps: expanded !== true && width >= 1800
+    cornerCaps: expanded !== true && width >= 1800,
+    wingPairs: expanded !== true && width >= 1800 ? 4 : 2
   }
 }
 
@@ -175,7 +176,8 @@ function canopyLayout(items, viewport, expanded) {
   if (expanded === true) return denseLayout(source, metrics)
 
   var crown = metrics.crownColumns
-  var capacity = crown + Math.max(0, crown - 1) + 4 + (metrics.cornerCaps ? 2 : 0)
+  var capacity = crown + Math.max(0, crown - 1) + metrics.wingPairs * 2
+    + (metrics.cornerCaps ? 2 : 0)
   if (source.length <= capacity) return denseLayout(source, metrics)
 
   var placements = []
@@ -204,7 +206,7 @@ function canopyLayout(items, viewport, expanded) {
       tier: "secondary", opacity: 0.9 })
   }
 
-  for (i = 0; i < 4; i++) {
+  for (i = 0; i < metrics.wingPairs * 2; i++) {
     var wingBinding = source[cursor++]
     if (!wingBinding) break
     var wingRow = Math.floor(i / 2)
@@ -239,7 +241,7 @@ function canopyLayout(items, viewport, expanded) {
     }
   }
 
-  var height = (metrics.cardHeight + metrics.gap) * 4 - metrics.gap
+  var height = (metrics.cardHeight + metrics.gap) * (2 + metrics.wingPairs) - metrics.gap
   return {
     items: placements,
     more: Math.max(0, source.length - placements.length),

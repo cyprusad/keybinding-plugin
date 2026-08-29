@@ -59,7 +59,7 @@ TestCase {
     for (var i = 0; i < 38; i++) cards.push({ id: "sha256:" + String(i), combo: "SUPER + " + i, description: "Command " + i })
     var collapsed = GuideModel.canopyLayout(cards, { width: 2560, height: 1440 }, false)
     verify(collapsed.visibleCount > 12)
-    compare(collapsed.visibleCount, 23)
+    compare(collapsed.visibleCount, 27)
     verify(collapsed.more > 0)
     verify(collapsed.overflow !== null)
     verify(collapsed.metrics.cardHeight >= 46)

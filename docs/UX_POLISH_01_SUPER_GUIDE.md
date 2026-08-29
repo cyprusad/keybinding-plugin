@@ -96,6 +96,10 @@ On wide displays, the two upper corners become small, low-priority corner caps.
 They increase collapsed capacity without creating another full-width row; they
 are not rendered on narrower displays where they would crowd the crown.
 
+The side wings use four left/right pairs on wide displays (rather than two),
+so four additional low-priority bindings remain visible at their normal,
+readable card width. Narrow displays retain the smaller two-pair wing.
+
 Conceptual placement, where lower numbers have higher priority:
 
 ```text
