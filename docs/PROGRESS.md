@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | 8a8a929 | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses stepped corner caps that attach to the secondary row plus extended edge wings to expose six additional low-priority shortcuts. The duplicate Copilot menu binding is labeled accurately but excluded from the guide. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | — | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses stepped corner caps that attach to the secondary row plus extended edge wings to expose six additional low-priority shortcuts. The duplicate Copilot menu binding is labeled accurately but excluded from the guide. Modifier lanes now use an explicit discovery nudge. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log

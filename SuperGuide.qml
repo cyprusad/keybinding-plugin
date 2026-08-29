@@ -349,35 +349,50 @@ Item {
             }
           }
 
-          Row {
+          Column {
             id: laneSummary
             visible: root.frozenMask === "SUPER"
             y: deckCanvas.y + deckCanvas.height + Style.space(5)
             anchors.horizontalCenter: parent.horizontalCenter
-            spacing: Style.space(5)
+            spacing: Style.space(3)
 
-            Repeater {
-              model: [
-                { label: "Shift", count: root.lanes.SHIFT },
-                { label: "Ctrl", count: root.lanes.CTRL },
-                { label: "Alt", count: root.lanes.ALT }
-              ]
-              delegate: BorderSurface {
-                required property var modelData
-                implicitWidth: laneLabel.implicitWidth + Style.space(10)
-                implicitHeight: Style.space(20)
-                color: Util.alpha(Color.menu.background, 0.62)
-                borderSpec: Border.surfaceSpec("menu", "border", Util.alpha(Color.menu.border, 0.72),
-                  Math.max(1, Style.space(1)))
-                radius: Style.cornerRadius
-                Text {
-                  id: laneLabel
-                  anchors.centerIn: parent
-                  text: modelData.label + " " + modelData.count
-                  color: Color.menu.text
-                  font.family: Style.font.family
-                  font.pixelSize: Style.font.caption
-                  opacity: 0.88
+            Text {
+              anchors.horizontalCenter: parent.horizontalCenter
+              text: "PRESS SHIFT, CTRL, OR ALT FOR MORE SHORTCUTS"
+              color: Color.menu.text
+              opacity: 0.74
+              font.family: Style.font.family
+              font.pixelSize: Style.font.caption
+              font.bold: true
+            }
+
+            Row {
+              anchors.horizontalCenter: parent.horizontalCenter
+              spacing: Style.space(5)
+
+              Repeater {
+                model: [
+                  { label: "SHIFT", count: root.lanes.SHIFT },
+                  { label: "CTRL", count: root.lanes.CTRL },
+                  { label: "ALT", count: root.lanes.ALT }
+                ]
+                delegate: BorderSurface {
+                  required property var modelData
+                  implicitWidth: laneLabel.implicitWidth + Style.space(10)
+                  implicitHeight: Style.space(20)
+                  color: Util.alpha(Color.menu.background, 0.62)
+                  borderSpec: Border.surfaceSpec("menu", "border", Util.alpha(Color.menu.border, 0.72),
+                    Math.max(1, Style.space(1)))
+                  radius: Style.cornerRadius
+                  Text {
+                    id: laneLabel
+                    anchors.centerIn: parent
+                    text: "+ " + modelData.label + " · " + modelData.count
+                    color: Color.menu.text
+                    font.family: Style.font.family
+                    font.pixelSize: Style.font.caption
+                    opacity: 0.88
+                  }
                 }
               }
             }

@@ -187,6 +187,11 @@ pixels:
 Text should remain substantially more opaque than a faded surface. Decorative
 transparency must never make a binding unreadable.
 
+When the plain Super lane is visible, the lane summary is an instruction, not
+opaque telemetry: “Press Shift, Ctrl, or Alt for more shortcuts,” followed by
+explicit `+ SHIFT`, `+ CTRL`, and `+ ALT` pills with their available binding
+counts.
+
 ## 6. Ranking and position stability
 
 The Super Guide should not maintain a separate alphabetical ranking. It should
