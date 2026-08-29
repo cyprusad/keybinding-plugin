@@ -294,13 +294,10 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          Text {
+          PanelSectionHeader {
             width: parent.width
             visible: root.displayedDiff !== ""
             text: "Proposed diff"
-            color: Color.foreground
-            font.pixelSize: Style.font.caption
-            font.bold: true
           }
 
           Text {
@@ -316,8 +313,9 @@ Panel {
           Text {
             width: parent.width
             visible: root.displayedDiff !== ""
-            text: "View bridge source on GitHub"
+            text: "Optional: view bridge source on GitHub"
             color: Color.accent
+            opacity: 0.82
             font.pixelSize: Style.font.caption
             font.underline: bridgeSourceMouse.containsMouse
 
@@ -360,14 +358,7 @@ Panel {
             }
           }
 
-          Text {
-            width: parent.width
-            text: "Only the managed bridge block changes. Existing bindings remain intact; Hyprland is validated and a rollback backup is kept."
-            color: Color.foreground
-            opacity: 0.78
-            font.pixelSize: Style.font.caption
-            wrapMode: Text.WordWrap
-          }
+          PanelSectionHeader { text: "Next step"; width: parent.width }
 
           Button {
             width: parent.width
@@ -385,6 +376,15 @@ Panel {
             color: Color.urgent
             font.pixelSize: Style.font.caption
             wrapMode: Text.WordWrap
+          }
+
+          Text {
+            width: parent.width
+            text: "Optional tools"
+            color: Color.foreground
+            opacity: 0.62
+            font.pixelSize: Style.font.caption
+            font.bold: true
           }
 
           Row {
