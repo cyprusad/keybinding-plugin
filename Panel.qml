@@ -16,6 +16,7 @@ Panel {
   property var preview: ({})
   property bool confirmDisable: false
   property bool confirmClear: false
+  property bool showDiff: false
 
   readonly property bool onboarding: !service || service.integrationState !== "enabled"
   readonly property string displayedHash: preview && typeof preview.currentHash === "string"
@@ -51,13 +52,6 @@ Panel {
     if (root.preview && root.preview.safeToPatch === true)
       return luminance < 0.5 ? "#8bd49c" : "#236b3e"
     return luminance < 0.5 ? "#f0c674" : "#8a5a00"
-  }
-
-  function symlinkSummary() {
-    var logical = root.preview ? root.preview.logicalPath : ""
-    var resolved = root.preview ? root.preview.resolvedPath : ""
-    if (!logical || !resolved) return "Unknown — paths unavailable"
-    return logical === resolved ? "No — paths match" : "Yes — logical path resolves to target"
   }
 
   function symlinkPathsMatch() {
@@ -246,7 +240,7 @@ Panel {
 
           Text {
             width: parent.width
-            text: "Omakeez checks the Hyprland file it would update. This confirms the real target, symlink and Git safety, and that the managed bridge can be added without disturbing your existing bindings."
+            text: "Omakeez checks the Hyprland file before it changes anything."
             color: Color.foreground
             opacity: 0.78
             font.pixelSize: Style.font.caption
@@ -266,21 +260,47 @@ Panel {
               anchors.right: parent.right
               anchors.top: parent.top
               anchors.margins: Style.space(8)
-              spacing: Style.space(3)
+              spacing: Style.space(7)
 
-              Text { width: parent.width; text: "Symlink check"; color: Color.foreground; font.pixelSize: Style.font.caption; font.bold: true }
-              Text { width: parent.width; text: root.symlinkCheckSummary(); color: root.symlinkPathsMatch() ? Color.foreground : root.safetyColor(); font.pixelSize: Style.font.caption; wrapMode: Text.WordWrap }
+              Text { width: parent.width; text: "Safety"; color: Color.foreground; opacity: 0.68; font.pixelSize: Style.font.caption; font.bold: true }
+              Text { width: parent.width; text: root.safetySummary(); color: root.safetyColor(); font.pixelSize: Style.font.body; font.bold: true; wrapMode: Text.WordWrap }
+              Text {
+                width: parent.width
+                text: root.enableReady
+                  ? "Omakeez can add its small local bridge without changing your existing bindings."
+                  : "Automatic setup needs review before Omakeez can change this file."
+                color: Color.foreground
+                opacity: 0.76
+                font.pixelSize: Style.font.caption
+                wrapMode: Text.WordWrap
+              }
+
+              Row {
+                width: parent.width
+                spacing: Style.space(16)
+
+                Column {
+                  width: (parent.width - parent.spacing) / 2
+                  spacing: Style.space(2)
+                  Text { width: parent.width; text: "Symlink check"; color: Color.foreground; opacity: 0.62; font.pixelSize: Style.font.caption; font.bold: true }
+                  Text { width: parent.width; text: root.symlinkCheckSummary(); color: root.symlinkPathsMatch() ? Color.foreground : root.safetyColor(); opacity: 0.86; font.pixelSize: Style.font.caption; elide: Text.ElideRight }
+                }
+
+                Column {
+                  width: (parent.width - parent.spacing) / 2
+                  spacing: Style.space(2)
+                  Text { width: parent.width; text: "Git check"; color: Color.foreground; opacity: 0.62; font.pixelSize: Style.font.caption; font.bold: true }
+                  Text { width: parent.width; text: root.gitCheckSummary(); color: Color.foreground; opacity: 0.86; font.pixelSize: Style.font.caption; elide: Text.ElideMiddle }
+                }
+              }
+
               Column {
                 visible: !root.symlinkPathsMatch()
                 width: parent.width
                 spacing: Style.space(2)
-                Text { width: parent.width; text: "Logical path: " + root.pathValue("logicalPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
-                Text { width: parent.width; text: "Resolved path: " + root.pathValue("resolvedPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
+                Text { width: parent.width; text: "Logical path: " + root.pathValue("logicalPath"); color: Color.foreground; opacity: 0.78; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
+                Text { width: parent.width; text: "Resolved path: " + root.pathValue("resolvedPath"); color: Color.foreground; opacity: 0.78; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
               }
-              Text { width: parent.width; text: "Git check"; color: Color.foreground; font.pixelSize: Style.font.caption; font.bold: true }
-              Text { width: parent.width; text: root.gitCheckSummary(); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption; wrapMode: Text.WordWrap }
-              Text { width: parent.width; text: "Safety"; color: Color.foreground; font.pixelSize: Style.font.caption; font.bold: true }
-              Text { width: parent.width; text: root.safetySummary(); color: root.safetyColor(); font.pixelSize: Style.font.caption; font.bold: true; wrapMode: Text.WordWrap }
             }
           }
 
@@ -297,41 +317,59 @@ Panel {
           PanelSectionHeader {
             width: parent.width
             visible: root.displayedDiff !== ""
-            text: "Proposed diff"
+            text: "What Omakeez changes"
           }
 
           Text {
             width: parent.width
             visible: root.displayedDiff !== ""
-            text: "This is the small bridge Omakeez would add to your Hyprland file. Red and green lines show the standard diff format: removed lines and added lines."
+            text: "One small, local bridge is added to Hyprland so the visual guide can see registered shortcuts."
             color: Color.foreground
             opacity: 0.78
             font.pixelSize: Style.font.caption
             wrapMode: Text.WordWrap
           }
 
-          Text {
+          Row {
             width: parent.width
             visible: root.displayedDiff !== ""
-            text: "Optional: view bridge source on GitHub"
-            color: Color.accent
-            opacity: 0.82
-            font.pixelSize: Style.font.caption
-            font.underline: bridgeSourceMouse.containsMouse
+            spacing: Style.space(14)
 
-            MouseArea {
-              id: bridgeSourceMouse
-              anchors.fill: parent
-              hoverEnabled: true
-              cursorShape: Qt.PointingHandCursor
-              onClicked: root.openBridgeSource()
+            Text {
+              text: root.showDiff ? "Hide exact change" : "Review exact change"
+              color: Color.accent
+              opacity: 0.86
+              font.pixelSize: Style.font.caption
+              font.underline: diffToggleMouse.containsMouse
+              MouseArea {
+                id: diffToggleMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.showDiff = !root.showDiff
+              }
+            }
+
+            Text {
+              text: "View bridge source"
+              color: Color.accent
+              opacity: 0.86
+              font.pixelSize: Style.font.caption
+              font.underline: bridgeSourceMouse.containsMouse
+              MouseArea {
+                id: bridgeSourceMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: root.openBridgeSource()
+              }
             }
           }
 
           BorderSurface {
             width: parent.width
             height: Style.space(170)
-            visible: root.displayedDiff !== ""
+            visible: root.displayedDiff !== "" && root.showDiff
             color: Qt.rgba(0, 0, 0, 0.18)
             borderSpec: Border.flat(Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.12), 1)
             radius: Style.cornerRadius
@@ -358,7 +396,7 @@ Panel {
             }
           }
 
-          PanelSectionHeader { text: "Next step"; width: parent.width }
+          PanelSectionHeader { text: "Ready when you are"; width: parent.width }
 
           Button {
             width: parent.width
@@ -378,17 +416,9 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          Text {
-            width: parent.width
-            text: "Optional tools"
-            color: Color.foreground
-            opacity: 0.62
-            font.pixelSize: Style.font.caption
-            font.bold: true
-          }
-
           Row {
             width: parent.width
+            visible: !!root.service && root.preview && root.preview.safeToPatch !== true
             spacing: Style.space(8)
             Button {
               width: (parent.width - Style.space(8)) / 2
