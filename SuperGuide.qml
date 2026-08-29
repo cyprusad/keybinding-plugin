@@ -260,6 +260,14 @@ Item {
                     Util.alpha(Color.menu.border, Math.min(1, modelData.opacity + 0.12)),
                     Math.max(1, Style.space(1)))
 
+                Behavior on x {
+                  NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                }
+                Behavior on y {
+                  NumberAnimation { duration: 150; easing.type: Easing.OutCubic }
+                }
+                Behavior on color { ColorAnimation { duration: 120 } }
+
                 Row {
                   anchors.fill: parent
                   anchors.margins: Style.space(4)
@@ -321,6 +329,7 @@ Item {
               color: Util.alpha(Color.menu.background, 0.9)
               borderSpec: Border.surfaceSpec("menu", "border", Color.menu.selectedBorder,
                 Math.max(1, Style.space(1)))
+              Behavior on color { ColorAnimation { duration: 120 } }
 
               Text {
                 anchors.centerIn: parent
