@@ -4,3 +4,10 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
 env -u DISPLAY QT_QPA_PLATFORM=minimal QT_QPA_PLATFORMTHEME= \
   qmltestrunner -input "$root/tests/qml/tst_guide.qml" -o -,txt
+grep -q 'GuideModel.canopyLayout' "$root/SuperGuide.qml"
+grep -q 'Util.alpha(Color.menu.background' "$root/SuperGuide.qml"
+grep -q 'mask: Region {}' "$root/SuperGuide.qml"
+if grep -q 'Flow {' "$root/SuperGuide.qml"; then
+  echo "legacy flow layout remains in the Super Guide" >&2
+  exit 1
+fi

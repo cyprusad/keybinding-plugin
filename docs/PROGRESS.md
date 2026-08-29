@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (01A complete) | — | Pure ranked deck, readable key labels, responsive center-out geometry, and overflow tests pass. Transparent canopy and hover expansion remain. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (01B complete) | — | Ranked deck, readable key labels, responsive center-out geometry, and transparent glass canopy render pass. Hover expansion remains. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log
