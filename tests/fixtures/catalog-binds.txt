@@ -44,3 +44,10 @@ bindd:
 	dispatcher: __lua
 	arg: 99
 	description: Move silently to workspace 1
+bindd:
+	modmask: 65
+	key: SUPER + SHIFT + code:201
+	keycode: 0
+	dispatcher: __lua
+	arg: __lua
+	description: Omarchy menu

@@ -7,9 +7,10 @@ trap 'rm -rf "$out"' EXIT
 
 first=$("$root/scripts/generate-catalog" --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" --keymap-file "$root/tests/fixtures/catalog-keymap.txt" --output-dir "$out")
 printf '%s\n' "$first" | grep -q '"changed":true'
-jq -e '.schemaVersion == 1 and (.bindings | length == 6)' "$out/catalog.json" >/dev/null
+jq -e '.schemaVersion == 1 and (.bindings | length == 7)' "$out/catalog.json" >/dev/null
 jq -e '.bindings[] | select(.description == "Move silently to workspace 1") | .combo == "SUPER + SHIFT + ALT + 1" and .xkbCodes == [10]' "$out/catalog.json" >/dev/null
 jq -e '.bindings[] | select(.description == "Toggle style") | .combo == "-" and .xkbCodes == [20]' "$out/catalog.json" >/dev/null
+jq -e '.bindings[] | select(.key == "code:201") | .combo == "SUPER + SHIFT + COPILOT" and .guideEligible == false' "$out/catalog.json" >/dev/null
 ! jq -e '.bindings[] | has("arg")' "$out/catalog.json" >/dev/null
 ! grep -Fq "secret" "$out/bridge-catalog.lua"
 luac -p "$out/bridge-catalog.lua"

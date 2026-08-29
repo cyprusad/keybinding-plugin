@@ -207,7 +207,9 @@ For this polish pass:
 
 The active XKB keymap also resolves raw `code:N` bindings while the catalog is
 generated. For example, the current `code:10`–`code:20` entries become `1`–`0`
-and `-`; an unresolvable hardware code remains an explicit `KEY N` fallback.
+and `-`. Omarchy's `code:201` is the dedicated Copilot key, so it is labeled
+`COPILOT` but excluded from the guide because it duplicates `SUPER + SPACE`.
+An otherwise unresolvable hardware code remains an explicit `KEY N` fallback.
 
 Context-aware ranking from active workspace, terminal/browser context, and
 local history remains the separate design described in `PLAN.md` section 13.1.

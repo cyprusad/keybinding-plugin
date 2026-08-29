@@ -25,6 +25,10 @@ DISPLAY_SYMBOLS = {
     "RIGHT": "RIGHT", "PRIOR": "PAGE UP", "NEXT": "PAGE DOWN",
     "HOME": "HOME", "END": "END", "DELETE": "DELETE", "INSERT": "INSERT",
 }
+# Omarchy binds the dedicated Copilot key by its Linux input code. It is not a
+# normal XKB character key (the generic XKB alias looks like F23), so preserve
+# the physical key's real user-facing name.
+SPECIAL_CODE_LABELS = {201: "COPILOT"}
 
 
 def fail(code, message):
@@ -141,6 +145,8 @@ def display_key(key, code_symbols):
             code = int(key.split(":", 1)[1])
         except ValueError:
             return key.upper()
+        if code in SPECIAL_CODE_LABELS:
+            return SPECIAL_CODE_LABELS[code]
         for symbol in code_symbols.get(code, []):
             label = display_symbol(symbol)
             if label:
@@ -278,7 +284,11 @@ def build(args):
         seen.add(identity)
         combo_key = display_key(key, code_symbols)
         combo = " + ".join(mods + [combo_key]) if mods else combo_key
-        entries.append({"id": identity, "combo": combo, "modifiers": mods, "key": key, "xkbCodes": codes, "description": description, "category": category(description), "phase": phase, "submap": submap, "dispatcherKind": dispatcher or "other", "trackable": not mouse, "guideEligible": not mouse, "repeat": repeat})
+        # The Copilot-key route duplicates SUPER+SPACE for the Omarchy menu.
+        # Mirror Omarchy's own keybindings menu and keep it browseable but out
+        # of the immediate Super Guide.
+        guide_eligible = not mouse and key != "code:201"
+        entries.append({"id": identity, "combo": combo, "modifiers": mods, "key": key, "xkbCodes": codes, "description": description, "category": category(description), "phase": phase, "submap": submap, "dispatcherKind": dispatcher or "other", "trackable": not mouse, "guideEligible": guide_eligible, "repeat": repeat})
     entries.sort(key=lambda item: (menu_priority(item["combo"], item["description"]), item["combo"], item["description"], item["id"]))
     source = json.dumps({"bindings": entries, "modifierCodes": {k: sorted(v) for k, v in modifier_codes.items()}}, sort_keys=True, separators=(",", ":"))
     source_hash = "sha256:" + hashlib.sha256(source.encode()).hexdigest()
