@@ -91,8 +91,11 @@ TestCase {
     compare(expanded.more, 0)
     compare(expanded.items[0].x, collapsed.items[0].x)
     compare(expanded.items[0].y, collapsed.items[0].y)
-    compare(expanded.items[9].x, collapsed.items[9].x)
-    compare(expanded.items[9].y, collapsed.items[9].y)
+    for (var fixed = 0; fixed < collapsed.items.length; fixed++) {
+      compare(expanded.items[fixed].binding.id, collapsed.items[fixed].binding.id)
+      compare(expanded.items[fixed].x, collapsed.items[fixed].x)
+      compare(expanded.items[fixed].y, collapsed.items[fixed].y)
+    }
     verify(expanded.height < 1440 * 0.45)
 
     var alternateLane = GuideModel.canopyLayout(cards.slice(0, 25), { width: 2560, height: 1440 }, false)
@@ -100,7 +103,7 @@ TestCase {
     compare(alternateLane.visibleCount, 25)
     compare(alternateLane.items[0].x + alternateLane.items[0].width / 2, 1280)
     verify(alternateLane.items[9].y > alternateLane.items[0].y)
-    compare(alternateLane.items[9].y, alternateLane.items[16].y)
+    verify(alternateLane.items[17].y > alternateLane.items[9].y)
   }
 
   function test_lanesAndAccessibilityFiltering() {

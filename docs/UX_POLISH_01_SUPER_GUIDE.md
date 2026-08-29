@@ -102,12 +102,12 @@ The side wings use four left/right pairs on wide displays (rather than two),
 so four additional low-priority bindings remain visible at their normal,
 readable card width. Narrow displays retain the smaller two-pair wing.
 
-Hover expansion preserves the primary crown and familiar second row. The first
-new binding fills the former overflow center; lower-priority wing cards and
-hidden bindings then repack into complete, nearly even rows below it. The
-result is a solid widening terrace rather than a side-rail outline with a
-tapering tail. Modifier lanes that have no overflow use the same filled shape
-rather than a separate centered-grid layout.
+The collapsed canopy is a fixed visual frame: hover expansion never moves a
+visible card. The first new binding fills the former overflow center; the rest
+balance across open interior space between the fixed left and right wings.
+Modifier lanes that already fit retain that same frame rather than switching to
+a separate centered-grid layout. This preserves the eye's anchors while making
+the previously hidden choices available.
 
 Conceptual placement, where lower numbers have higher priority:
 

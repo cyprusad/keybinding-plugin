@@ -155,40 +155,6 @@ function append(destination, values) {
   for (var i = 0; i < values.length; i++) destination.push(values[i])
 }
 
-function filledCanopyLayout(items, metrics) {
-  var placements = []
-  var source = Array.isArray(items) ? items : []
-  var index = 0
-  var crown = metrics.crownColumns
-  var step = metrics.cardHeight + metrics.gap
-  var topCount = Math.min(crown, source.length)
-  append(placements, placeCentered(source, index, topCount, metrics, 0, "primary", 1))
-  index += topCount
-
-  // Use complete, nearly even rows under the crown. This makes a filled
-  // terrace instead of a sparse grid or a downward-tapering tail.
-  var remaining = source.length - index
-  var rowCount = remaining > 0 ? Math.ceil(remaining / (crown + 2)) : 0
-  var base = rowCount > 0 ? Math.floor(remaining / rowCount) : 0
-  var extra = rowCount > 0 ? remaining % rowCount : 0
-  for (var row = 0; row < rowCount; row++) {
-    var count = base + (row < extra ? 1 : 0)
-    append(placements, placeCentered(source, index, count, metrics,
-      (row + 1) * step, "mound", 1))
-    index += count
-  }
-  return {
-    items: placements,
-    more: 0,
-    total: items.length,
-    visibleCount: items.length,
-    expanded: false,
-    height: Math.max(metrics.cardHeight, (rowCount + 1) * step - metrics.gap),
-    overflow: null,
-    metrics: metrics
-  }
-}
-
 function collapsedCanopyLayout(source, metrics) {
   var crown = metrics.crownColumns
   var placements = []
@@ -271,20 +237,17 @@ function collapsedCanopyLayout(source, metrics) {
 }
 
 function expandedCanopyLayout(source, metrics, collapsed) {
-  if (collapsed.more === 0) return filledCanopyLayout(source, metrics)
+  if (collapsed.more === 0) return collapsed
 
-  var placements = []
+  var placements = collapsed.items.slice()
   var used = {}
-  var crown = metrics.crownColumns
   var step = metrics.cardHeight + metrics.gap
   var i
 
-  // Keep the primary crown and the entire familiar second row fixed. Only
-  // lower-priority wings are repacked to make the expanded footprint solid.
+  // The collapsed canopy is the visual frame. Expansion must not move a
+  // visible card, because the frame is what makes the guide scannable.
   for (i = 0; i < collapsed.items.length; i++) {
     var existing = collapsed.items[i]
-    if (existing.tier !== "primary" && existing.tier !== "secondary" && existing.tier !== "corner") continue
-    placements.push(existing)
     used[existing.binding.id] = true
   }
 
@@ -292,13 +255,18 @@ function expandedCanopyLayout(source, metrics, collapsed) {
   for (i = 0; i < source.length; i++)
     if (used[source[i].id] !== true) remaining.push(source[i])
 
-  // The first remaining binding fills the old +MORE center without disturbing
-  // the surrounding secondary cards. Complete lower rows then follow.
+  // The first remaining binding fills the old +MORE center. The rest are
+  // balanced across the open interior of the fixed left/right wing frame;
+  // unlike the old reflow, no already-visible card changes its position.
   var centerBinding = remaining.shift()
   if (centerBinding) append(placements, placeCentered([centerBinding], 0, 1, metrics,
     step, "mound", 1))
 
-  var rowCount = remaining.length > 0 ? Math.ceil(remaining.length / (crown + 2)) : 0
+  var interiorCapacity = Math.max(1, Math.floor(
+    (metrics.width - metrics.margin * 2 - metrics.cardWidth * 2 - metrics.gap * 2)
+      / (metrics.cardWidth + metrics.gap)))
+  var rowCount = remaining.length > 0
+    ? Math.ceil(remaining.length / interiorCapacity) : 0
   var base = rowCount > 0 ? Math.floor(remaining.length / rowCount) : 0
   var extra = rowCount > 0 ? remaining.length % rowCount : 0
   for (var row = 0, cursor = 0; row < rowCount; row++) {
@@ -307,7 +275,7 @@ function expandedCanopyLayout(source, metrics, collapsed) {
       (row + 2) * step, "mound", 1))
     cursor += count
   }
-  var height = Math.max(metrics.cardHeight, (rowCount + 2) * step - metrics.gap)
+  var height = Math.max(collapsed.height, (rowCount + 2) * step - metrics.gap)
   return {
     items: placements,
     more: 0,
@@ -326,9 +294,7 @@ function canopyLayout(items, viewport, expanded) {
   var metrics = canopyMetrics(viewport, false)
   var collapsed = collapsedCanopyLayout(source, metrics)
   if (expanded === true) return expandedCanopyLayout(source, metrics, collapsed)
-  // Lanes that already fit should still read as a canopy, never as a generic
-  // centered grid.
-  return collapsed.more === 0 ? filledCanopyLayout(source, metrics) : collapsed
+  return collapsed
 }
 
 function laneCounts(catalog) {
