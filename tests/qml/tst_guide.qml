@@ -63,9 +63,14 @@ TestCase {
     verify(collapsed.more > 0)
     verify(collapsed.overflow !== null)
     verify(collapsed.metrics.cardHeight >= 46)
+    compare(collapsed.items[0].binding.id, cards[0].id)
     compare(collapsed.items[0].x + collapsed.items[0].width / 2, 1280)
     compare(collapsed.items[1].y, collapsed.items[2].y)
     compare(collapsed.items[1].x + collapsed.items[2].x + collapsed.items[1].width, 2560)
+    compare(collapsed.items[9].binding.id, cards[9].id)
+    compare(collapsed.items[10].binding.id, cards[10].id)
+    verify(collapsed.items[9].x < collapsed.overflow.x)
+    verify(collapsed.items[10].x > collapsed.overflow.x)
     var cornerCount = 0
     for (var placement = 0; placement < collapsed.items.length; placement++)
       if (collapsed.items[placement].tier === "corner") cornerCount++

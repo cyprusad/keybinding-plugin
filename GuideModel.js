@@ -189,17 +189,17 @@ function canopyLayout(items, viewport, expanded) {
   var secondY = metrics.cardHeight + metrics.gap
   var cursor = crown
   var i
-  for (i = 0; i < leftCount; i++) {
-    var leftBinding = source[cursor++]
-    placements.push({ binding: leftBinding,
-      x: Math.round(center - moreWidth / 2 - metrics.gap - metrics.cardWidth * (i + 1) - metrics.gap * i),
-      y: secondY, width: metrics.cardWidth, height: metrics.cardHeight,
-      tier: "secondary", opacity: 0.9 })
-  }
-  for (i = 0; i < rightCount; i++) {
-    var rightBinding = source[cursor++]
-    placements.push({ binding: rightBinding,
-      x: Math.round(center + moreWidth / 2 + metrics.gap + (metrics.cardWidth + metrics.gap) * i),
+  // The overflow pill occupies the visual center of this row. Continue the
+  // priority reading order from its left and right edges: closest left,
+  // closest right, then move outward in alternating pairs.
+  for (i = 0; i < secondCount; i++) {
+    var secondaryBinding = source[cursor++]
+    var secondaryDistance = Math.floor(i / 2)
+    var secondaryLeft = i % 2 === 0
+    placements.push({ binding: secondaryBinding,
+      x: Math.round(secondaryLeft
+        ? center - moreWidth / 2 - metrics.gap - (metrics.cardWidth + metrics.gap) * (secondaryDistance + 1)
+        : center + moreWidth / 2 + metrics.gap + (metrics.cardWidth + metrics.gap) * secondaryDistance),
       y: secondY, width: metrics.cardWidth, height: metrics.cardHeight,
       tier: "secondary", opacity: 0.9 })
   }

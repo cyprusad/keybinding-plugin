@@ -192,8 +192,11 @@ For this polish pass:
 
 1. The catalog generator mirrors Omarchy's `SUPER+K` priority rules, then uses
    combo, description, and opaque ID only as stable ties.
-2. The first eligible binding occupies the center. Each successive item is
-   placed alternately left then right, moving outward by priority.
+2. The first eligible binding occupies the top-row center. Each successive
+   item is placed alternately left then right, moving outward by priority.
+   The second row repeats that same alternating order around the centered
+   overflow pill; the wings and corner caps contain the remaining lowest
+   collapsed priorities.
 3. Preserve the same catalog order in every modifier lane and freeze it at
    guide-open time.
 4. A matched-binding highlight changes appearance, not rank or position.
