@@ -18,6 +18,13 @@
 | 14 — Integration, privacy, and performance | Complete (manual gate passed) | 98fcd92 | Automated suite and live release evidence pass; manual lock/privacy/reset/focused-monitor checks pass, with the 1Password app prompt documented outside the detection boundary. |
 | 15 — Documentation and release | In progress (draft documentation) | — | README, security, troubleshooting, license, and changelog drafted; UX polish and final release smoke test remain. |
 
+## UX polish workstream
+
+| Polish | Status | Commit | Notes |
+|---|---|---|---|
+| 01 — Super Guide behavior and look | Planned | — | Transparent glass canopy, denser symmetric center-out layout, canonical ranking, and hover-to-expand overflow. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
+
 ## Commit log
 
 | Commit | Scope |
