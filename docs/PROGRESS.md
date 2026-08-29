@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | 49be0a0 | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses stepped corner caps that attach to the secondary row plus extended edge wings to expose six additional low-priority shortcuts. The duplicate Copilot menu binding is labeled accurately but excluded from the guide. Shift/Ctrl/Alt discovery is a terse header hint with no footer or counts, active lanes use human-readable chords, and the guide aligns with the top screen edge. Expansion preserves the entire visible canopy frame and balances only hidden choices into its interior; fully fitting lanes keep that same frame. Two-line cards, contrast shield, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | 00f9b2c | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses stepped corner caps that attach to the secondary row plus extended edge wings to expose six additional low-priority shortcuts. The duplicate Copilot menu binding is labeled accurately but excluded from the guide. Shift/Ctrl/Alt discovery is a terse header hint with no footer or counts, active lanes use human-readable chords, and the guide aligns with the top screen edge. Expansion preserves the entire visible canopy frame and balances only hidden choices into its interior; fully fitting lanes keep that same frame. The visible overflow pill matches a binding card while its wider reserved slot preserves the stepped secondary row. Two-line cards, contrast shield, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log
@@ -97,3 +97,5 @@
 | `ca70cda` | Preserve the canopy's spatial map for hover expansion and fully fitting lanes. |
 | `2fedeea` | Repack expanded and fully fitting Super Guide lanes into solid terrace rows. |
 | `49be0a0` | Preserve the visible canopy frame while filling its open interior on expansion. |
+| `89dd507` | Match the visible overflow pill to a normal guide card. |
+| `00f9b2c` | Retain the wide reserved overflow slot so the stepped canopy geometry stays fixed. |
