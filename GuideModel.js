@@ -160,7 +160,8 @@ function append(destination, values) {
 function collapsedCanopyLayout(source, metrics) {
   var crown = metrics.crownColumns
   var placements = []
-  append(placements, placeCentered(source, 0, crown, metrics, 0, "primary", 1))
+  var topCount = Math.min(crown, source.length)
+  append(placements, placeCentered(source, 0, topCount, metrics, 0, "primary", 1))
 
   var center = metrics.width / 2
   // Keep the wide reserved slot for secondary-card placement, but draw the
@@ -169,7 +170,7 @@ function collapsedCanopyLayout(source, metrics) {
   var moreWidth = metrics.cardWidth
   var secondCount = crown - 1
   var secondY = metrics.cardHeight + metrics.gap
-  var cursor = crown
+  var cursor = topCount
   var i
   // The overflow pill occupies the visual center of this row. Continue the
   // priority reading order from its left and right edges: closest left,

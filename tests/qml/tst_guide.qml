@@ -106,6 +106,11 @@ TestCase {
     compare(alternateLane.items[0].x + alternateLane.items[0].width / 2, 1280)
     verify(alternateLane.items[9].y > alternateLane.items[0].y)
     verify(alternateLane.items[17].y > alternateLane.items[9].y)
+
+    var twoBindings = GuideModel.canopyLayout(cards.slice(0, 2), { width: 2560, height: 1440 }, false)
+    compare(twoBindings.items.length, 2)
+    compare(twoBindings.items[0].y, twoBindings.items[1].y)
+    compare(twoBindings.items[0].x + twoBindings.items[1].x + twoBindings.items[0].width, 2560)
   }
 
   function test_lanesAndAccessibilityFiltering() {
