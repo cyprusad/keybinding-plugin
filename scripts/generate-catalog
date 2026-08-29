@@ -159,6 +159,9 @@ def menu_priority(combo, description):
     """Mirror Omarchy's SUPER+K priority list for stable guide placement."""
     line = f"{combo} → {description}"
     priority = 50
+    # Apps is the primary destination in the SUPER+ALT lane, ahead of the
+    # window-width helper that otherwise sorts first there.
+    if "Apps menu" in line: priority = 0
     if "Keybindings" in line: priority = 0
     if "Omarchy menu" in line: priority = 1
     if "Terminal" in line: priority = 2
