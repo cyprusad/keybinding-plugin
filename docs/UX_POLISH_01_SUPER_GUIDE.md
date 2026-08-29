@@ -191,6 +191,9 @@ When the plain Super lane is visible, the header itself gives the terse next
 step: “hold Super · add Shift / Ctrl / Alt.” There is no footer, no separate
 lane control, and no binding counts competing with the shortcuts.
 
+Internal modifier masks are never shown verbatim. For example, `SUPER_SHIFT`
+renders as the human-readable chord `SUPER + SHIFT`.
+
 ## 6. Ranking and position stability
 
 The Super Guide should not maintain a separate alphabetical ranking. It should

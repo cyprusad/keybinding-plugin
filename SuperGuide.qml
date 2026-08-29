@@ -34,6 +34,10 @@ Item {
   readonly property int barSize: bar && Number(bar.barSize) > 0 ? Math.round(Number(bar.barSize)) : 0
   readonly property bool barHidden: bar ? bar.barHidden === true : false
 
+  function displayMask(mask) {
+    return String(mask || "SUPER").split("_").join(" + ")
+  }
+
   function resetDeck() {
     frozenMask = currentMask
     // The catalog is generated in the same priority order as Omarchy's
@@ -231,7 +235,7 @@ Item {
               Text {
                 text: root.expanded ? "all " + guideWindow.guideLayout.total + " bindings"
                   : root.frozenMask === "SUPER" ? "hold Super · add Shift / Ctrl / Alt"
-                    : root.frozenMask
+                    : root.displayMask(root.frozenMask)
                 color: Color.menu.text
                 opacity: 0.84
                 font.family: Style.font.family
