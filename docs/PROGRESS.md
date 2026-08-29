@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | — | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses wide-screen corner caps plus extended edge wings to expose six additional low-priority shortcuts. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | 969adf9 | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses wide-screen corner caps plus extended edge wings to expose six additional low-priority shortcuts. The duplicate Copilot menu binding is labeled accurately but excluded from the guide. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log
@@ -86,3 +86,5 @@
 | `fea4f41` | Mirror Omarchy's `SUPER+K` ordering and resolve physical code bindings through XKB. |
 | `81f61ca` | Add wide-screen Super Guide corner caps for two more low-priority bindings. |
 | `7b5974a` | Alternate the Super Guide secondary row outward from the overflow pill. |
+| `74d5441` | Extend wide-screen guide edge wings for four more visible shortcuts. |
+| `969adf9` | Label Omarchy's Copilot key and hide its duplicate menu binding from the guide. |
