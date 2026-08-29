@@ -89,7 +89,9 @@ function canopyMetrics(viewport, expanded) {
   columns = clamp(columns, 5, expanded === true ? 12 : 9)
   if (columns % 2 === 0 && columns > 5) columns -= 1
   var cornerWidth = Math.round(compact * 0.78)
-  var moreWidth = compact
+  // Reserve the original wider center slot so the secondary row and its
+  // attached corner caps keep their stepped canopy geometry.
+  var moreWidth = Math.round(compact * 1.45)
   var secondaryLeftCount = Math.ceil(Math.max(0, columns - 1) / 2)
   var outerSecondaryLeft = width / 2 - moreWidth / 2 - gap
     - (compact + gap) * secondaryLeftCount
@@ -161,6 +163,9 @@ function collapsedCanopyLayout(source, metrics) {
   append(placements, placeCentered(source, 0, crown, metrics, 0, "primary", 1))
 
   var center = metrics.width / 2
+  // Keep the wide reserved slot for secondary-card placement, but draw the
+  // hover affordance itself at normal card width so its replacement is stable.
+  var moreSlotWidth = Math.round(metrics.cardWidth * 1.45)
   var moreWidth = metrics.cardWidth
   var secondCount = crown - 1
   var secondY = metrics.cardHeight + metrics.gap
@@ -176,8 +181,8 @@ function collapsedCanopyLayout(source, metrics) {
     var secondaryLeft = i % 2 === 0
     placements.push({ binding: secondaryBinding,
       x: Math.round(secondaryLeft
-        ? center - moreWidth / 2 - metrics.gap - (metrics.cardWidth + metrics.gap) * (secondaryDistance + 1)
-        : center + moreWidth / 2 + metrics.gap + (metrics.cardWidth + metrics.gap) * secondaryDistance),
+        ? center - moreSlotWidth / 2 - metrics.gap - (metrics.cardWidth + metrics.gap) * (secondaryDistance + 1)
+        : center + moreSlotWidth / 2 + metrics.gap + (metrics.cardWidth + metrics.gap) * secondaryDistance),
       y: secondY, width: metrics.cardWidth, height: metrics.cardHeight,
       tier: "secondary", opacity: 0.9 })
   }
