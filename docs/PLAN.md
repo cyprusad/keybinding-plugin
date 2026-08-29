@@ -1,13 +1,13 @@
-# Keybind Dojo — Decision-Complete Engineering Plan
+# Omakeez — Decision-Complete Engineering Plan
 
 Status: approved design, implementation not started  
 Target: Omarchy Quattro with Hyprland 0.56.2 or newer  
-Plugin ID: `io.github.cyprusad.keybind-dojo`
+Plugin ID: `io.github.cyprusad.omakeez`
 License: MIT
 
 ## 1. Product definition
 
-Keybind Dojo is a local-first Omarchy shell plugin that helps a user discover and learn their actual Hyprland keyboard bindings. Its primary experience is an instant, non-interactive “Super Guide” that appears while Super is held and behaves like a desktop-scale which-key panel. Usage statistics, recommendations, practice, XP, and streaks support that experience.
+Omakeez is a local-first Omarchy shell plugin that helps a user discover and learn their actual Hyprland keyboard bindings. Its primary experience is an instant, non-interactive “Super Guide” that appears while Super is held and behaves like a desktop-scale which-key panel. Usage statistics, recommendations, practice, XP, and streaks support that experience.
 
 The plugin must be useful immediately after normal Omarchy installation in browse-only mode. Tracking and the Super Guide require one explicit consent click. That click performs the required Hyprland Lua config integration automatically; the user does not manually edit a file in the normal path.
 
@@ -44,10 +44,10 @@ The chosen design is therefore:
 physical keyboard
   → Hyprland input.keyboard.key Lua callback
   → constant-time lookup in a generated allowlist
-  → hl.dsp.event("keybind-dojo:...")
+  → hl.dsp.event("omakeez:...")
   → Hyprland socket2 custom event
   → Quickshell Hyprland.rawEvent
-  → Keybind Dojo service
+  → Omakeez service
   → guide UI + aggregate statistics
 ```
 
@@ -87,7 +87,7 @@ README.md
 LICENSE
 ```
 
-Do not write generated or runtime files into the Git checkout. Runtime state belongs under `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/keybind-dojo/`.
+Do not write generated or runtime files into the Git checkout. Runtime state belongs under `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/omakeez/`.
 
 ### Manifest contract
 
@@ -96,8 +96,8 @@ The final manifest is:
 ```json
 {
   "schemaVersion": 1,
-  "id": "io.github.cyprusad.keybind-dojo",
-  "name": "Keybind Dojo",
+  "id": "io.github.cyprusad.omakeez",
+  "name": "Omakeez",
   "version": "0.1.0",
   "author": "cyprusad",
   "license": "MIT",
@@ -109,7 +109,7 @@ The final manifest is:
     "overlay": "Overlay.qml"
   },
   "barWidget": {
-    "displayName": "Keybind Dojo",
+    "displayName": "Omakeez",
     "category": "Learning",
     "allowMultiple": false,
     "defaultSection": "right",
@@ -232,11 +232,11 @@ The bridge will:
 Socket2 custom event payloads are versioned:
 
 ```text
-keybind-dojo:v1:guide:down:SUPER
-keybind-dojo:v1:guide:up
-keybind-dojo:v1:mods:SUPER_SHIFT
-keybind-dojo:v1:match:<opaque-id>:press
-keybind-dojo:v1:match:<opaque-id>:release
+omakeez:v1:guide:down:SUPER
+omakeez:v1:guide:up
+omakeez:v1:mods:SUPER_SHIFT
+omakeez:v1:match:<opaque-id>:press
+omakeez:v1:match:<opaque-id>:release
 ```
 
 No other event shapes are accepted. Malformed or unknown-version events are ignored by the service.
@@ -299,7 +299,7 @@ Automatic patching is allowed only when the final target:
 - Is owned and writable by the current UID.
 - Has exactly one hard link.
 - Is under `$HOME`, or is inside a Git worktree whose root is owned and writable by the current UID.
-- Has zero or one well-formed Keybind Dojo managed block.
+- Has zero or one well-formed Omakeez managed block.
 
 Git-managed targets remain eligible. The onboarding screen shows the logical path, resolved target, Git root, dirty state, and exact diff before the button is enabled.
 
@@ -357,7 +357,7 @@ function bindingForId(id)
 function recommendations(limit)
 ```
 
-Listen to `Quickshell.Hyprland.Hyprland.rawEvent`. Accept only `custom` events beginning with `keybind-dojo:v1:`. Never evaluate payload content as code.
+Listen to `Quickshell.Hyprland.Hyprland.rawEvent`. Accept only `custom` events beginning with `omakeez:v1:`. Never evaluate payload content as code.
 
 The service reads bar settings from the plugin’s entry in `shell.shellConfig.bar.layout` and updates them through `shell.updateEntryInline`. Do not create a second preferences file.
 
@@ -508,7 +508,7 @@ Pass criteria:
 - Hyprland loads the guarded bridge with no config error.
 - 50 representative Omarchy bindings still execute correctly.
 - `hyprctl binds` reports the same dispatcher metadata before and after enabling.
-- Ordinary typing produces zero Keybind Dojo socket events.
+- Ordinary typing produces zero Omakeez socket events.
 - Matched test chords produce exactly one expected event per configured phase.
 - Super-down to guide visibility has p95 below 50 ms over at least 100 samples.
 - Idle CPU attributable to the bridge/service remains below 0.2% averaged over five minutes.
@@ -548,7 +548,7 @@ text, commands, and raw context events must not be persisted; context should be
 used transiently or reduced to a documented coarse category. This alternative
 must be designed and reviewed separately rather than pulled into Tasks 12–15.
 The existing Omarchy Learn experience should be evaluated as a complementary
-reference so Keybind Dojo focuses on live, context-aware guidance instead of
+reference so Omakeez focuses on live, context-aware guidance instead of
 duplicating static learning material.
 
 ## 14. Required validation commands

@@ -270,7 +270,7 @@ Item {
     anchors { top: true; bottom: true; left: true; right: true }
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.namespace: "keybind-dojo-overlay"
+    WlrLayershell.namespace: "omakeez-overlay"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
@@ -309,7 +309,7 @@ Item {
             height: parent.height
             Text {
               id: titleText
-              text: "KEYBIND DOJO"
+              text: "OMAKEEZ"
               color: Color.menu.selectedText
               font.family: Style.font.family
               font.pixelSize: Style.font.heading

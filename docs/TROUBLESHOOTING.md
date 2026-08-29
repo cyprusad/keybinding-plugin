@@ -13,7 +13,7 @@ hyprctl configerrors
 After a code update, refresh the installed plugin and reopen the overlay:
 
 ```sh
-omarchy plugin update io.github.cyprusad.keybind-dojo --yes
+omarchy plugin update io.github.cyprusad.omakeez --yes
 omarchy-shell shell rescanPlugins
 ```
 
@@ -59,7 +59,7 @@ not locked or showing an Omarchy Polkit credential surface.
 If the state directory reports an error, inspect only the plugin's state:
 
 ```sh
-dojo_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/keybind-dojo"
+dojo_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/omakeez"
 find "$dojo_state_dir" -maxdepth 2 -type f -printf '%M %f %s bytes\n' | sort
 ```
 

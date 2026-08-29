@@ -1,4 +1,4 @@
-# Keybind Dojo release-gate evidence
+# Omakeez release-gate evidence
 
 Status: **AUTOMATED PASS; LIVE/MANUAL GATE PENDING**
 

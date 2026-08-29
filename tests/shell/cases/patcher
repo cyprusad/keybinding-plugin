@@ -10,7 +10,7 @@ printf 'require("default.hypr.omarchy")\n' > "$config"
 hash=$(HOME="$fixture/home" "$root/scripts/bridge-control" inspect --config "$config" | jq -r .currentHash)
 enabled=$(HOME="$fixture/home" "$root/scripts/bridge-control" enable --config "$config" --state-dir "$fixture/state" --expected-hash "$hash" --no-live-reload)
 printf '%s\n' "$enabled" | jq -e '.ok == true and .changed == true and .validation == "skipped"' >/dev/null
-grep -q 'Keybind Dojo managed bridge' "$config"
+grep -q 'Omakeez managed bridge' "$config"
 grep -Fq "pcall(dofile, \"$root/bridge.lua\")" "$config"
 new_hash=$(printf '%s\n' "$enabled" | jq -r .newHash)
 disabled=$(HOME="$fixture/home" "$root/scripts/bridge-control" disable --config "$config" --state-dir "$fixture/state" --expected-hash "$new_hash" --no-live-reload)

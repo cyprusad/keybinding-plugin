@@ -46,7 +46,7 @@ When a previously enabled integration becomes disconnected, hide the guide immed
 
 - List controller-created backups in reverse time order inside troubleshooting output, not the main panel.
 - Do not add a general “restore backup” UI in v1; automatic rollback is transaction-local.
-- Never delete a backup outside Keybind Dojo’s state directory.
+- Never delete a backup outside Omakeez’s state directory.
 - Document manual recovery with paths and hashes.
 
 ## Validation

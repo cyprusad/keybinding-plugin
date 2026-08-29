@@ -5,7 +5,7 @@ import qs.Ui
 BarWidget {
   id: root
 
-  moduleName: "io.github.cyprusad.keybind-dojo"
+  moduleName: "io.github.cyprusad.omakeez"
 
   property var service: null
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
@@ -14,9 +14,9 @@ BarWidget {
   readonly property string statusMark: !service || service.integrationState === "disabled"
     ? " ·" : service.integrationState === "error" ? " !" : service.integrationState === "disconnected" ? " ?" : ""
   readonly property string tooltipSummary: service && service.integrationState === "enabled"
-    ? "Keybind Dojo · " + (service.currentLevel ? service.currentLevel.name : "Initiate")
+    ? "Omakeez · " + (service.currentLevel ? service.currentLevel.name : "Initiate")
       + " · " + Number(service.stats.totalXp || 0) + " XP · streak " + currentStreak
-    : "Set up Keybind Dojo"
+    : "Set up Omakeez"
 
   function syncService() {
     service = bar && bar.shell && typeof bar.shell.serviceFor === "function"

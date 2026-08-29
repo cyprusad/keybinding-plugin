@@ -6,8 +6,8 @@ import qs.Ui
 Panel {
   id: root
 
-  moduleName: "io.github.cyprusad.keybind-dojo"
-  ipcTarget: "io.github.cyprusad.keybind-dojo"
+  moduleName: "io.github.cyprusad.omakeez"
+  ipcTarget: "io.github.cyprusad.omakeez"
   manageIpc: false
 
   property var anchorItem: null
@@ -136,7 +136,7 @@ Panel {
 
           Text {
             width: parent.width
-            text: root.onboarding ? "Set up Keybind Dojo" : "Keybind Dojo"
+            text: root.onboarding ? "Set up Omakeez" : "Omakeez"
             color: Color.foreground
             font.family: root.bar ? root.bar.fontFamily : Style.font.family
             font.pixelSize: Style.font.title

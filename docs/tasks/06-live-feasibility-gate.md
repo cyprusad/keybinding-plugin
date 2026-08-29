@@ -42,7 +42,7 @@ Exercise at least 50 representative bindings, including:
 
 For destructive or disruptive bindings such as shutdown, close-all-windows, suspend, and logout, validate catalog matching through the mock harness instead of executing them.
 
-Also type ordinary prose, shell commands, and a synthetic password into a local disposable input field. Inspect only Keybind Dojo’s own event counter and verify no events were emitted.
+Also type ordinary prose, shell commands, and a synthetic password into a local disposable input field. Inspect only Omakeez’s own event counter and verify no events were emitted.
 
 ## Performance measurement
 

@@ -1,4 +1,4 @@
--- Keybind Dojo's deliberately small Hyprland input observer.
+-- Omakeez's deliberately small Hyprland input observer.
 local STATE_NAME = "__keybind_dojo_bridge_state"
 local ORDERED_MODIFIERS = { "SUPER", "SHIFT", "CTRL", "ALT" }
 
@@ -7,7 +7,7 @@ if not state_home or state_home == "" then
   state_home = (os.getenv("HOME") or "") .. "/.local/state"
 end
 
-local loaded, catalog = pcall(dofile, state_home .. "/omarchy/keybind-dojo/bridge-catalog.lua")
+local loaded, catalog = pcall(dofile, state_home .. "/omarchy/omakeez/bridge-catalog.lua")
 
 local function valid_codes(codes)
   if type(codes) ~= "table" or #codes == 0 then return false end
@@ -114,19 +114,19 @@ hl.on("input.keyboard.key", function(keycode, timestamp, event_state)
         bridge.held[name][code] = true
         if was_empty then
           bridge.guideRoot = name
-          emit("keybind-dojo:v1:guide:down:" .. name)
+          emit("omakeez:v1:guide:down:" .. name)
         end
       else
         if not bridge.held[name][code] then return end
         bridge.held[name][code] = nil
         if name == bridge.guideRoot and was_held and not is_held(name) then
           bridge.guideRoot = nil
-          emit("keybind-dojo:v1:guide:up")
+          emit("omakeez:v1:guide:up")
           return
         end
       end
       if bridge.guideRoot and not was_empty then
-        emit("keybind-dojo:v1:mods:" .. modifier_mask())
+        emit("omakeez:v1:mods:" .. modifier_mask())
       end
       return
     end
@@ -135,7 +135,7 @@ hl.on("input.keyboard.key", function(keycode, timestamp, event_state)
   local phase = state == 1 and "press" or "release"
   local key = modifier_mask() .. "|" .. tostring(code) .. "|" .. phase .. "|" .. bridge.submap
   local id = bridge.catalog.matches[key]
-  if valid_id(id) then emit("keybind-dojo:v1:match:" .. id .. ":" .. phase) end
+  if valid_id(id) then emit("omakeez:v1:match:" .. id .. ":" .. phase) end
 end)
 
 hl.on("keybinds.submap", function(event)

@@ -1,4 +1,4 @@
-# Keybind Dojo Implementation Tasks
+# Omakeez Implementation Tasks
 
 This directory turns [`../PLAN.md`](../PLAN.md) into small, sequential assignments suitable for a coding agent working on one bounded problem at a time.
 

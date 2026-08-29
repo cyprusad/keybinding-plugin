@@ -8,4 +8,4 @@ for entry in BarWidget.qml Panel.qml Overlay.qml Service.qml SuperGuide.qml; do
   test -f "$root/$entry"
 done
 
-grep -q '"io.github.cyprusad.keybind-dojo"' "$root/manifest.json"
+grep -q '"io.github.cyprusad.omakeez"' "$root/manifest.json"

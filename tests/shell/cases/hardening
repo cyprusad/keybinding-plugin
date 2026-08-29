@@ -26,7 +26,7 @@ printf '%s\n' "$inspect" | jq -e '.safeToPatch == true and .symlinked == true an
 hash=$(printf '%s\n' "$inspect" | jq -r '.currentHash')
 enabled=$("$root/scripts/bridge-control" enable --config "$logical" --state-dir "$state" --expected-hash "$hash" --no-live-reload)
 printf '%s\n' "$enabled" | jq -e '.ok == true and .changed == true' >/dev/null
-grep -q 'Keybind Dojo managed bridge' "$target"
+grep -q 'Omakeez managed bridge' "$target"
 printf '%s\n' "$($root/scripts/bridge-control inspect --config "$logical" --state-dir "$state")" \
   | jq -e '.backups | length == 1 and .[0].currentHash != null' >/dev/null
 
@@ -50,11 +50,11 @@ if "$root/scripts/bridge-control" enable --config "$retarget" --state-dir "$stat
   echo "retargeted file was patched" >&2
   exit 1
 fi
-! grep -q 'Keybind Dojo managed bridge' "$retarget_b"
+! grep -q 'Omakeez managed bridge' "$retarget_b"
 
 "$root/scripts/bridge-control" disable --config "$logical" --state-dir "$state" --expected-hash "$("$root/scripts/bridge-control" inspect --config "$logical" --state-dir "$state" | jq -r '.currentHash')" --no-live-reload >/dev/null
 grep -q 'require("default.hypr.omarchy")' "$target"
-! grep -q 'Keybind Dojo managed bridge' "$target"
+! grep -q 'Omakeez managed bridge' "$target"
 
 inode_config="$home/inode.lua"
 printf 'return {}\n' > "$inode_config"
@@ -71,8 +71,8 @@ if "$root/scripts/bridge-control" enable --config "$inode_config" --state-dir "$
   exit 1
 fi
 
-begin='-- >>> Keybind Dojo managed bridge >>>'
-end='-- <<< Keybind Dojo managed bridge <<<'
+begin='-- >>> Omakeez managed bridge >>>'
+end='-- <<< Omakeez managed bridge <<<'
 partial="$home/partial.lua"
 printf '%s\n' "$begin" > "$partial"
 [ "$(inspect_reason "$partial")" = malformed-markers ]

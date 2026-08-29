@@ -23,7 +23,7 @@ bridgeEventCount: integer (session-only diagnostic)
 
 1. Load the catalog from the XDG state directory without blocking QML startup. Validate `schemaVersion`, binding field types, allowed categories, opaque ID format, and duplicate IDs.
 2. Listen through `Quickshell.Hyprland.Hyprland.rawEvent`.
-3. Accept only `custom` events whose payload begins exactly `keybind-dojo:v1:`.
+3. Accept only `custom` events whose payload begins exactly `omakeez:v1:`.
 4. Parse only the five protocol forms specified in the plan. Reject extra fields, unknown event types, wrong versions, invalid modifiers, and invalid IDs.
 5. A match ID not present in the current catalog is ignored and counted only in session diagnostics.
 6. Super lifecycle updates service state immediately; guide timing is delegated to the guide component.

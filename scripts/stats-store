@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Atomic local storage and recovery helper for Keybind Dojo statistics."""
+"""Atomic local storage and recovery helper for Omakeez statistics."""
 import argparse
 import hashlib
 import json
@@ -35,7 +35,7 @@ def prepare_directory(path):
 
 def atomic_write(path, text):
     prepare_directory(path.parent)
-    fd, temporary = tempfile.mkstemp(prefix=".keybind-dojo-stats.", dir=path.parent)
+    fd, temporary = tempfile.mkstemp(prefix=".omakeez-stats.", dir=path.parent)
     try:
         os.fchmod(fd, stat.S_IRUSR | stat.S_IWUSR)
         with os.fdopen(fd, "w", encoding="utf-8") as handle:

@@ -13,7 +13,7 @@ Tasks 04, 07, and 08.
 1. Resolve the service through `bar.shell.serviceFor(moduleName)`.
 2. Show a compact belt icon plus current streak when stats are available.
 3. Show a subtle status mark when integration is disabled, disconnected, or errored.
-4. Tooltip text summarizes level/streak when enabled and says `Set up Keybind Dojo` when disabled.
+4. Tooltip text summarizes level/streak when enabled and says `Set up Omakeez` when disabled.
 5. Left click toggles the nested panel. Do not assign right/middle actions in v1.
 
 ## Onboarding panel

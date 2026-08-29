@@ -37,7 +37,7 @@ Implement pure functions in `js/Stats.js` and integrate them into `Service.qml`.
 
 ### Reset
 
-`clearLocalData()` requires a confirmation parameter from UI, resets in memory, and archives the previous stats in `recovery/` rather than deleting it permanently. Retain at most five recovery copies, deleting only the oldest Keybind Dojo-owned recovery file.
+`clearLocalData()` requires a confirmation parameter from UI, resets in memory, and archives the previous stats in `recovery/` rather than deleting it permanently. Retain at most five recovery copies, deleting only the oldest Omakeez-owned recovery file.
 
 ## Tests
 
@@ -66,7 +66,7 @@ qmllint -I "$OMARCHY_PATH/shell" Service.qml
 - No raw events, keycodes, descriptions, commands, or window data are persisted.
 - A burst of events produces one batched write.
 - Corruption cannot crash the shell or silently destroy the original file.
-- Reset affects only files owned by Keybind Dojo inside its state directory.
+- Reset affects only files owned by Omakeez inside its state directory.
 
 ## Out of scope
 

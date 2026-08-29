@@ -1,8 +1,8 @@
-# Keybind Dojo
+# Omakeez
 
 > Pre-release: UX polish and final release smoke testing are still in progress.
 
-Keybind Dojo is a local-first Omarchy plugin that helps you learn the
+Omakeez is a local-first Omarchy plugin that helps you learn the
 keybindings you already use. Hold Super to see a visual guide for the focused
 workspace, browse the full catalog, practice bindings, and review aggregate
 progress.
@@ -39,7 +39,7 @@ Hyprland completed the command.
 Data is stored locally under:
 
 ```text
-${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/keybind-dojo/
+${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/omakeez/
 ```
 
 The catalog and bridge lookup contain binding metadata needed for display and
@@ -52,14 +52,14 @@ starting a fresh profile.
 Disable tracking before removing the plugin:
 
 ```sh
-omarchy plugin disable io.github.cyprusad.keybind-dojo
-omarchy plugin remove io.github.cyprusad.keybind-dojo
+omarchy plugin disable io.github.cyprusad.omakeez
+omarchy plugin remove io.github.cyprusad.omakeez
 ```
 
 Updates preserve local state and the managed integration:
 
 ```sh
-omarchy plugin update io.github.cyprusad.keybind-dojo --yes
+omarchy plugin update io.github.cyprusad.omakeez --yes
 ```
 
 For recovery and audit procedures, see [SECURITY.md](docs/SECURITY.md) and

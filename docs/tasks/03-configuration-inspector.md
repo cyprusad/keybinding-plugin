@@ -17,7 +17,7 @@ bridge-control manual-snippet
 ```
 
 Default config: `${XDG_CONFIG_HOME:-$HOME/.config}/hypr/hyprland.lua`  
-Default state: `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/keybind-dojo`
+Default state: `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/omakeez`
 
 All commands print one JSON object. `manual-snippet` returns the exact marked loader block as a JSON string.
 

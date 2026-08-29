@@ -3,7 +3,7 @@ import QtTest 1.3
 import "../../ServiceModel.js" as Model
 
 TestCase {
-  name: "KeybindDojoServiceModel"
+  name: "OmakeezServiceModel"
 
   function id(letter) { return "sha256:" + Array(65).join(letter) }
 
@@ -62,30 +62,30 @@ TestCase {
 
   function test_everyValidProtocolForm() {
     var catalog = Model.normalizeCatalog(validCatalog()).catalog
-    compare(Model.parseProtocol("keybind-dojo:v1:super:down", catalog).root, "SUPER")
-    compare(Model.parseProtocol("keybind-dojo:v1:guide:down:ALT", catalog).root, "ALT")
-    compare(Model.parseProtocol("keybind-dojo:v1:guide:up", catalog).phase, "up")
-    compare(Model.parseProtocol("keybind-dojo:v1:mods:SUPER_SHIFT_CTRL_ALT", catalog).modifiers, "SUPER_SHIFT_CTRL_ALT")
-    compare(Model.parseProtocol("keybind-dojo:v1:mods:SHIFT_ALT", catalog).modifiers, "SHIFT_ALT")
-    var press = Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":press", catalog)
+    compare(Model.parseProtocol("omakeez:v1:super:down", catalog).root, "SUPER")
+    compare(Model.parseProtocol("omakeez:v1:guide:down:ALT", catalog).root, "ALT")
+    compare(Model.parseProtocol("omakeez:v1:guide:up", catalog).phase, "up")
+    compare(Model.parseProtocol("omakeez:v1:mods:SUPER_SHIFT_CTRL_ALT", catalog).modifiers, "SUPER_SHIFT_CTRL_ALT")
+    compare(Model.parseProtocol("omakeez:v1:mods:SHIFT_ALT", catalog).modifiers, "SHIFT_ALT")
+    var press = Model.parseProtocol("omakeez:v1:match:" + id("b") + ":press", catalog)
     verify(press.ok)
     verify(press.known)
     compare(press.phase, "press")
-    var release = Model.parseProtocol("keybind-dojo:v1:match:" + id("c") + ":release", catalog)
+    var release = Model.parseProtocol("omakeez:v1:match:" + id("c") + ":release", catalog)
     verify(release.ok)
     compare(release.phase, "release")
   }
 
   function test_protocolRejectsMalformedAndUnknownForms() {
     var catalog = Model.normalizeCatalog(validCatalog()).catalog
-    verify(!Model.parseProtocol("keybind-dojo:v2:super:down", catalog).ok)
-    verify(!Model.parseProtocol("keybind-dojo:v1:super:down:extra", catalog).ok)
-    verify(!Model.parseProtocol("keybind-dojo:v1:guide:down:CAPS", catalog).ok)
-    verify(!Model.parseProtocol("keybind-dojo:v1:guide:up:extra", catalog).ok)
-    verify(!Model.parseProtocol("keybind-dojo:v1:mods:SUPER_CTRL_SHIFT", catalog).ok)
-    verify(!Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":press:extra", catalog).ok)
-    verify(!Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":release", catalog).ok)
-    var unknown = Model.parseProtocol("keybind-dojo:v1:match:" + id("d") + ":press", catalog)
+    verify(!Model.parseProtocol("omakeez:v2:super:down", catalog).ok)
+    verify(!Model.parseProtocol("omakeez:v1:super:down:extra", catalog).ok)
+    verify(!Model.parseProtocol("omakeez:v1:guide:down:CAPS", catalog).ok)
+    verify(!Model.parseProtocol("omakeez:v1:guide:up:extra", catalog).ok)
+    verify(!Model.parseProtocol("omakeez:v1:mods:SUPER_CTRL_SHIFT", catalog).ok)
+    verify(!Model.parseProtocol("omakeez:v1:match:" + id("b") + ":press:extra", catalog).ok)
+    verify(!Model.parseProtocol("omakeez:v1:match:" + id("b") + ":release", catalog).ok)
+    var unknown = Model.parseProtocol("omakeez:v1:match:" + id("d") + ":press", catalog)
     verify(unknown.ok)
     verify(!unknown.known)
   }
@@ -100,12 +100,12 @@ TestCase {
     compare(Model.normalizeFullscreen("true"), false)
 
     var config = { bar: { layout: { left: [], center: [], right: [
-      { id: "io.github.cyprusad.keybind-dojo", guideDelayMs: 150, showInFullscreen: true }
+      { id: "io.github.cyprusad.omakeez", guideDelayMs: 150, showInFullscreen: true }
     ] } } }
-    var settings = Model.settingsFor(config, "io.github.cyprusad.keybind-dojo")
+    var settings = Model.settingsFor(config, "io.github.cyprusad.omakeez")
     compare(settings.guideDelayMs, 150)
     compare(settings.showInFullscreen, true)
-    compare(Model.settingsFor({}, "io.github.cyprusad.keybind-dojo").guideDelayMs, undefined)
+    compare(Model.settingsFor({}, "io.github.cyprusad.omakeez").guideDelayMs, undefined)
   }
 
   function test_fullscreenAndEventClassification() {

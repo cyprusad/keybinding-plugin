@@ -3,7 +3,7 @@ import QtTest 1.3
 import "../../Stats.js" as Stats
 
 TestCase {
-  name: "KeybindDojoStats"
+  name: "OmakeezStats"
 
   function id(letter) { return "sha256:" + Array(65).join(letter) }
   function timestamp(year, month, day) { return new Date(year, month - 1, day, 12, 0, 0).getTime() / 1000 }

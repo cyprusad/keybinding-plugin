@@ -4,7 +4,7 @@ import "../../Stats.js" as Stats
 import "../../Recommendations.js" as Recommendations
 
 TestCase {
-  name: "KeybindDojoGamification"
+  name: "OmakeezGamification"
 
   function id(letter) { return "sha256:" + Array(65).join(letter) }
   function timestamp(day) { return new Date(2026, 0, day, 12, 0, 0).getTime() / 1000 }

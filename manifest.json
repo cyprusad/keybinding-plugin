@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "id": "io.github.cyprusad.keybind-dojo",
-  "name": "Keybind Dojo",
+  "id": "io.github.cyprusad.omakeez",
+  "name": "Omakeez",
   "version": "0.1.0",
   "author": "cyprusad",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "overlay": "Overlay.qml"
   },
   "barWidget": {
-    "displayName": "Keybind Dojo",
+    "displayName": "Omakeez",
     "category": "Learning",
     "allowMultiple": false,
     "defaultSection": "right",

@@ -139,7 +139,7 @@ function eligibleBinding(binding) {
   if (!binding || binding.trackable !== true) return false
   if (binding.available === false || binding.unavailable === true) return false
   if (String(binding.description || "").trim() === "") return false
-  if (binding.pluginOwned === true || binding.owner === "io.github.cyprusad.keybind-dojo") return false
+  if (binding.pluginOwned === true || binding.owner === "io.github.cyprusad.omakeez") return false
   return validOpaqueId(binding.id)
 }
 

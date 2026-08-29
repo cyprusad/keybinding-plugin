@@ -46,4 +46,4 @@ printf '%s\n' "$disabled" | jq -e '.ok == true and .changed == true' >/dev/null
 test "$(cat "$fresh")" = 'require("default.hypr.omarchy")'
 
 snippet=$("$root/scripts/bridge-control" manual-snippet)
-printf '%s\n' "$snippet" | jq -e '.ok == true and (.snippet | contains("Keybind Dojo managed bridge"))' >/dev/null
+printf '%s\n' "$snippet" | jq -e '.ok == true and (.snippet | contains("Omakeez managed bridge"))' >/dev/null

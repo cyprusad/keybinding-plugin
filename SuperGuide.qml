@@ -177,7 +177,7 @@ Item {
         exclusionMode: ExclusionMode.Ignore
         anchors { top: true; left: true; right: true }
 
-        WlrLayershell.namespace: "keybind-dojo-guide"
+        WlrLayershell.namespace: "omakeez-guide"
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
         // Hover is intentionally confined to this single pill. Every other

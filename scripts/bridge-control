@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only bridge configuration inspection for Keybind Dojo."""
+"""Read-only bridge configuration inspection for Omakeez."""
 import argparse
 import difflib
 import hashlib
@@ -15,8 +15,8 @@ import fcntl
 import shutil
 from pathlib import Path
 
-BEGIN = "-- >>> Keybind Dojo managed bridge >>>"
-END = "-- <<< Keybind Dojo managed bridge <<<"
+BEGIN = "-- >>> Omakeez managed bridge >>>"
+END = "-- <<< Omakeez managed bridge <<<"
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 BRIDGE_PATH = PLUGIN_ROOT / "bridge.lua"
 BLOCK = BEGIN + "\npcall(dofile, " + json.dumps(str(BRIDGE_PATH)) + ")\n" + END
@@ -80,7 +80,7 @@ def default_config():
 
 
 def default_state():
-    return Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "omarchy/keybind-dojo"
+    return Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "omarchy/omakeez"
 
 
 def under(path, parent):
@@ -291,7 +291,7 @@ def mutate(command, args):
             output({"ok": True, "changed": False, "logicalPath": str(logical), "resolvedPath": str(target), "oldHash": before["currentHash"], "newHash": before["currentHash"], "validation": "not-needed", "rolledBack": False})
             return
         candidate_bytes = candidate.encode("utf-8")
-        syntax_fd, syntax_path = tempfile.mkstemp(prefix=".keybind-dojo-syntax.", dir=target.parent)
+        syntax_fd, syntax_path = tempfile.mkstemp(prefix=".omakeez-syntax.", dir=target.parent)
         try:
             with os.fdopen(syntax_fd, "wb") as syntax_file:
                 syntax_file.write(candidate_bytes)
@@ -308,7 +308,7 @@ def mutate(command, args):
         os.chmod(backup / "content", 0o600)
         (backup / "metadata.json").write_text(json.dumps(before, indent=2) + "\n")
         os.chmod(backup / "metadata.json", 0o600)
-        fd, temporary = tempfile.mkstemp(prefix=".keybind-dojo.", dir=target.parent)
+        fd, temporary = tempfile.mkstemp(prefix=".omakeez.", dir=target.parent)
         try:
             os.fchmod(fd, 0o600)
             with os.fdopen(fd, "wb") as handle:

@@ -16,7 +16,7 @@ Quickshell guide satisfy the feasibility and performance thresholds. Tasks that
 depend on this gate may proceed.
 
 The earlier failed run was traced to the managed loader pointing at
-`$XDG_STATE_HOME/omarchy/keybind-dojo/bridge.lua`, where no bridge was installed.
+`$XDG_STATE_HOME/omarchy/omakeez/bridge.lua`, where no bridge was installed.
 The loader now resolves the installed plugin's `bridge.lua`. A full Hyprland Lua
 reload then registered the production callback, and physical keyboard events
 arrived through the intended architecture.
@@ -69,11 +69,11 @@ idle seconds. It consumed 48 ticks at 100 ticks/second:
 `(48 / 100) / 300 * 100 = 0.1600% CPU`
 
 This is a conservative upper bound because it includes the whole Omarchy shell,
-not only Keybind Dojo. It remains below the 0.2% attributable-CPU budget.
+not only Omakeez. It remains below the 0.2% attributable-CPU budget.
 
 ## Privacy and callback work
 
-- A persistent listener filtered to `keybind-dojo:v1:` received no events from
+- A persistent listener filtered to `omakeez:v1:` received no events from
   ordinary typing. No typed key, prose, command text, or password-like content
   was inspected or logged.
 - The bridge emits only Super lifecycle, modifier-mask, and opaque SHA-256 match

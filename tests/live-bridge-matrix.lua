@@ -69,7 +69,7 @@ for _, match_key in ipairs(keys) do
     clear_payloads()
     on_key(code, 0, phase == "press" and 1 or 0)
 
-    local expected = "keybind-dojo:v1:match:" .. catalog.matches[match_key] .. ":" .. phase
+    local expected = "omakeez:v1:match:" .. catalog.matches[match_key] .. ":" .. phase
     assert(#payloads == 1, match_key .. " emitted " .. #payloads .. " payloads")
     assert(payloads[1] == expected, match_key .. " emitted an unexpected payload")
 

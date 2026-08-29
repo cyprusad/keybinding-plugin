@@ -10,8 +10,8 @@ done
 
 jq -e '
   .schemaVersion == 1 and
-  .id == "io.github.cyprusad.keybind-dojo" and
-  .name == "Keybind Dojo" and
+  .id == "io.github.cyprusad.omakeez" and
+  .name == "Omakeez" and
   .version == "0.1.0" and
   .author == "cyprusad" and
   .license == "MIT" and

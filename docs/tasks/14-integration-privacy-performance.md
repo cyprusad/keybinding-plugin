@@ -58,7 +58,7 @@ Use a disposable text field and enter:
 
 Verify:
 
-- No Keybind Dojo custom event for unmatched input.
+- No Omakeez custom event for unmatched input.
 - No raw key log exists.
 - State contains only opaque IDs and aggregate numeric/date fields.
 - No dispatcher arguments, entered text, window titles, or application identifiers occur anywhere under the state directory.

@@ -1,6 +1,6 @@
 # Security and privacy
 
-Keybind Dojo runs as an Omarchy shell plugin. Omarchy plugins are not a
+Omakeez runs as an Omarchy shell plugin. Omarchy plugins are not a
 security sandbox, so installing this plugin grants its QML, JavaScript, Lua,
 and helper-script code the capabilities available to the user session. Review
 the repository before installing updates.
@@ -15,7 +15,7 @@ The plugin may:
   fullscreen, and shell lifecycle suppression.
 - Write the resolved Hyprland Lua target only after the user reviews the exact
   diff and consents through the panel.
-- Write local state under `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/keybind-dojo/`:
+- Write local state under `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/omakeez/`:
   `catalog.json`, `bridge-catalog.lua`, `stats.json`, `recovery/`,
   `backups/`, and `bridge-control.lock`.
 
@@ -49,8 +49,8 @@ plugin only suppresses the guide for Omarchy lock and exposed Polkit state.
 - `scripts/bridge-control`: path safety, exact diff, backup, atomic write,
   validation, reload, and rollback.
 - `scripts/stats-store`: permission-restricted atomic statistics and recovery.
-- `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/keybind-dojo/`: runtime data.
-- The guarded `Keybind Dojo managed bridge` block in the resolved Hyprland Lua
+- `${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/omakeez/`: runtime data.
+- The guarded `Omakeez managed bridge` block in the resolved Hyprland Lua
   target.
 
 Use the installed plugin's controller when auditing a live managed block. A

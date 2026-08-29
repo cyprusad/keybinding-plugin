@@ -126,7 +126,7 @@ Omarchy's Learn menu already supplies two useful read-only sources:
 - `omarchy-menu-herdr-keybindings --print` combines Herdr defaults with the
   user's TOML overrides and prints the resulting bindings.
 
-Keybind Dojo should treat these as provider adapters, not scrape their menu UI.
+Omakeez should treat these as provider adapters, not scrape their menu UI.
 The same adapter shape can support future applications:
 
 ```text
