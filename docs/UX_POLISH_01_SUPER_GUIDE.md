@@ -88,8 +88,8 @@ the overflow reveal pill and tested separately.
 
 ### Collapsed state
 
-The highest-priority bindings form a compact two-row crown below the Omarchy
-bar. Remaining collapsed bindings become left and right wings that step
+The highest-priority bindings form a compact two-row crown at the screen edge,
+layered over the transparent bar surface. Remaining collapsed bindings become left and right wings that step
 outward and then downward, preserving the center of the desktop.
 
 Where the secondary row leaves enough space, two low-priority corner caps sit

@@ -134,9 +134,5 @@ TestCase {
     verify(!GuideModel.focusedVisible(true, "DP-1", "HDMI-A-1"))
     verify(!GuideModel.focusedVisible(false, "DP-1", "DP-1"))
     verify(!GuideModel.focusedVisible(true, "", "DP-1"))
-    compare(GuideModel.barOffset("top", 32, false), 32)
-    compare(GuideModel.barOffset("bottom", 32, false), 0)
-    compare(GuideModel.barOffset("left", 32, false), 0)
-    compare(GuideModel.barOffset("top", 32, true), 0)
   }
 }

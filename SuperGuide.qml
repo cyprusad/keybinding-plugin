@@ -29,10 +29,6 @@ Item {
   readonly property string currentMask: service && String(service.activeModifiers || "") !== ""
     ? String(service.activeModifiers) : "SUPER"
   readonly property var lanes: GuideModel.laneCounts(service ? service.catalog : null)
-  readonly property var bar: service && service.shell ? service.shell.bar : null
-  readonly property string barPosition: bar ? String(bar.position || "top") : "top"
-  readonly property int barSize: bar && Number(bar.barSize) > 0 ? Math.round(Number(bar.barSize)) : 0
-  readonly property bool barHidden: bar ? bar.barHidden === true : false
 
   function displayMask(mask) {
     return String(mask || "SUPER").split("_").join(" + ")
@@ -207,7 +203,10 @@ Item {
         Item {
           id: guideContent
           x: Style.space(4)
-          y: GuideModel.barOffset(root.barPosition, root.barSize, root.barHidden) + Style.space(4)
+          // The guide's transparent contrast surface already begins at the
+          // screen edge. Start the header there too, rather than reserving an
+          // opaque-looking dead band for the bar underneath.
+          y: Style.space(4)
           width: Math.max(1, parent.width - Style.space(8))
           height: headerChip.height + Style.space(5) + deckCanvas.height
 

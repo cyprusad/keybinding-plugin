@@ -297,7 +297,3 @@ function focusedVisible(shouldShow, screenName, focusedName) {
   return shouldShow === true && String(screenName || "") !== ""
     && String(screenName || "") === String(focusedName || "")
 }
-
-function barOffset(position, size, hidden) {
-  return String(position || "top") === "top" && hidden !== true ? Math.max(0, Number(size) || 0) : 0
-}
