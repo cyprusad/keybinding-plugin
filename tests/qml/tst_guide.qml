@@ -44,6 +44,30 @@ TestCase {
     compare(GuideModel.cardModel(catalog(), "SHIFT", 12).total, 0)
   }
 
+  function test_priorityDisplayAndCanopyLayout() {
+    var source = catalog()
+    source.bindings[13].key = "code:20"
+    source.bindings[13].combo = "SUPER + code:20"
+    var ranked = GuideModel.rankedBindings(source, "SUPER", [source.bindings[13].id])
+    compare(ranked[0].id, source.bindings[13].id)
+    compare(ranked[0].combo, "SUPER + KEY 20")
+
+    var cards = []
+    for (var i = 0; i < 38; i++) cards.push({ id: "sha256:" + String(i), combo: "SUPER + " + i, description: "Command " + i })
+    var collapsed = GuideModel.canopyLayout(cards, { width: 2560, height: 1440 }, false)
+    verify(collapsed.visibleCount > 12)
+    verify(collapsed.more > 0)
+    verify(collapsed.overflow !== null)
+    compare(collapsed.items[0].x + collapsed.items[0].width / 2, 1280)
+    compare(collapsed.items[1].y, collapsed.items[2].y)
+    compare(collapsed.items[1].x + collapsed.items[2].x + collapsed.items[1].width, 2560)
+
+    var expanded = GuideModel.canopyLayout(cards, { width: 2560, height: 1440 }, true)
+    compare(expanded.visibleCount, 38)
+    compare(expanded.more, 0)
+    verify(expanded.height < 1440 * 0.45)
+  }
+
   function test_lanesAndAccessibilityFiltering() {
     var lanes = GuideModel.laneCounts(catalog())
     compare(lanes.SHIFT, 1)
