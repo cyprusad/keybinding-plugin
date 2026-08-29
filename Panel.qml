@@ -59,16 +59,29 @@ Panel {
     return logical === resolved ? "No — paths match" : "Yes — logical path resolves to target"
   }
 
+  function symlinkPathsMatch() {
+    var logical = root.preview ? root.preview.logicalPath : ""
+    var resolved = root.preview ? root.preview.resolvedPath : ""
+    return logical !== "" && resolved !== "" && logical === resolved
+  }
+
+  function symlinkCheckSummary() {
+    if (root.symlinkPathsMatch()) return "OK — logical and resolved paths match"
+    if (root.preview && root.preview.logicalPath && root.preview.resolvedPath)
+      return "Review required — paths differ"
+    return "Review required — paths unavailable"
+  }
+
   function safetySummary() {
     if (root.preview && root.preview.safeToPatch === true) return "OK — safe to enable"
     var reason = root.pathValue("reasonCode")
     return reason === "—" ? "Review required" : "Review required — " + reason
   }
 
-  function gitSummary() {
+  function gitCheckSummary() {
     if (!root.preview || root.preview.gitManaged !== true) return "Not tracked"
     var rootPath = root.pathValue("gitRoot")
-    return "Tracked — " + rootPath + (root.preview.gitDirty === true ? " (working tree changed)" : "")
+    return "Tracked — " + rootPath + (root.preview.gitDirty === true ? " (working tree changed)" : " (clean)")
   }
 
   function diffMarkup() {
@@ -250,11 +263,19 @@ Panel {
               anchors.margins: Style.space(8)
               spacing: Style.space(3)
 
-              Text { width: parent.width; text: "Logical path to Hyprland config: " + root.pathValue("logicalPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
-              Text { width: parent.width; text: "Resolved path: " + root.pathValue("resolvedPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
-              Text { width: parent.width; text: "Symlink: " + root.symlinkSummary(); color: Color.foreground; font.pixelSize: Style.font.caption }
-              Text { width: parent.width; text: "Git: " + root.gitSummary(); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
-              Text { width: parent.width; text: "Safety: " + root.safetySummary(); color: root.safetyColor(); font.pixelSize: Style.font.caption; font.bold: true }
+              Text { width: parent.width; text: "Symlink check"; color: Color.foreground; font.pixelSize: Style.font.caption; font.bold: true }
+              Text { width: parent.width; text: root.symlinkCheckSummary(); color: root.symlinkPathsMatch() ? Color.foreground : root.safetyColor(); font.pixelSize: Style.font.caption; wrapMode: Text.WordWrap }
+              Column {
+                visible: !root.symlinkPathsMatch()
+                width: parent.width
+                spacing: Style.space(2)
+                Text { width: parent.width; text: "Logical path: " + root.pathValue("logicalPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
+                Text { width: parent.width; text: "Resolved path: " + root.pathValue("resolvedPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
+              }
+              Text { width: parent.width; text: "Git check"; color: Color.foreground; font.pixelSize: Style.font.caption; font.bold: true }
+              Text { width: parent.width; text: root.gitCheckSummary(); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption; wrapMode: Text.WordWrap }
+              Text { width: parent.width; text: "Safety"; color: Color.foreground; font.pixelSize: Style.font.caption; font.bold: true }
+              Text { width: parent.width; text: root.safetySummary(); color: root.safetyColor(); font.pixelSize: Style.font.caption; font.bold: true; wrapMode: Text.WordWrap }
             }
           }
 
