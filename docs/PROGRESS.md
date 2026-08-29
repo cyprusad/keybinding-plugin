@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | — | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses stepped corner caps that attach to the secondary row plus extended edge wings to expose six additional low-priority shortcuts. The duplicate Copilot menu binding is labeled accurately but excluded from the guide. Shift/Ctrl/Alt discovery is a terse header hint with no footer or counts, active lanes use human-readable chords, and the guide aligns with the top screen edge. Hover and fully fitting lanes retain the canopy's spatial map through a filled mound layout. Two-line cards, contrast shield, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | ca70cda | The ranked canopy follows the familiar `SUPER+K` order from the center outward in both primary and secondary rows, resolves physical `code:N` bindings through the active XKB keymap, and uses stepped corner caps that attach to the secondary row plus extended edge wings to expose six additional low-priority shortcuts. The duplicate Copilot menu binding is labeled accurately but excluded from the guide. Shift/Ctrl/Alt discovery is a terse header hint with no footer or counts, active lanes use human-readable chords, and the guide aligns with the top screen edge. Hover and fully fitting lanes retain the canopy's spatial map through a filled mound layout. Two-line cards, contrast shield, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log
@@ -94,3 +94,4 @@
 | `a9df5a4` | Move Shift/Ctrl/Alt discovery to the header and remove the footer. |
 | `e56f846` | Render active guide lanes as shortcut chords instead of internal masks. |
 | `76b1856` | Align the Super Guide content with the top screen edge. |
+| `ca70cda` | Preserve the canopy's spatial map for hover expansion and fully fitting lanes. |
