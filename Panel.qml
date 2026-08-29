@@ -65,6 +65,12 @@ Panel {
     return reason === "—" ? "Review required" : "Review required — " + reason
   }
 
+  function gitSummary() {
+    if (!root.preview || root.preview.gitManaged !== true) return "Not tracked"
+    var rootPath = root.pathValue("gitRoot")
+    return "Tracked — " + rootPath + (root.preview.gitDirty === true ? " (working tree changed)" : "")
+  }
+
   function diffMarkup() {
     var lines = displayedDiff.split("\n")
     var output = []
@@ -247,7 +253,7 @@ Panel {
               Text { width: parent.width; text: "Logical path to Hyprland config: " + root.pathValue("logicalPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
               Text { width: parent.width; text: "Resolved path: " + root.pathValue("resolvedPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
               Text { width: parent.width; text: "Symlink: " + root.symlinkSummary(); color: Color.foreground; font.pixelSize: Style.font.caption }
-              Text { width: parent.width; text: "Git: " + root.pathValue("gitRoot") + (root.preview && root.preview.gitDirty === true ? " (dirty)" : ""); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
+              Text { width: parent.width; text: "Git: " + root.gitSummary(); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
               Text { width: parent.width; text: "Safety: " + root.safetySummary(); color: root.safetyColor(); font.pixelSize: Style.font.caption; font.bold: true }
             }
           }
