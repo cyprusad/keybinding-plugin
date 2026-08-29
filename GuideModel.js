@@ -96,7 +96,9 @@ function canopyMetrics(viewport, expanded) {
     cardHeight: expanded === true ? 42 : 46,
     gap: gap,
     margin: margin,
-    crownColumns: columns
+    crownColumns: columns,
+    cornerWidth: Math.round(compact * 0.78),
+    cornerCaps: expanded !== true && width >= 1800
   }
 }
 
@@ -173,7 +175,7 @@ function canopyLayout(items, viewport, expanded) {
   if (expanded === true) return denseLayout(source, metrics)
 
   var crown = metrics.crownColumns
-  var capacity = crown + Math.max(0, crown - 1) + 4
+  var capacity = crown + Math.max(0, crown - 1) + 4 + (metrics.cornerCaps ? 2 : 0)
   if (source.length <= capacity) return denseLayout(source, metrics)
 
   var placements = []
@@ -216,6 +218,25 @@ function canopyLayout(items, viewport, expanded) {
       tier: "wing",
       opacity: wingRow === 0 ? 0.76 : 0.62
     })
+  }
+
+  // Wide displays have usable upper corner space outside the central crown.
+  // These are intentionally the last collapsed items: they add capacity
+  // without competing with the center-first priority reading order.
+  if (metrics.cornerCaps) {
+    for (i = 0; i < 2; i++) {
+      var cornerBinding = source[cursor++]
+      if (!cornerBinding) break
+      placements.push({
+        binding: cornerBinding,
+        x: i === 0 ? metrics.margin : metrics.width - metrics.margin - metrics.cornerWidth,
+        y: 0,
+        width: metrics.cornerWidth,
+        height: metrics.cardHeight,
+        tier: "corner",
+        opacity: 0.54
+      })
+    }
   }
 
   var height = (metrics.cardHeight + metrics.gap) * 4 - metrics.gap

@@ -92,6 +92,10 @@ The highest-priority bindings form a compact two-row crown below the Omarchy
 bar. Remaining collapsed bindings become left and right wings that step
 outward and then downward, preserving the center of the desktop.
 
+On wide displays, the two upper corners become small, low-priority corner caps.
+They increase collapsed capacity without creating another full-width row; they
+are not rendered on narrower displays where they would crowd the crown.
+
 Conceptual placement, where lower numbers have higher priority:
 
 ```text

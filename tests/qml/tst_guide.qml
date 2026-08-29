@@ -59,12 +59,17 @@ TestCase {
     for (var i = 0; i < 38; i++) cards.push({ id: "sha256:" + String(i), combo: "SUPER + " + i, description: "Command " + i })
     var collapsed = GuideModel.canopyLayout(cards, { width: 2560, height: 1440 }, false)
     verify(collapsed.visibleCount > 12)
+    compare(collapsed.visibleCount, 23)
     verify(collapsed.more > 0)
     verify(collapsed.overflow !== null)
     verify(collapsed.metrics.cardHeight >= 46)
     compare(collapsed.items[0].x + collapsed.items[0].width / 2, 1280)
     compare(collapsed.items[1].y, collapsed.items[2].y)
     compare(collapsed.items[1].x + collapsed.items[2].x + collapsed.items[1].width, 2560)
+    var cornerCount = 0
+    for (var placement = 0; placement < collapsed.items.length; placement++)
+      if (collapsed.items[placement].tier === "corner") cornerCount++
+    compare(cornerCount, 2)
 
     var expanded = GuideModel.canopyLayout(cards, { width: 2560, height: 1440 }, true)
     compare(expanded.visibleCount, 38)

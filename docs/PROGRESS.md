@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | fea4f41 | The ranked canopy now follows the familiar `SUPER+K` order from center outward and resolves physical `code:N` bindings through the active XKB keymap. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | — | The ranked canopy follows the familiar `SUPER+K` order from center outward, resolves physical `code:N` bindings through the active XKB keymap, and uses wide-screen corner caps to expose two additional low-priority shortcuts. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log
