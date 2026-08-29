@@ -44,6 +44,27 @@ Panel {
     return luminance < 0.5 ? "#f08a8a" : "#a52d3c"
   }
 
+  function safetyColor() {
+    var luminance = Color.menu.background.r * 0.2126
+      + Color.menu.background.g * 0.7152 + Color.menu.background.b * 0.0722
+    if (root.preview && root.preview.safeToPatch === true)
+      return luminance < 0.5 ? "#8bd49c" : "#236b3e"
+    return luminance < 0.5 ? "#f0c674" : "#8a5a00"
+  }
+
+  function symlinkSummary() {
+    var logical = root.preview ? root.preview.logicalPath : ""
+    var resolved = root.preview ? root.preview.resolvedPath : ""
+    if (!logical || !resolved) return "Unknown — paths unavailable"
+    return logical === resolved ? "No — paths match" : "Yes — logical path resolves to target"
+  }
+
+  function safetySummary() {
+    if (root.preview && root.preview.safeToPatch === true) return "OK — safe to enable"
+    var reason = root.pathValue("reasonCode")
+    return reason === "—" ? "Review required" : "Review required — " + reason
+  }
+
   function diffMarkup() {
     var lines = displayedDiff.split("\n")
     var output = []
@@ -223,12 +244,22 @@ Panel {
               anchors.margins: Style.space(8)
               spacing: Style.space(3)
 
-              Text { width: parent.width; text: "Logical: " + root.pathValue("logicalPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
-              Text { width: parent.width; text: "Resolved: " + root.pathValue("resolvedPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
-              Text { width: parent.width; text: "Symlink: " + (root.preview && root.preview.symlinked === true ? "preserved" : "no"); color: Color.foreground; font.pixelSize: Style.font.caption }
+              Text { width: parent.width; text: "Logical path to Hyprland config: " + root.pathValue("logicalPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
+              Text { width: parent.width; text: "Resolved path: " + root.pathValue("resolvedPath"); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
+              Text { width: parent.width; text: "Symlink: " + root.symlinkSummary(); color: Color.foreground; font.pixelSize: Style.font.caption }
               Text { width: parent.width; text: "Git: " + root.pathValue("gitRoot") + (root.preview && root.preview.gitDirty === true ? " (dirty)" : ""); color: Color.foreground; elide: Text.ElideMiddle; font.pixelSize: Style.font.caption }
-              Text { width: parent.width; text: "Safety: " + root.pathValue("reasonCode"); color: root.preview && root.preview.safeToPatch === true ? Color.foreground : Color.urgent; font.pixelSize: Style.font.caption }
+              Text { width: parent.width; text: "Safety: " + root.safetySummary(); color: root.safetyColor(); font.pixelSize: Style.font.caption; font.bold: true }
             }
+          }
+
+          Text {
+            width: parent.width
+            visible: !!root.service && root.preview && root.preview.safeToPatch !== true
+            text: "Automatic patching is unavailable for this path. Review the reason above, then use Copy manual snippet to add the bridge yourself."
+            color: root.safetyColor()
+            opacity: 0.9
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
           }
 
           Text {
