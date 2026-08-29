@@ -105,6 +105,7 @@ Panel {
 
   function open() {
     if (service && service.integrationState !== "enabled") service.inspectIntegration()
+    showDiff = false
     refreshPreview()
     controller.show()
   }
@@ -184,7 +185,7 @@ Panel {
     centerOnBar: false
     focusTarget: keyCatcher
     contentWidth: panel.fittedContentWidth(Style.space(560))
-    contentHeight: panel.fittedContentHeight(Style.space(640))
+    contentHeight: panel.fittedContentHeight(contentColumn.implicitHeight, Style.space(640))
 
     PanelKeyCatcher {
       id: keyCatcher
