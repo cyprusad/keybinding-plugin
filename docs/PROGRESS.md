@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (implementation complete; live UX gate pending) | — | Ranked deck, readable key labels, transparent glass canopy, overflow-only hover expansion, and restrained motion are implemented. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (implementation complete; live UX gate pending) | e0d9b52 | Ranked deck, readable key labels, transparent glass canopy, overflow-only hover expansion, and restrained motion are implemented. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log
@@ -76,3 +76,9 @@
 | `1863dfd` | Record lock-screen suppression. |
 | `e0b5435` | Make local-data reset actionable during pending stats flushes. |
 | `4530df8` | Record stats reset and recovery verification. |
+| `771db7f` | Add the UX Polish 01 Super Guide behavior and look plan. |
+| `6ce5632` | Model ranked, dense Super Guide canopy layouts and readable raw key labels. |
+| `77df621` | Render the transparent glass Super Guide canopy. |
+| `dc67acd` | Fix deferred production-service timer restarts found during live refresh. |
+| `e0d4f01` | Expand Super Guide overflow on pointer hover. |
+| `e0d9b52` | Polish canopy expansion motion and record the implementation checkpoint. |
