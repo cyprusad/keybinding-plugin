@@ -155,15 +155,18 @@ function append(destination, values) {
   for (var i = 0; i < values.length; i++) destination.push(values[i])
 }
 
-function denseLayout(items, metrics) {
+function moundLayout(items, metrics) {
   var placements = []
-  var columns = metrics.crownColumns
   var index = 0
   var row = 0
+  var crown = metrics.crownColumns
+  var widths = [crown, crown, Math.max(3, crown - 2), Math.max(3, crown - 4),
+    Math.max(1, crown - 6), 1]
+  var step = metrics.cardHeight + metrics.gap
   while (index < items.length) {
-    var count = Math.min(columns, items.length - index)
+    var count = Math.min(widths[Math.min(row, widths.length - 1)], items.length - index)
     append(placements, placeCentered(items, index, count, metrics,
-      row * (metrics.cardHeight + metrics.gap), "expanded", 1))
+      row * step, "mound", 1))
     index += count
     row += 1
   }
@@ -172,31 +175,21 @@ function denseLayout(items, metrics) {
     more: 0,
     total: items.length,
     visibleCount: items.length,
-    expanded: true,
-    height: Math.max(metrics.cardHeight, row * (metrics.cardHeight + metrics.gap) - metrics.gap),
+    expanded: false,
+    height: Math.max(metrics.cardHeight, row * step - metrics.gap),
     overflow: null,
     metrics: metrics
   }
 }
 
-function canopyLayout(items, viewport, expanded) {
-  var source = Array.isArray(items) ? items : []
-  var metrics = canopyMetrics(viewport, expanded)
-  if (expanded === true) return denseLayout(source, metrics)
-
+function collapsedCanopyLayout(source, metrics) {
   var crown = metrics.crownColumns
-  var capacity = crown + Math.max(0, crown - 1) + metrics.wingPairs * 2
-    + (metrics.cornerCaps ? 2 : 0)
-  if (source.length <= capacity) return denseLayout(source, metrics)
-
   var placements = []
   append(placements, placeCentered(source, 0, crown, metrics, 0, "primary", 1))
 
   var center = metrics.width / 2
   var moreWidth = Math.round(metrics.cardWidth * 1.45)
   var secondCount = crown - 1
-  var leftCount = Math.floor(secondCount / 2)
-  var rightCount = secondCount - leftCount
   var secondY = metrics.cardHeight + metrics.gap
   var cursor = crown
   var i
@@ -205,6 +198,7 @@ function canopyLayout(items, viewport, expanded) {
   // closest right, then move outward in alternating pairs.
   for (i = 0; i < secondCount; i++) {
     var secondaryBinding = source[cursor++]
+    if (!secondaryBinding) break
     var secondaryDistance = Math.floor(i / 2)
     var secondaryLeft = i % 2 === 0
     placements.push({ binding: secondaryBinding,
@@ -251,21 +245,64 @@ function canopyLayout(items, viewport, expanded) {
   }
 
   var height = (metrics.cardHeight + metrics.gap) * (2 + metrics.wingPairs) - metrics.gap
+  var more = Math.max(0, source.length - placements.length)
   return {
     items: placements,
-    more: Math.max(0, source.length - placements.length),
+    more: more,
     total: source.length,
     visibleCount: placements.length,
     expanded: false,
     height: height,
-    overflow: {
-      x: Math.round(center - moreWidth / 2),
-      y: secondY,
-      width: moreWidth,
-      height: metrics.cardHeight
-    },
+    overflow: more > 0 ? {
+        x: Math.round(center - moreWidth / 2),
+        y: secondY,
+        width: moreWidth,
+        height: metrics.cardHeight
+      } : null,
     metrics: metrics
   }
+}
+
+function expandedCanopyLayout(source, metrics, collapsed) {
+  if (collapsed.more === 0) return moundLayout(source, metrics)
+
+  var placements = collapsed.items.slice()
+  var cursor = collapsed.visibleCount
+  var crown = metrics.crownColumns
+  var widths = [1, Math.max(3, crown - 2), Math.max(3, crown - 4),
+    Math.max(3, crown - 6), 1]
+  var step = metrics.cardHeight + metrics.gap
+  var row = 0
+  var height = collapsed.height
+  while (cursor < source.length) {
+    var count = Math.min(widths[Math.min(row, widths.length - 1)], source.length - cursor)
+    append(placements, placeCentered(source, cursor, count, metrics,
+      (row + 1) * step, "mound", 1))
+    cursor += count
+    height = Math.max(height, (row + 2) * step - metrics.gap)
+    row += 1
+  }
+  return {
+    items: placements,
+    more: 0,
+    total: source.length,
+    visibleCount: source.length,
+    expanded: true,
+    height: height,
+    overflow: null,
+    metrics: metrics
+  }
+}
+
+function canopyLayout(items, viewport, expanded) {
+  var source = Array.isArray(items) ? items : []
+  // Expansion preserves the collapsed card dimensions and coordinates.
+  var metrics = canopyMetrics(viewport, false)
+  var collapsed = collapsedCanopyLayout(source, metrics)
+  if (expanded === true) return expandedCanopyLayout(source, metrics, collapsed)
+  // Lanes that already fit should still read as a canopy, never as a generic
+  // centered grid.
+  return collapsed.more === 0 ? moundLayout(source, metrics) : collapsed
 }
 
 function laneCounts(catalog) {
