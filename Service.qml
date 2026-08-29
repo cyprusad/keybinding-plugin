@@ -21,6 +21,7 @@ Item {
   property var stats: Stats.emptyStats()
   property bool guideVisible: false
   property string activeModifiers: ""
+  property string activeGuideRoot: ""
   property string highlightedBindingId: ""
   property int guideDelayMs: 0
   property bool showInFullscreen: false
@@ -49,7 +50,7 @@ Item {
 
   // These diagnostics remain intentionally in memory only. They are useful to
   // the feasibility IPC target and do not become a statistics implementation.
-  property double pendingSuperReceivedMs: 0
+  property double pendingGuideReceivedMs: 0
   property int observedEventCount: 0
   property var latencySamples: []
 
@@ -100,16 +101,18 @@ Item {
     }
 
     lastProtocolError = ""
-    if (parsed.type === "super") {
+    if (parsed.type === "guide") {
       if (parsed.phase === "down") {
-        pendingSuperReceivedMs = Date.now()
-        activeModifiers = "SUPER"
+        pendingGuideReceivedMs = Date.now()
+        activeGuideRoot = parsed.root
+        activeModifiers = parsed.root
         highlightedBindingId = ""
         guideVisible = true
       } else {
         activeModifiers = ""
+        activeGuideRoot = ""
         guideVisible = false
-        pendingSuperReceivedMs = 0
+        pendingGuideReceivedMs = 0
       }
       return true
     }
@@ -131,18 +134,19 @@ Item {
   }
 
   function recordGuideVisible() {
-    if (pendingSuperReceivedMs <= 0) return
+    if (pendingGuideReceivedMs <= 0) return
     var next = latencySamples.slice()
-    next.push(Math.max(0, Date.now() - pendingSuperReceivedMs))
+    next.push(Math.max(0, Date.now() - pendingGuideReceivedMs))
     latencySamples = next
-    pendingSuperReceivedMs = 0
+    pendingGuideReceivedMs = 0
   }
 
   function resetDiagnostics() {
     guideVisible = false
     activeModifiers = ""
+    activeGuideRoot = ""
     highlightedBindingId = ""
-    pendingSuperReceivedMs = 0
+    pendingGuideReceivedMs = 0
     observedEventCount = 0
     bridgeEventCount = 0
     latencySamples = []
@@ -402,6 +406,7 @@ Item {
         ? "disconnected" : "disabled"
       guideVisible = false
       activeModifiers = ""
+      activeGuideRoot = ""
       highlightedBindingId = ""
     } else integrationState = "error"
     return integrationState !== "error"

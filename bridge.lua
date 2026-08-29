@@ -43,6 +43,7 @@ if type(existing) == "table" then
   existing.modifiers = modifiers
   existing.held = { SUPER = {}, SHIFT = {}, CTRL = {}, ALT = {} }
   existing.submap = ""
+  existing.guideRoot = nil
   return
 end
 
@@ -52,6 +53,7 @@ local bridge = {
   modifiers = modifiers,
   held = { SUPER = {}, SHIFT = {}, CTRL = {}, ALT = {} },
   submap = "",
+  guideRoot = nil,
   emitting = false,
 }
 _G[STATE_NAME] = bridge
@@ -106,18 +108,24 @@ hl.on("input.keyboard.key", function(keycode, timestamp, event_state)
   for _, name in ipairs(ORDERED_MODIFIERS) do
     if bridge.modifiers[name][code] then
       local was_held = is_held(name)
+      local was_empty = modifier_mask() == ""
       if state == 1 then
         if bridge.held[name][code] then return end
         bridge.held[name][code] = true
-        if name == "SUPER" and not was_held then emit("keybind-dojo:v1:super:down") end
+        if was_empty then
+          bridge.guideRoot = name
+          emit("keybind-dojo:v1:guide:down:" .. name)
+        end
       else
         if not bridge.held[name][code] then return end
         bridge.held[name][code] = nil
-        if name == "SUPER" and was_held and not is_held("SUPER") then
-          emit("keybind-dojo:v1:super:up")
+        if name == bridge.guideRoot and was_held and not is_held(name) then
+          bridge.guideRoot = nil
+          emit("keybind-dojo:v1:guide:up")
+          return
         end
       end
-      if name ~= "SUPER" and is_held("SUPER") then
+      if bridge.guideRoot and not was_empty then
         emit("keybind-dojo:v1:mods:" .. modifier_mask())
       end
       return

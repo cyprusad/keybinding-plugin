@@ -62,9 +62,11 @@ TestCase {
 
   function test_everyValidProtocolForm() {
     var catalog = Model.normalizeCatalog(validCatalog()).catalog
-    compare(Model.parseProtocol("keybind-dojo:v1:super:down", catalog).phase, "down")
-    compare(Model.parseProtocol("keybind-dojo:v1:super:up", catalog).phase, "up")
+    compare(Model.parseProtocol("keybind-dojo:v1:super:down", catalog).root, "SUPER")
+    compare(Model.parseProtocol("keybind-dojo:v1:guide:down:ALT", catalog).root, "ALT")
+    compare(Model.parseProtocol("keybind-dojo:v1:guide:up", catalog).phase, "up")
     compare(Model.parseProtocol("keybind-dojo:v1:mods:SUPER_SHIFT_CTRL_ALT", catalog).modifiers, "SUPER_SHIFT_CTRL_ALT")
+    compare(Model.parseProtocol("keybind-dojo:v1:mods:SHIFT_ALT", catalog).modifiers, "SHIFT_ALT")
     var press = Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":press", catalog)
     verify(press.ok)
     verify(press.known)
@@ -78,7 +80,8 @@ TestCase {
     var catalog = Model.normalizeCatalog(validCatalog()).catalog
     verify(!Model.parseProtocol("keybind-dojo:v2:super:down", catalog).ok)
     verify(!Model.parseProtocol("keybind-dojo:v1:super:down:extra", catalog).ok)
-    verify(!Model.parseProtocol("keybind-dojo:v1:mods:SHIFT", catalog).ok)
+    verify(!Model.parseProtocol("keybind-dojo:v1:guide:down:CAPS", catalog).ok)
+    verify(!Model.parseProtocol("keybind-dojo:v1:guide:up:extra", catalog).ok)
     verify(!Model.parseProtocol("keybind-dojo:v1:mods:SUPER_CTRL_SHIFT", catalog).ok)
     verify(!Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":press:extra", catalog).ok)
     verify(!Model.parseProtocol("keybind-dojo:v1:match:" + id("b") + ":release", catalog).ok)

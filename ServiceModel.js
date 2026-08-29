@@ -105,7 +105,6 @@ function normalizeCatalog(raw) {
 function allowedModifierMask(mask) {
   if (typeof mask !== "string" || mask === "") return false
   var parts = mask.split("_")
-  if (parts[0] !== "SUPER") return false
   var seen = {}
   for (var i = 0; i < parts.length; i++) {
     if (MODIFIERS.indexOf(parts[i]) === -1 || seen[parts[i]]) return false
@@ -119,8 +118,14 @@ function parseProtocol(payload, catalog) {
   if (typeof payload !== "string" || payload.indexOf(PROTOCOL_PREFIX) !== 0)
     return { ok: false, error: "wrong-prefix" }
 
-  if (payload === PROTOCOL_PREFIX + "super:down") return { ok: true, type: "super", phase: "down" }
-  if (payload === PROTOCOL_PREFIX + "super:up") return { ok: true, type: "super", phase: "up" }
+  // Retain the original Super events during the transition so an older bridge
+  // cannot leave the service without a guide lifecycle.
+  if (payload === PROTOCOL_PREFIX + "super:down") return { ok: true, type: "guide", phase: "down", root: "SUPER" }
+  if (payload === PROTOCOL_PREFIX + "super:up") return { ok: true, type: "guide", phase: "up", root: "SUPER" }
+
+  var guideDown = payload.match(/^keybind-dojo:v1:guide:down:(SUPER|SHIFT|CTRL|ALT)$/)
+  if (guideDown) return { ok: true, type: "guide", phase: "down", root: guideDown[1] }
+  if (payload === PROTOCOL_PREFIX + "guide:up") return { ok: true, type: "guide", phase: "up" }
 
   var modifierMatch = payload.match(/^keybind-dojo:v1:mods:(.*)$/)
   if (modifierMatch) {

@@ -220,8 +220,10 @@ The bridge will:
 - Subscribe to `input.keyboard.key` and `keybinds.submap`.
 - Track left/right Super, Shift, Ctrl, and Alt states using generated XKB modifier keycodes.
 - Treat Wayland state `1` as press and `0` as release.
-- On Super press/release, emit guide lifecycle events even if no binding matches.
-- On modifier changes while Super is held, emit the canonical modifier mask.
+- On the first held Super, Shift, Ctrl, or Alt key, emit a guide lifecycle
+  event with that modifier as the guide root; close it when that root releases.
+- On modifier changes while a guide root is held, emit the canonical modifier
+  mask.
 - Look up non-modifier events by modifier mask, XKB code, phase, and submap.
 - Emit a matched opaque ID only when the lookup contains that exact event.
 - Ignore unmatched input immediately.
@@ -230,8 +232,8 @@ The bridge will:
 Socket2 custom event payloads are versioned:
 
 ```text
-keybind-dojo:v1:super:down
-keybind-dojo:v1:super:up
+keybind-dojo:v1:guide:down:SUPER
+keybind-dojo:v1:guide:up
 keybind-dojo:v1:mods:SUPER_SHIFT
 keybind-dojo:v1:match:<opaque-id>:press
 keybind-dojo:v1:match:<opaque-id>:release

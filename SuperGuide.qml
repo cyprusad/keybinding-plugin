@@ -15,6 +15,7 @@ Item {
   property string renderedHighlightId: ""
   property int focusRevision: 0
   property string frozenMask: ""
+  property string frozenGuideRoot: "SUPER"
   property var frozenCards: []
 
   readonly property bool eligible: service ? GuideModel.eligible({
@@ -27,15 +28,27 @@ Item {
   }) : false
   readonly property int delayValue: service ? Number(service.guideDelayMs) : -1
   readonly property string currentMask: service && String(service.activeModifiers || "") !== ""
-    ? String(service.activeModifiers) : "SUPER"
+    ? String(service.activeModifiers)
+    : service && String(service.activeGuideRoot || "") !== "" ? String(service.activeGuideRoot) : "SUPER"
+  readonly property string currentGuideRoot: service && String(service.activeGuideRoot || "") !== ""
+    ? String(service.activeGuideRoot) : "SUPER"
   readonly property var lanes: GuideModel.laneCounts(service ? service.catalog : null)
 
   function displayMask(mask) {
-    return String(mask || "SUPER").split("_").join(" + ")
+    return String(mask || currentGuideRoot).split("_").join(" + ")
+  }
+
+  function guideHint(rootModifier) {
+    var rootName = String(rootModifier || "SUPER")
+    if (rootName === "SHIFT") return "Hold SHIFT · Add SUPER / CTRL / ALT"
+    if (rootName === "CTRL") return "Hold CTRL · Add SUPER / SHIFT / ALT"
+    if (rootName === "ALT") return "Hold ALT · Add SUPER / SHIFT / CTRL"
+    return "Hold SUPER · Add SHIFT / CTRL / ALT"
   }
 
   function resetDeck() {
     frozenMask = currentMask
+    frozenGuideRoot = currentGuideRoot
     // The catalog is generated in the same priority order as Omarchy's
     // SUPER+K menu. `canopyLayout` then assigns its first item to the center
     // and alternates each following item outward symmetrically.
@@ -45,7 +58,7 @@ Item {
   }
 
   function showGuide() {
-    if (!delayedVisible || frozenMask !== currentMask) resetDeck()
+    if (!delayedVisible || frozenMask !== currentMask || frozenGuideRoot !== currentGuideRoot) resetDeck()
     delayedVisible = true
   }
 
@@ -124,6 +137,10 @@ Item {
     function onActiveWindowFullscreenChanged() { root.syncVisibility() }
     function onShowInFullscreenChanged() { root.syncVisibility() }
     function onActiveModifiersChanged() {
+      if (root.delayedVisible && root.service && root.service.guideVisible === true)
+        root.resetDeck()
+    }
+    function onActiveGuideRootChanged() {
       if (root.delayedVisible && root.service && root.service.guideVisible === true)
         root.resetDeck()
     }
@@ -225,7 +242,7 @@ Item {
               anchors.centerIn: parent
               spacing: Style.space(5)
               Text {
-                text: "SUPER GUIDE"
+                text: root.frozenGuideRoot + " GUIDE"
                 color: Color.menu.selectedText
                 font.family: Style.font.family
                 font.pixelSize: Style.font.caption
@@ -236,7 +253,7 @@ Item {
               }
               Text {
                 text: root.expanded ? "All " + guideWindow.guideLayout.total + " bindings"
-                  : root.frozenMask === "SUPER" ? "Hold SUPER · Add SHIFT / CTRL / ALT"
+                  : root.frozenMask === root.frozenGuideRoot ? root.guideHint(root.frozenGuideRoot)
                     : root.displayMask(root.frozenMask)
                 color: Color.menu.text
                 opacity: 0.84
