@@ -23,6 +23,38 @@ Panel {
   readonly property string displayedDiff: preview && typeof preview.proposedDiff === "string"
     ? preview.proposedDiff : ""
 
+  function htmlEscape(value) {
+    return String(value || "").replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/ /g, "&nbsp;")
+  }
+
+  function diffAddedColor() {
+    var luminance = Color.menu.background.r * 0.2126
+      + Color.menu.background.g * 0.7152 + Color.menu.background.b * 0.0722
+    return luminance < 0.5 ? "#8bd49c" : "#236b3e"
+  }
+
+  function diffRemovedColor() {
+    var luminance = Color.menu.background.r * 0.2126
+      + Color.menu.background.g * 0.7152 + Color.menu.background.b * 0.0722
+    return luminance < 0.5 ? "#f08a8a" : "#a52d3c"
+  }
+
+  function diffMarkup() {
+    var lines = displayedDiff.split("\n")
+    var output = []
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i]
+      var color = line.indexOf("+++") === 0 || line.indexOf("---") === 0
+        ? String(Color.menu.text)
+        : line.indexOf("+") === 0 ? diffAddedColor()
+        : line.indexOf("-") === 0 ? diffRemovedColor() : String(Color.menu.text)
+      output.push("<font color=\"" + color + "\">" + htmlEscape(line) + "</font>")
+    }
+    return output.join("<br/>")
+  }
+
   function syncService() {
     service = bar && bar.shell && typeof bar.shell.serviceFor === "function"
       ? bar.shell.serviceFor(moduleName) : null
@@ -62,7 +94,7 @@ Panel {
   function enableLabel() {
     if (!service) return "Service unavailable"
     if (service.integrationMutationRunning) return "Working…"
-    return "Enable tracking and Super Guide"
+    return "Enable tracking and visual keybinding guide"
   }
 
   function delayValue(index) { return [0, 80, 150, 250, -1][index] }
@@ -210,7 +242,8 @@ Panel {
               TextEdit {
                 id: diffText
                 width: Math.max(parent.width, paintedWidth)
-                text: root.displayedDiff
+                text: root.diffMarkup()
+                textFormat: TextEdit.RichText
                 readOnly: true
                 selectByMouse: true
                 color: Color.foreground
@@ -251,11 +284,13 @@ Panel {
             width: parent.width
             spacing: Style.space(8)
             Button {
+              width: (parent.width - Style.space(8)) / 2
               text: "Recheck"
               enabled: !!root.service
               onClicked: if (root.service) { root.service.inspectIntegration(); root.refreshPreview() }
             }
             Button {
+              width: (parent.width - Style.space(8)) / 2
               text: "Copy manual snippet"
               enabled: !!root.service && root.service.manualSnippet !== ""
               onClicked: Quickshell.execDetached(["bash", "-c", "printf %s " + Util.shellQuote(root.service.manualSnippet) + " | wl-copy"])
