@@ -34,27 +34,13 @@ Item {
   readonly property int barSize: bar && Number(bar.barSize) > 0 ? Math.round(Number(bar.barSize)) : 0
   readonly property bool barHidden: bar ? bar.barHidden === true : false
 
-  function pushUnique(list, id) {
-    var value = String(id || "")
-    if (value !== "" && list.indexOf(value) === -1) list.push(value)
-  }
-
-  function priorityIds() {
-    var result = []
-    if (!service) return result
-    var quest = service.dailyQuest
-    if (quest) pushUnique(result, quest.bindingId)
-    if (service.recommendations) {
-      var recommendations = service.recommendations(64)
-      for (var i = 0; i < recommendations.length; i++) pushUnique(result, recommendations[i])
-    }
-    return result
-  }
-
   function resetDeck() {
     frozenMask = currentMask
+    // The catalog is generated in the same priority order as Omarchy's
+    // SUPER+K menu. `canopyLayout` then assigns its first item to the center
+    // and alternates each following item outward symmetrically.
     frozenCards = GuideModel.rankedBindings(service ? service.catalog : null,
-      frozenMask, priorityIds())
+      frozenMask, [])
     expanded = false
   }
 

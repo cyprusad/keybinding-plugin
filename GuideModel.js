@@ -45,7 +45,8 @@ function rankedBindings(catalog, mask, priorityIds) {
       combo: displayCombo(binding),
       description: String(binding.description || ""),
       category: String(binding.category || "other"),
-      priority: priorities[binding.id] === undefined ? -1 : priorities[binding.id]
+      priority: priorities[binding.id] === undefined ? -1 : priorities[binding.id],
+      catalogOrder: i
     })
   }
   matches.sort(function(a, b) {
@@ -56,11 +57,7 @@ function rankedBindings(catalog, mask, priorityIds) {
       if (bPriority < 0) return -1
       if (aPriority !== bPriority) return aPriority - bPriority
     }
-    var left = String(a.description || "").toLowerCase()
-    var right = String(b.description || "").toLowerCase()
-    if (left < right) return -1
-    if (left > right) return 1
-    return String(a.id).localeCompare(String(b.id))
+    return a.catalogOrder - b.catalogOrder
   })
   return matches
 }

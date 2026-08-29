@@ -22,7 +22,7 @@
 
 | Polish | Status | Commit | Notes |
 |---|---|---|---|
-| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | 815a533 | The ranked canopy now uses two-line full-width cards and a theme-native fading contrast shield behind the glass deck. Hover expansion and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
+| 01 — Super Guide behavior and look | In progress (implementation updated; live UX gate pending) | — | The ranked canopy now follows the familiar `SUPER+K` order from center outward and resolves physical `code:N` bindings through the active XKB keymap. Two-line cards, contrast shield, hover expansion, and restrained motion remain. True backdrop blur is deferred because it would require compositor-specific configuration. See `UX_POLISH_01_SUPER_GUIDE.md`. |
 | 02 — Bar panel and full Dojo | Deferred | — | To be planned after UX Polish 01 manual gate. |
 
 ## Commit log

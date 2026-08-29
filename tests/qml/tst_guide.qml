@@ -36,7 +36,7 @@ TestCase {
     compare(cards.total, 14)
     compare(cards.items.length, 12)
     compare(cards.more, 2)
-    compare(cards.items[0].description, "Command M")
+    compare(cards.items[0].description, "Command Z")
 
     var shift = GuideModel.cardModel(catalog(), "SUPER_SHIFT", 12)
     compare(shift.total, 1)
@@ -51,6 +51,9 @@ TestCase {
     var ranked = GuideModel.rankedBindings(source, "SUPER", [source.bindings[13].id])
     compare(ranked[0].id, source.bindings[13].id)
     compare(ranked[0].combo, "SUPER + KEY 20")
+
+    var canonical = GuideModel.rankedBindings(source, "SUPER", [])
+    compare(canonical[0].id, source.bindings[0].id)
 
     var cards = []
     for (var i = 0; i < 38; i++) cards.push({ id: "sha256:" + String(i), combo: "SUPER + " + i, description: "Command " + i })

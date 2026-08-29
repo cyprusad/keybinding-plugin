@@ -1,5 +1,6 @@
 xkb_keycodes "evdev" {
     <AE01> = 10;
+    <AE01> = 10;
     <AE02> = 11;
     <AE11> = 20;
     <AE12> = 21;
@@ -15,6 +16,7 @@ xkb_keycodes "evdev" {
     <RWIN> = 134;
 };
 xkb_symbols "pc" {
+    key <AE01> { [ 1 ] };
     key <AE11> { [ minus ] };
     key <AE12> { [ equal ] };
     key <AD03> { [ e ] };

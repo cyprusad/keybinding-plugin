@@ -151,14 +151,13 @@ Move from two-line cards to mostly one-line command pills:
 [ SUPER + W ]  Close window
 ```
 
-- Combo and description are visually distinct but share one compact row.
-- The combo behaves like a small keycap inside the pill; the description is
-  plain text rather than a second button.
+- Combo and description are visually distinct in two compact rows. The
+  shortcut uses the first row; its plain-language purpose uses the second.
 - Primary crown pills may be slightly wider/taller than wing pills.
 - Mirrored slot pairs use the same width, based on the wider member of the
   pair, so text length cannot break symmetry.
-- Long descriptions elide only after the responsive model has tried a larger
-  compact width.
+- Long labels may shrink slightly to fit, but instructional text should not
+  fall back to an ellipsis in the normal canopy.
 - Raw `code:N` labels should be resolved to a human-readable key name when the
   active keymap provides one. If resolution is impossible, display `Key N`
   rather than exposing parser syntax.
@@ -181,21 +180,23 @@ transparency must never make a binding unreadable.
 ## 6. Ranking and position stability
 
 The Super Guide should not maintain a separate alphabetical ranking. It should
-consume a canonical ordering from the service so Practice, recommendations,
-and the guide agree.
+consume the same stable priority order as Omarchy's `SUPER+K` keybindings menu.
+This keeps the desktop guide familiar and stops usage or gamification state
+from making the primary muscle-memory positions move.
 
 For this polish pass:
 
-1. Pin the current daily recommendation to the center when it belongs to the
-   active modifier lane.
-2. Follow with the service's deterministic recommendation order: never used,
-   oldest use, lowest count, then opaque ID.
-3. Use stable description/ID ordering for eligible bindings outside that
-   recommendation result.
-4. Freeze the resulting order at guide-open time.
-5. A matched-binding highlight changes appearance, not rank or position.
+1. The catalog generator mirrors Omarchy's `SUPER+K` priority rules, then uses
+   combo, description, and opaque ID only as stable ties.
+2. The first eligible binding occupies the center. Each successive item is
+   placed alternately left then right, moving outward by priority.
+3. Preserve the same catalog order in every modifier lane and freeze it at
+   guide-open time.
+4. A matched-binding highlight changes appearance, not rank or position.
 
-This gives the center meaning without producing a constantly moving target.
+The active XKB keymap also resolves raw `code:N` bindings while the catalog is
+generated. For example, the current `code:10`–`code:20` entries become `1`–`0`
+and `-`; an unresolvable hardware code remains an explicit `KEY N` fallback.
 
 Context-aware ranking from active workspace, terminal/browser context, and
 local history remains the separate design described in `PLAN.md` section 13.1.

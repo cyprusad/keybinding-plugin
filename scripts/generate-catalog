@@ -15,6 +15,16 @@ MODIFIERS = {"SHIFT": 1, "CTRL": 4, "CONTROL": 4, "ALT": 8, "SUPER": 64}
 CANONICAL = ("SUPER", "SHIFT", "CTRL", "ALT")
 ALIASES = {"COMMA": "COMMA", "PERIOD": "PERIOD", "MINUS": "MINUS", "EQUAL": "EQUAL", "SLASH": "SLASH"}
 MOUSE_RE = re.compile(r"^(?:mouse|mouse:)", re.I)
+DISPLAY_SYMBOLS = {
+    "RETURN": "ENTER", "ESCAPE": "ESC", "BACKSPACE": "BACKSPACE",
+    "SPACE": "SPACE", "TAB": "TAB", "MINUS": "-", "EQUAL": "=",
+    "PLUS": "+", "COMMA": ",", "PERIOD": ".", "SLASH": "/",
+    "SEMICOLON": ";", "APOSTROPHE": "'", "QUOTEDBL": '"',
+    "BRACKETLEFT": "[", "BRACKETRIGHT": "]", "BACKSLASH": "\\",
+    "GRAVE": "`", "UP": "UP", "DOWN": "DOWN", "LEFT": "LEFT",
+    "RIGHT": "RIGHT", "PRIOR": "PAGE UP", "NEXT": "PAGE DOWN",
+    "HOME": "HOME", "END": "END", "DELETE": "DELETE", "INSERT": "INSERT",
+}
 
 
 def fail(code, message):
@@ -60,10 +70,12 @@ def parse_keymap(text):
     for match in re.finditer(r"key\s*<([A-Za-z0-9_]+)>\s*\{\s*\[\s*([^,\]\s]+)", text):
         symbols.setdefault(match.group(1), []).append(match.group(2).upper())
     symbol_codes = {}
+    code_symbols = {}
     for name, code in names.items():
         for symbol in symbols.get(name, []):
             symbol_codes.setdefault(symbol, set()).add(code)
-    return names, symbol_codes
+            code_symbols.setdefault(code, []).append(symbol)
+    return names, symbol_codes, code_symbols
 
 
 def normalize_key(key):
@@ -113,6 +125,88 @@ def xkb_codes(key, names, symbol_codes):
     return sorted(codes)
 
 
+def display_symbol(symbol):
+    value = str(symbol or "").strip()
+    if not value or value.lower() == "nosymbol":
+        return ""
+    if len(value) == 1:
+        return value.upper()
+    upper = value.upper()
+    return DISPLAY_SYMBOLS.get(upper, upper.replace("_", " "))
+
+
+def display_key(key, code_symbols):
+    if key.startswith("code:"):
+        try:
+            code = int(key.split(":", 1)[1])
+        except ValueError:
+            return key.upper()
+        for symbol in code_symbols.get(code, []):
+            label = display_symbol(symbol)
+            if label:
+                return label
+        return "KEY " + str(code)
+    return display_symbol(key) or key.upper()
+
+
+def menu_priority(combo, description):
+    """Mirror Omarchy's SUPER+K priority list for stable guide placement."""
+    line = f"{combo} → {description}"
+    priority = 50
+    if "Keybindings" in line: priority = 0
+    if "Omarchy menu" in line: priority = 1
+    if "Terminal" in line: priority = 2
+    if "Browser" in line and "Browser (" not in line: priority = 3
+    if "File manager" in line and "File manager (cwd)" not in line: priority = 4
+    if "Launch apps" in line: priority = 5
+    if "System menu" in line: priority = 6
+    if "Theme menu" in line: priority = 7
+    if "Full screen" in line: priority = 8
+    if "Full width" in line: priority = 9
+    if "Close window" in line: priority = 10
+    if "Close all windows" in line: priority = 11
+    if "Lock system" in line: priority = 12
+    if "Toggle window floating" in line: priority = 13
+    if "Toggle window split" in line: priority = 14
+    if "Pop window" in line: priority = 15
+    if "Universal" in line: priority = 16
+    if "Clipboard" in line: priority = 17
+    if "Audio controls" in line: priority = 18
+    if "Bluetooth controls" in line: priority = 19
+    if "Wifi controls" in line: priority = 20
+    if "Emojis" in line: priority = 21
+    if "Color picker" in line: priority = 22
+    if "Screenshot" in line: priority = 23
+    if "Screenrecording" in line: priority = 24
+    if "Tmux" in line: priority = 25
+    if "Herdr" in line: priority = 26
+    if "File manager (cwd)" in line: priority = 28
+    if re.search(r"(Switch|Next|Former|Previous).*workspace", line): priority = 29
+    if "Move window to workspace" in line: priority = 30
+    if "Move window silently to workspace" in line: priority = 31
+    if "Swap window" in line: priority = 32
+    if "Focus" in line: priority = 33
+    if re.search(r"Move window$", line): priority = 34
+    if "Resize window" in line: priority = 35
+    if "Expand window" in line: priority = 36
+    if "Shrink window" in line: priority = 37
+    if "scratchpad" in line: priority = 38
+    if "notification" in line: priority = 39
+    if "Toggle window transparency" in line: priority = 40
+    if "Toggle workspace gaps" in line: priority = 41
+    if "Toggle nightlight" in line: priority = 42
+    if "Toggle locking" in line: priority = 43
+    if "group" in line: priority = 94
+    if "Scroll active workspace" in line: priority = 95
+    if "Cycle to" in line: priority = 96
+    if "Reveal active" in line: priority = 97
+    if "Apple Display" in line: priority = 98
+    if "XF86" in line: priority = 99
+    if "Tmux keybindings" in line: priority = 100
+    if "Herdr keybindings" in line: priority = 101
+    return priority
+
+
 def category(description):
     text = description.lower()
     groups = [
@@ -155,7 +249,7 @@ def lua_string(value):
 def build(args):
     binds = read_input(args.hyprctl_file, ["hyprctl", "binds"], "hyprctl-unavailable")
     keymap = read_input(args.keymap_file, ["xkbcli", "compile-keymap"], "keymap-unavailable")
-    names, symbol_codes = parse_keymap(keymap)
+    names, symbol_codes, code_symbols = parse_keymap(keymap)
     raw = parse_binds(binds)
     entries, seen = [], set()
     modifier_codes = {name: set() for name in CANONICAL}
@@ -182,8 +276,10 @@ def build(args):
         if identity in seen:
             continue
         seen.add(identity)
-        entries.append({"id": identity, "combo": " + ".join(mods + [key]) if mods else key, "modifiers": mods, "key": key, "xkbCodes": codes, "description": description, "category": category(description), "phase": phase, "submap": submap, "dispatcherKind": dispatcher or "other", "trackable": not mouse, "guideEligible": not mouse, "repeat": repeat})
-    entries.sort(key=lambda item: (item["combo"], item["description"], item["id"]))
+        combo_key = display_key(key, code_symbols)
+        combo = " + ".join(mods + [combo_key]) if mods else combo_key
+        entries.append({"id": identity, "combo": combo, "modifiers": mods, "key": key, "xkbCodes": codes, "description": description, "category": category(description), "phase": phase, "submap": submap, "dispatcherKind": dispatcher or "other", "trackable": not mouse, "guideEligible": not mouse, "repeat": repeat})
+    entries.sort(key=lambda item: (menu_priority(item["combo"], item["description"]), item["combo"], item["description"], item["id"]))
     source = json.dumps({"bindings": entries, "modifierCodes": {k: sorted(v) for k, v in modifier_codes.items()}}, sort_keys=True, separators=(",", ":"))
     source_hash = "sha256:" + hashlib.sha256(source.encode()).hexdigest()
     state = Path(args.output_dir)
