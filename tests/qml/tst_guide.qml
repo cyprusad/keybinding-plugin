@@ -71,10 +71,13 @@ TestCase {
     compare(collapsed.items[10].binding.id, cards[10].id)
     verify(collapsed.items[9].x < collapsed.overflow.x)
     verify(collapsed.items[10].x > collapsed.overflow.x)
-    var cornerCount = 0
+    var corners = []
     for (var placement = 0; placement < collapsed.items.length; placement++)
-      if (collapsed.items[placement].tier === "corner") cornerCount++
-    compare(cornerCount, 2)
+      if (collapsed.items[placement].tier === "corner") corners.push(collapsed.items[placement])
+    compare(corners.length, 2)
+    compare(corners[0].y, collapsed.overflow.y)
+    verify(corners[0].x > collapsed.metrics.margin)
+    verify(corners[1].x + corners[1].width < 2560 - collapsed.metrics.margin)
 
     var expanded = GuideModel.canopyLayout(cards, { width: 2560, height: 1440 }, true)
     compare(expanded.visibleCount, 38)

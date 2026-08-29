@@ -92,9 +92,10 @@ The highest-priority bindings form a compact two-row crown below the Omarchy
 bar. Remaining collapsed bindings become left and right wings that step
 outward and then downward, preserving the center of the desktop.
 
-On wide displays, the two upper corners become small, low-priority corner caps.
-They increase collapsed capacity without creating another full-width row; they
-are not rendered on narrower displays where they would crowd the crown.
+Where the secondary row leaves enough space, two low-priority corner caps sit
+one row below the crown and inset from each edge. Together with the lower side
+wings, they create a stepped outline rather than cards that hug the absolute
+upper corners. They are not rendered when the secondary row would crowd them.
 
 The side wings use four left/right pairs on wide displays (rather than two),
 so four additional low-priority bindings remain visible at their normal,

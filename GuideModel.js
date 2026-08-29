@@ -88,6 +88,14 @@ function canopyMetrics(viewport, expanded) {
   var columns = Math.floor((width - margin * 2 + gap) / (compact + gap))
   columns = clamp(columns, 5, expanded === true ? 12 : 9)
   if (columns % 2 === 0 && columns > 5) columns -= 1
+  var cornerWidth = Math.round(compact * 0.78)
+  var cornerInset = Math.round(compact * 0.20)
+  var moreWidth = Math.round(compact * 1.45)
+  var secondaryLeftCount = Math.ceil(Math.max(0, columns - 1) / 2)
+  var outerSecondaryLeft = width / 2 - moreWidth / 2 - gap
+    - (compact + gap) * secondaryLeftCount
+  var cornerCaps = expanded !== true
+    && outerSecondaryLeft - gap - (margin + cornerInset) >= cornerWidth
   return {
     width: width,
     cardWidth: compact,
@@ -97,8 +105,9 @@ function canopyMetrics(viewport, expanded) {
     gap: gap,
     margin: margin,
     crownColumns: columns,
-    cornerWidth: Math.round(compact * 0.78),
-    cornerCaps: expanded !== true && width >= 1800,
+    cornerWidth: cornerWidth,
+    cornerInset: cornerInset,
+    cornerCaps: cornerCaps,
     wingPairs: expanded !== true && width >= 1800 ? 4 : 2
   }
 }
@@ -231,8 +240,9 @@ function canopyLayout(items, viewport, expanded) {
       if (!cornerBinding) break
       placements.push({
         binding: cornerBinding,
-        x: i === 0 ? metrics.margin : metrics.width - metrics.margin - metrics.cornerWidth,
-        y: 0,
+        x: i === 0 ? metrics.margin + metrics.cornerInset
+          : metrics.width - metrics.margin - metrics.cornerInset - metrics.cornerWidth,
+        y: secondY,
         width: metrics.cornerWidth,
         height: metrics.cardHeight,
         tier: "corner",
