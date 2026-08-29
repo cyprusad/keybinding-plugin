@@ -6,7 +6,13 @@ env -u DISPLAY QT_QPA_PLATFORM=minimal QT_QPA_PLATFORMTHEME= \
   qmltestrunner -input "$root/tests/qml/tst_guide.qml" -o -,txt
 grep -q 'GuideModel.canopyLayout' "$root/SuperGuide.qml"
 grep -q 'Util.alpha(Color.menu.background' "$root/SuperGuide.qml"
-grep -q 'mask: Region {}' "$root/SuperGuide.qml"
+grep -q 'HoverHandler' "$root/SuperGuide.qml"
+grep -q 'overflowHoverTimer' "$root/SuperGuide.qml"
+grep -q 'item: overflowPill.visible && !root.expanded ? overflowPill : null' "$root/SuperGuide.qml"
+if grep -q 'mask: Region {}' "$root/SuperGuide.qml"; then
+  echo "overflow hover requires a restricted pointer region" >&2
+  exit 1
+fi
 if grep -q 'Flow {' "$root/SuperGuide.qml"; then
   echo "legacy flow layout remains in the Super Guide" >&2
   exit 1

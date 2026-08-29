@@ -65,8 +65,14 @@ Item {
 
   function hideGuide() {
     guideDelayTimer.stop()
+    overflowHoverTimer.stop()
     delayedVisible = false
     expanded = false
+  }
+
+  function expandOverflow() {
+    if (!delayedVisible || expanded || frozenCards.length === 0) return
+    expanded = true
   }
 
   function focusedScreenName() {
@@ -111,6 +117,13 @@ Item {
     interval: 140
     repeat: false
     onTriggered: root.renderedHighlightId = ""
+  }
+
+  Timer {
+    id: overflowHoverTimer
+    interval: 150
+    repeat: false
+    onTriggered: root.expandOverflow()
   }
 
   Connections {
@@ -162,7 +175,12 @@ Item {
         WlrLayershell.namespace: "keybind-dojo-guide"
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-        mask: Region {}
+        // Hover is intentionally confined to this single pill. Every other
+        // part of the guide remains pointer-transparent and the expanded
+        // state is sticky, so cards themselves never need an input region.
+        mask: Region {
+          item: overflowPill.visible && !root.expanded ? overflowPill : null
+        }
 
         readonly property var guideLayout: GuideModel.canopyLayout(root.frozenCards, {
           width: Math.max(1, guideContent.width),
@@ -204,7 +222,8 @@ Item {
                 font.bold: true
               }
               Text {
-                text: root.frozenMask === "SUPER" ? "hold Super" : root.frozenMask
+                text: root.expanded ? "all " + guideWindow.guideLayout.total + " bindings"
+                  : root.frozenMask === "SUPER" ? "hold Super" : root.frozenMask
                 color: Color.menu.text
                 opacity: 0.84
                 font.family: Style.font.family
@@ -305,11 +324,20 @@ Item {
 
               Text {
                 anchors.centerIn: parent
-                text: "+" + guideWindow.guideLayout.more + " MORE"
+                text: "+" + guideWindow.guideLayout.more + " MORE · HOVER"
                 color: Color.menu.selectedText
                 font.family: Style.font.family
                 font.pixelSize: Style.font.caption
                 font.bold: true
+              }
+
+              HoverHandler {
+                id: overflowHover
+                enabled: overflowPill.visible && !root.expanded
+                onHoveredChanged: {
+                  if (hovered) overflowHoverTimer.restart()
+                  else overflowHoverTimer.stop()
+                }
               }
             }
           }
