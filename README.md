@@ -12,7 +12,7 @@ progress.
 Validated with Omarchy 4.0.1-1, Quickshell 0.3.1, and Hyprland 0.56.2.
 
 ```sh
-omarchy plugin add https://github.com/cyprusad/keybinding-plugin.git --enable
+omarchy plugin add https://github.com/cyprusad/omakeez.git --enable
 ```
 
 The bar widget opens browse-only mode first. Choosing **Enable tracking and

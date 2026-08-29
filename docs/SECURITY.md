@@ -61,7 +61,6 @@ block as malformed even when the installed block is valid.
 
 Please do not include passwords, private configuration, or state files in a
 public issue. For sensitive reports, use the repository's GitHub Security
-Advisories flow: <https://github.com/cyprusad/keybinding-plugin/security/advisories/new>.
+Advisories flow: <https://github.com/cyprusad/omakeez/security/advisories/new>.
 For non-sensitive bugs, open an issue at
-<https://github.com/cyprusad/keybinding-plugin/issues>.
-
+<https://github.com/cyprusad/omakeez/issues>.
