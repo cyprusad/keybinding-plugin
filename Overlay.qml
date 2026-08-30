@@ -605,7 +605,7 @@ Item {
               width: settingsView.width
               spacing: Style.space(10)
               Text { text: "Settings"; color: Color.menu.selectedText; font.pixelSize: Style.font.heading; font.bold: true }
-              Text { width: parent.width; text: service.integrationState === "enabled" ? "Tracking enabled" : "Tracking is not enabled"; color: Color.menu.text; font.pixelSize: Style.font.body }
+              Text { width: parent.width; text: service.integrationState === "enabled" ? "Visual guide enabled" : "Visual guide is not enabled"; color: Color.menu.text; font.pixelSize: Style.font.body }
               Text { width: parent.width; text: "Resolved config: " + (service.integrationDetails && service.integrationDetails.resolvedPath ? service.integrationDetails.resolvedPath : "—"); color: Color.menu.text; opacity: 0.72; font.pixelSize: Style.font.caption; elide: Text.ElideMiddle }
               Text { text: "Guide delay"; color: Color.menu.text; font.pixelSize: Style.font.body; font.bold: true }
               Flow {

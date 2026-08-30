@@ -123,15 +123,15 @@ Panel {
     if (service.integrationMutationRunning || service.integrationState === "enabling") return "Patching configuration…"
     if (service.integrationInspectRunning) return "Verifying integration status…"
     if (service.integrationState === "error") return "Integration error: " + pathValue("reasonCode")
-    if (service.integrationState === "disconnected") return "Tracking is disconnected from the current configuration"
-    if (service.integrationState === "enabled") return "Tracking enabled"
+    if (service.integrationState === "disconnected") return "Visual guide is disconnected from the current configuration"
+    if (service.integrationState === "enabled") return "Visual guide enabled"
     return "Ready for review"
   }
 
   function enableLabel() {
     if (!service) return "Service unavailable"
     if (service.integrationMutationRunning) return "Working…"
-    return "Enable tracking and visual keybinding guide"
+    return "Enable visual keybinding guide"
   }
 
   function enableIntegration() {
@@ -213,6 +213,7 @@ Panel {
           }
           Text {
             width: parent.width
+            visible: !root.service || root.service.integrationState !== "enabled"
             text: root.statusText()
             color: root.service && root.service.integrationState === "error" ? Color.urgent : Color.foreground
             opacity: 0.78
@@ -462,7 +463,7 @@ Panel {
             width: parent.width
             spacing: Style.space(8)
             Button {
-              text: root.confirmDisable ? "Confirm disable" : "Disable tracking"
+              text: root.confirmDisable ? "Confirm disable guide" : "Disable visual guide"
               onClicked: {
                 if (!root.confirmDisable) root.confirmDisable = true
                 else root.service.disableIntegration(root.displayedHash)
@@ -470,7 +471,7 @@ Panel {
             }
             Button {
               visible: root.confirmDisable
-              text: "Keep enabled"
+              text: "Keep guide enabled"
               onClicked: root.confirmDisable = false
             }
           }
