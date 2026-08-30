@@ -66,7 +66,15 @@ Bindings and Settings surfaces around:
 - an easily reachable explanation of the allowlisted input observer;
 - future read-only provider cards for Tmux, Herdr, and other applications.
 
-No logo work is required for this pass.
+## Mark exploration
+
+Omakeez uses a small, monochrome O-key mark drawn with native QML vector
+paths. It inherits the shell foreground color rather than shipping a fixed
+color bitmap, so it remains legible across Omarchy themes. The current live
+workshop stages both supplied directions: the denser **compact** mark in the
+bar (where optical weight matters most) and the lighter **outline** mark at
+panel scale. After visual review, one variant will become the consistent mark
+everywhere.
 
 ## Delivery order
 
