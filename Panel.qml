@@ -213,7 +213,10 @@ Panel {
           }
           Text {
             width: parent.width
-            visible: !root.service || root.service.integrationState !== "enabled"
+            visible: !root.service || root.service.integrationMutationRunning
+              || root.service.integrationInspectRunning
+              || root.service.integrationState === "error"
+              || root.service.integrationState === "disconnected"
             text: root.statusText()
             color: root.service && root.service.integrationState === "error" ? Color.urgent : Color.foreground
             opacity: 0.78
@@ -228,7 +231,15 @@ Panel {
           width: parent.width
           spacing: Style.space(8)
 
-          PanelSectionHeader { text: "Configuration review"; width: parent.width }
+          PanelSeparator { width: parent.width }
+
+          Text {
+            width: parent.width
+            text: "CONFIGURATION REVIEW"
+            color: Color.foreground
+            font.pixelSize: Style.font.caption
+            font.bold: true
+          }
 
           Text {
             width: parent.width
@@ -306,10 +317,18 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          PanelSectionHeader {
+          PanelSeparator {
             width: parent.width
             visible: root.displayedDiff !== ""
-            text: "What Omakeez changes"
+          }
+
+          Text {
+            width: parent.width
+            visible: root.displayedDiff !== ""
+            text: "WHAT OMAKEEZ CHANGES"
+            color: Color.foreground
+            font.pixelSize: Style.font.caption
+            font.bold: true
           }
 
           Text {
@@ -388,7 +407,15 @@ Panel {
             }
           }
 
-          PanelSectionHeader { text: "Ready when you are"; width: parent.width }
+          PanelSeparator { width: parent.width }
+
+          Text {
+            width: parent.width
+            text: "ENABLE VISUAL GUIDE"
+            color: Color.foreground
+            font.pixelSize: Style.font.caption
+            font.bold: true
+          }
 
           Button {
             width: parent.width
