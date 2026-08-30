@@ -126,3 +126,4 @@
 | `198ce71` | Capitalize the enabled panel's top-level OMAKEEZ heading. |
 | `623ffe6` | Soften major headings and give Delay and Fullscreen one uniform field-label style. |
 | `e1ac277` | Put visual guide settings first, remove the GUIDE heading, and move integration controls to the bottom. |
+| `1569b81` | Center and promote the Disable visual guide action. |
