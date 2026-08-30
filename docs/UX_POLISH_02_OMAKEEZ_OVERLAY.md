@@ -66,15 +66,13 @@ Bindings and Settings surfaces around:
 - an easily reachable explanation of the allowlisted input observer;
 - future read-only provider cards for Tmux, Herdr, and other applications.
 
-## Mark exploration
+## Mark status
 
-Omakeez uses a small, monochrome O-key mark drawn with native QML vector
-paths. It inherits the shell foreground color rather than shipping a fixed
-color bitmap, so it remains legible across Omarchy themes. The live workshop
-uses two optical sizes of the same mark: a deliberately simplified **micro**
-O-key in the bar, and the full layered **O-key** mark at panel scale. This
-avoids making three nested outlines look like a rendering defect in a tiny bar
-slot. After visual review, the full geometry can be refined further if needed.
+The experimental O-key vector was rejected during visual review and removed.
+Omakeez retains the original keyboard glyph for now. A future custom mark
+should start from a purpose-designed logo system with a faithful full mark and
+a separately designed micro-icon, rather than shrinking detailed artwork into
+the bar slot.
 
 ## Delivery order
 
