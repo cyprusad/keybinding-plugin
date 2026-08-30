@@ -328,7 +328,7 @@ Panel {
           Text {
             width: parent.width
             visible: root.displayedDiff !== ""
-            text: "One small, local bridge is added to Hyprland so the visual guide can see registered shortcuts."
+            text: "One small, local bridge is added to Hyprland so the visual guide can see registered keyboard shortcuts."
             color: Color.foreground
             opacity: 0.78
             font.pixelSize: Style.font.caption
