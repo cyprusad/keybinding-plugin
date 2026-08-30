@@ -1,5 +1,8 @@
 local root = arg[1]
 local callbacks, payloads, dispatching = {}, {}, false
+local state_home = assert(os.getenv("XDG_STATE_HOME"))
+local catalog_path = state_home .. "/omarchy/omakeez/bridge-catalog.lua"
+local catalog_seed = state_home .. "/omarchy/omakeez/bridge-catalog.seed.lua"
 hl = {
   on = function(name, callback) callbacks[name] = callback end,
   dsp = { event = function(value) return value end },
@@ -13,7 +16,12 @@ assert(pcall(dofile, root .. "/bridge.lua"))
 local count = 0
 for _ in pairs(callbacks) do count = count + 1 end
 assert(count == 2)
+-- A first install can load the bridge before its catalog generator finishes.
+-- The bridge must stay inert, then activate without a Hyprland reload once
+-- the generated catalog appears.
+assert(os.rename(catalog_seed, catalog_path))
 X("input.keyboard.key", { keycode = 133, state = 1 })
+assert(payloads[1] == "omakeez:v1:guide:down:SUPER")
 X("input.keyboard.key", { keycode = 133, state = 1 })
 X("input.keyboard.key", { keycode = 36, state = 1 })
 X("input.keyboard.key", { keycode = 36, state = 0 })

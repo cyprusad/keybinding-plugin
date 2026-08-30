@@ -5,7 +5,7 @@ root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
 fixture=$(mktemp -d)
 trap 'rm -rf "$fixture"' EXIT
 mkdir -p "$fixture/omarchy/omakeez"
-cp "$root/tests/fixtures/bridge-catalog.lua" "$fixture/omarchy/omakeez/bridge-catalog.lua"
+cp "$root/tests/fixtures/bridge-catalog.lua" "$fixture/omarchy/omakeez/bridge-catalog.seed.lua"
 XDG_STATE_HOME="$fixture" HOME="$fixture" lua "$root/tests/fixtures/bridge-harness.lua" "$root"
 luac -p "$root/bridge.lua"
 if sed -n '/hl.on("input.keyboard.key"/,/^end)/p' "$root/bridge.lua" | rg -q 'io\.|os\.execute|os\.remove|os\.rename|io\.popen|require\("socket|hyprctl'; then

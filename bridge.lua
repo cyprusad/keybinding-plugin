@@ -7,8 +7,6 @@ if not state_home or state_home == "" then
   state_home = (os.getenv("HOME") or "") .. "/.local/state"
 end
 
-local loaded, catalog = pcall(dofile, state_home .. "/omarchy/omakeez/bridge-catalog.lua")
-
 local function valid_codes(codes)
   if type(codes) ~= "table" or #codes == 0 then return false end
   for _, code in ipairs(codes) do
@@ -17,30 +15,33 @@ local function valid_codes(codes)
   return true
 end
 
-local usable = loaded and type(catalog) == "table" and catalog.schemaVersion == 1
-local modifier_codes = usable and catalog.modifierCodes or nil
-for _, name in ipairs(ORDERED_MODIFIERS) do
-  if not modifier_codes or not valid_codes(modifier_codes[name]) then usable = false end
-end
-if usable and type(catalog.matches) ~= "table" then usable = false end
-
-local existing = rawget(_G, STATE_NAME)
-if not usable then
-  if type(existing) == "table" then existing.enabled = false end
-  return
+local function empty_modifiers()
+  return { SUPER = {}, SHIFT = {}, CTRL = {}, ALT = {} }
 end
 
-local modifiers = { SUPER = {}, SHIFT = {}, CTRL = {}, ALT = {} }
-for name, codes in pairs(modifier_codes) do
-  if modifiers[name] then
+local function load_catalog()
+  local loaded, catalog = pcall(dofile, state_home .. "/omarchy/omakeez/bridge-catalog.lua")
+  if not loaded or type(catalog) ~= "table" or catalog.schemaVersion ~= 1
+    or type(catalog.matches) ~= "table" then return nil, nil end
+
+  local modifier_codes = catalog.modifierCodes
+  if type(modifier_codes) ~= "table" then return nil, nil end
+
+  local modifiers = empty_modifiers()
+  for _, name in ipairs(ORDERED_MODIFIERS) do
+    local codes = modifier_codes[name]
+    if not valid_codes(codes) then return nil, nil end
     for _, code in ipairs(codes) do modifiers[name][code] = true end
   end
+  return catalog, modifiers
 end
 
+local existing = rawget(_G, STATE_NAME)
 if type(existing) == "table" then
-  existing.enabled = true
+  local catalog, modifiers = load_catalog()
+  existing.enabled = catalog ~= nil
   existing.catalog = catalog
-  existing.modifiers = modifiers
+  existing.modifiers = modifiers or empty_modifiers()
   existing.held = { SUPER = {}, SHIFT = {}, CTRL = {}, ALT = {} }
   existing.submap = ""
   existing.guideRoot = nil
@@ -48,15 +49,31 @@ if type(existing) == "table" then
 end
 
 local bridge = {
-  enabled = true,
-  catalog = catalog,
-  modifiers = modifiers,
+  enabled = false,
+  catalog = nil,
+  modifiers = empty_modifiers(),
   held = { SUPER = {}, SHIFT = {}, CTRL = {}, ALT = {} },
   submap = "",
   guideRoot = nil,
   emitting = false,
 }
 _G[STATE_NAME] = bridge
+
+local function refresh_catalog()
+  local catalog, modifiers = load_catalog()
+  if not catalog then
+    bridge.enabled = false
+    bridge.catalog = nil
+    bridge.modifiers = empty_modifiers()
+    return false
+  end
+  bridge.enabled = true
+  bridge.catalog = catalog
+  bridge.modifiers = modifiers
+  return true
+end
+
+refresh_catalog()
 
 local function valid_id(value)
   return type(value) == "string"
@@ -94,7 +111,7 @@ local function event_value(event, key, fallback)
 end
 
 hl.on("input.keyboard.key", function(keycode, timestamp, event_state)
-  if not bridge.enabled then return end
+  if not bridge.enabled and not refresh_catalog() then return end
   local code, state
   if type(keycode) == "table" then
     code = tonumber(event_value(keycode, "keycode", event_value(keycode, "code", 0)))
