@@ -460,52 +460,6 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          PanelSeparator { width: parent.width }
-
-          Text {
-            width: parent.width
-            text: "INTEGRATION"
-            color: Color.foreground
-            opacity: 0.82
-            font.pixelSize: Style.font.caption
-            font.bold: true
-          }
-          Text {
-            width: parent.width
-            text: "The local Hyprland bridge is active. Disable it to stop Omakeez from showing or receiving registered keyboard shortcuts."
-            color: Color.foreground
-            opacity: 0.78
-            font.pixelSize: Style.font.caption
-            wrapMode: Text.WordWrap
-          }
-
-          Row {
-            width: parent.width
-            spacing: Style.space(8)
-            Button {
-              text: root.confirmDisable ? "Confirm disable guide" : "Disable visual guide"
-              onClicked: {
-                if (!root.confirmDisable) root.confirmDisable = true
-                else root.service.disableIntegration(root.displayedHash)
-              }
-            }
-            Button {
-              visible: root.confirmDisable
-              text: "Keep guide enabled"
-              onClicked: root.confirmDisable = false
-            }
-          }
-
-          PanelSeparator { width: parent.width }
-
-          Text {
-            width: parent.width
-            text: "GUIDE"
-            color: Color.foreground
-            opacity: 0.82
-            font.pixelSize: Style.font.caption
-            font.bold: true
-          }
           Text {
             width: parent.width
             text: "DELAY"
@@ -566,6 +520,42 @@ Panel {
               anchors.verticalCenter: parent.verticalCenter
               checked: root.service && root.service.showInFullscreen
               onToggled: root.service.setShowInFullscreen(!checked)
+            }
+          }
+
+          PanelSeparator { width: parent.width }
+
+          Text {
+            width: parent.width
+            text: "INTEGRATION"
+            color: Color.foreground
+            opacity: 0.82
+            font.pixelSize: Style.font.caption
+            font.bold: true
+          }
+          Text {
+            width: parent.width
+            text: "The local Hyprland bridge is active. Disable it to remove the bridge and stop the visual guide."
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
+
+          Row {
+            width: parent.width
+            spacing: Style.space(8)
+            Button {
+              text: root.confirmDisable ? "Confirm disable guide" : "Disable visual guide"
+              onClicked: {
+                if (!root.confirmDisable) root.confirmDisable = true
+                else root.service.disableIntegration(root.displayedHash)
+              }
+            }
+            Button {
+              visible: root.confirmDisable
+              text: "Keep guide enabled"
+              onClicked: root.confirmDisable = false
             }
           }
         }
