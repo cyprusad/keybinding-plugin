@@ -4,10 +4,17 @@ set -eu
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
 env -u DISPLAY QT_QPA_PLATFORM=minimal QT_QPA_PLATFORMTHEME= \
   qmltestrunner -input "$root/tests/qml/tst_service.qml" -o -,txt
-grep -q 'stdinEnabled = false' "$root/Service.qml"
-grep -q 'statsResetPending' "$root/Service.qml"
-grep -q 'beginClearLocalData' "$root/Service.qml"
+if rg -q 'Stats\.js|Recommendations\.js|stats-store|stats\.json|recordStatsObservation' "$root/Service.qml"; then
+  echo "service must not retain activity persistence or gamification" >&2
+  exit 1
+fi
 if rg -q 'root\.(catalogChangeTimer|fullscreenQueryTimer)' "$root/Service.qml"; then
   echo "QML timer IDs must not be accessed through root" >&2
   exit 1
 fi
+for removed in Stats.js Recommendations.js scripts/stats-store Overlay.qml; do
+  if [ -e "$root/$removed" ]; then
+    echo "removed privacy-risk surface still present: $removed" >&2
+    exit 1
+  fi
+done

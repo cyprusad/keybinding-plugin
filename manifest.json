@@ -6,11 +6,10 @@
   "author": "cyprusad",
   "license": "MIT",
   "description": "A local-first visual guide for Omarchy keyboard shortcuts.",
-  "kinds": ["bar-widget", "service", "overlay"],
+  "kinds": ["bar-widget", "service"],
   "entryPoints": {
     "barWidget": "BarWidget.qml",
-    "service": "Service.qml",
-    "overlay": "Overlay.qml"
+    "service": "Service.qml"
   },
   "barWidget": {
     "displayName": "Omakeez",

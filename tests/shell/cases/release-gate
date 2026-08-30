@@ -2,9 +2,9 @@
 set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
-runtime_files="$root/bridge.lua $root/Service.qml $root/Panel.qml $root/Overlay.qml $root/SuperGuide.qml $root/BarWidget.qml $root/ServiceModel.js $root/Stats.js $root/Recommendations.js $root/GuideModel.js $root/scripts/bridge-control $root/scripts/generate-catalog $root/scripts/stats-store"
+runtime_files="$root/bridge.lua $root/Service.qml $root/Panel.qml $root/SuperGuide.qml $root/BarWidget.qml $root/ServiceModel.js $root/GuideModel.js $root/scripts/bridge-control $root/scripts/generate-catalog"
 
-for entry in manifest.json BarWidget.qml Panel.qml Overlay.qml Service.qml SuperGuide.qml bridge.lua ServiceModel.js Stats.js Recommendations.js GuideModel.js scripts/bridge-control scripts/generate-catalog scripts/stats-store; do
+for entry in manifest.json BarWidget.qml Panel.qml Service.qml SuperGuide.qml bridge.lua ServiceModel.js GuideModel.js scripts/bridge-control scripts/generate-catalog; do
   test -f "$root/$entry"
 done
 
@@ -15,10 +15,10 @@ jq -e '
   .version == "0.1.0" and
   .author == "cyprusad" and
   .license == "MIT" and
-  (.kinds == ["bar-widget", "service", "overlay"]) and
+  (.kinds == ["bar-widget", "service"]) and
   (.entryPoints.barWidget == "BarWidget.qml") and
   (.entryPoints.service == "Service.qml") and
-  (.entryPoints.overlay == "Overlay.qml")
+  (has("overlay") | not)
 ' "$root/manifest.json" >/dev/null
 if grep -Fq 'io.github.sai' "$root/manifest.json" || grep -Eq '"author"[[:space:]]*:[[:space:]]*"sai"' "$root/manifest.json"; then
   echo "manifest contains the retired author identity" >&2
@@ -26,9 +26,22 @@ if grep -Fq 'io.github.sai' "$root/manifest.json" || grep -Eq '"author"[[:space:
 fi
 
 qmllint -I /usr/share/omarchy/shell \
-  "$root/BarWidget.qml" "$root/Panel.qml" "$root/Overlay.qml" \
-  "$root/Service.qml" "$root/SuperGuide.qml"
+  "$root/BarWidget.qml" "$root/Panel.qml" "$root/Service.qml" \
+  "$root/SuperGuide.qml"
 luac -p "$root/bridge.lua"
+
+# No activity history, XP system, or full-browser overlay may remain in a
+# release whose privacy model is guide-only.
+for removed in Overlay.qml Stats.js Recommendations.js scripts/stats-store; do
+  if [ -e "$root/$removed" ]; then
+    echo "removed privacy-risk surface still present: $removed" >&2
+    exit 1
+  fi
+done
+if rg -n -i 'stats\.json|recordStatsObservation|dailyQuest|totalXp|streak|recommendations' $runtime_files; then
+  echo "legacy activity persistence or gamification remains in runtime code" >&2
+  exit 1
+fi
 
 # Runtime code must not contain network clients, privilege escalation, dynamic
 # evaluation, or shell command injection helpers.
