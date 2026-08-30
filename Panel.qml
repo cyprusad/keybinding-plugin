@@ -205,7 +205,7 @@ Panel {
 
           Text {
             width: parent.width
-            text: root.onboarding ? "SET UP OMAKEEZ" : "Omakeez"
+            text: root.onboarding ? "SET UP OMAKEEZ" : "OMAKEEZ"
             color: Color.foreground
             font.family: root.bar ? root.bar.fontFamily : Style.font.family
             font.pixelSize: Style.font.title
