@@ -205,7 +205,7 @@ Panel {
 
           Text {
             width: parent.width
-            text: root.onboarding ? "Set up Omakeez" : "Omakeez"
+            text: root.onboarding ? "SET UP OMAKEEZ" : "Omakeez"
             color: Color.foreground
             font.family: root.bar ? root.bar.fontFamily : Style.font.family
             font.pixelSize: Style.font.title
@@ -405,16 +405,6 @@ Panel {
                 wrapMode: TextEdit.NoWrap
               }
             }
-          }
-
-          PanelSeparator { width: parent.width }
-
-          Text {
-            width: parent.width
-            text: "ENABLE VISUAL GUIDE"
-            color: Color.foreground
-            font.pixelSize: Style.font.caption
-            font.bold: true
           }
 
           Button {
