@@ -25,6 +25,10 @@ Item {
   property string highlightedBindingId: ""
   property int guideDelayMs: 0
   property bool showInFullscreen: false
+  property bool guideSuperEnabled: true
+  property bool guideShiftEnabled: true
+  property bool guideCtrlEnabled: true
+  property bool guideAltEnabled: true
   property bool desktopLocked: false
   property bool credentialPromptActive: false
   property bool activeWindowFullscreen: false
@@ -103,6 +107,13 @@ Item {
     lastProtocolError = ""
     if (parsed.type === "guide") {
       if (parsed.phase === "down") {
+        if (!root.guideRootEnabled(parsed.root)) {
+          activeModifiers = ""
+          activeGuideRoot = ""
+          guideVisible = false
+          pendingGuideReceivedMs = 0
+          return true
+        }
         pendingGuideReceivedMs = Date.now()
         activeGuideRoot = parsed.root
         activeModifiers = parsed.root
@@ -117,7 +128,7 @@ Item {
       return true
     }
     if (parsed.type === "mods") {
-      activeModifiers = parsed.modifiers
+      if (guideVisible) activeModifiers = parsed.modifiers
       return true
     }
     if (parsed.type === "match") {
@@ -345,6 +356,15 @@ Item {
     var entry = settingsEntry()
     guideDelayMs = Model.normalizeDelay(entry.guideDelayMs)
     showInFullscreen = Model.normalizeFullscreen(entry.showInFullscreen)
+    guideSuperEnabled = Model.normalizeGuideRoot(entry.guideSuperEnabled)
+    guideShiftEnabled = Model.normalizeGuideRoot(entry.guideShiftEnabled)
+    guideCtrlEnabled = Model.normalizeGuideRoot(entry.guideCtrlEnabled)
+    guideAltEnabled = Model.normalizeGuideRoot(entry.guideAltEnabled)
+    if (!guideRootEnabled(activeGuideRoot)) {
+      guideVisible = false
+      activeModifiers = ""
+      activeGuideRoot = ""
+    }
   }
 
   function persistSettings(changes) {
@@ -369,6 +389,38 @@ Item {
     if (next === showInFullscreen) return false
     showInFullscreen = next
     return persistSettings({ showInFullscreen: next })
+  }
+
+  function guideRootEnabled(rootName) {
+    if (rootName === "SUPER") return guideSuperEnabled
+    if (rootName === "SHIFT") return guideShiftEnabled
+    if (rootName === "CTRL") return guideCtrlEnabled
+    if (rootName === "ALT") return guideAltEnabled
+    return false
+  }
+
+  function setGuideRootEnabled(rootName, value) {
+    var next = Model.normalizeGuideRoot(value)
+    var setting = ""
+    if (rootName === "SUPER") setting = "guideSuperEnabled"
+    else if (rootName === "SHIFT") setting = "guideShiftEnabled"
+    else if (rootName === "CTRL") setting = "guideCtrlEnabled"
+    else if (rootName === "ALT") setting = "guideAltEnabled"
+    else return false
+
+    if (guideRootEnabled(rootName) === next) return false
+    if (rootName === "SUPER") guideSuperEnabled = next
+    else if (rootName === "SHIFT") guideShiftEnabled = next
+    else if (rootName === "CTRL") guideCtrlEnabled = next
+    else guideAltEnabled = next
+    if (!next && activeGuideRoot === rootName) {
+      guideVisible = false
+      activeModifiers = ""
+      activeGuideRoot = ""
+    }
+    var changes = {}
+    changes[setting] = next
+    return persistSettings(changes)
   }
 
   property var lockService: null

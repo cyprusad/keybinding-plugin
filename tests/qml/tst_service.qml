@@ -98,13 +98,19 @@ TestCase {
     compare(Model.normalizeDelay(99), 0)
     compare(Model.normalizeFullscreen(true), true)
     compare(Model.normalizeFullscreen("true"), false)
+    compare(Model.normalizeGuideRoot(undefined), true)
+    compare(Model.normalizeGuideRoot(true), true)
+    compare(Model.normalizeGuideRoot(false), false)
 
     var config = { bar: { layout: { left: [], center: [], right: [
-      { id: "io.github.cyprusad.omakeez", guideDelayMs: 150, showInFullscreen: true }
+      { id: "io.github.cyprusad.omakeez", guideDelayMs: 150, showInFullscreen: true,
+        guideSuperEnabled: false, guideShiftEnabled: true, guideCtrlEnabled: false, guideAltEnabled: true }
     ] } } }
     var settings = Model.settingsFor(config, "io.github.cyprusad.omakeez")
     compare(settings.guideDelayMs, 150)
     compare(settings.showInFullscreen, true)
+    compare(settings.guideSuperEnabled, false)
+    compare(settings.guideCtrlEnabled, false)
     compare(Model.settingsFor({}, "io.github.cyprusad.omakeez").guideDelayMs, undefined)
   }
 

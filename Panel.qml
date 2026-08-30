@@ -523,6 +523,48 @@ Panel {
             }
           }
 
+          PanelSeparator { width: parent.width; strength: 0.09 }
+
+          Text {
+            width: parent.width
+            text: "SHOW GUIDES FOR"
+            color: Color.foreground
+            opacity: 0.70
+            font.pixelSize: Style.font.caption
+            font.bold: true
+          }
+          Text {
+            width: parent.width
+            text: "Choose which held keys open a visual guide. Shortcuts continue to work normally."
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
+          Flow {
+            width: parent.width
+            spacing: Style.space(12)
+            Repeater {
+              model: ["SUPER", "SHIFT", "CTRL", "ALT"]
+              Row {
+                required property string modelData
+                spacing: Style.space(6)
+                Text {
+                  anchors.verticalCenter: parent.verticalCenter
+                  text: parent.modelData
+                  color: Color.foreground
+                  opacity: 0.82
+                  font.pixelSize: Style.font.caption
+                  font.bold: true
+                }
+                ToggleSwitch {
+                  checked: root.service && root.service.guideRootEnabled(parent.modelData)
+                  onToggled: root.service.setGuideRootEnabled(parent.modelData, !checked)
+                }
+              }
+            }
+          }
+
           PanelSeparator { width: parent.width }
 
           Text {

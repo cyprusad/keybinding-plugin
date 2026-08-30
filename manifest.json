@@ -19,7 +19,11 @@
     "defaultSection": "right",
     "defaults": {
       "guideDelayMs": 0,
-      "showInFullscreen": false
+      "showInFullscreen": false,
+      "guideSuperEnabled": true,
+      "guideShiftEnabled": true,
+      "guideCtrlEnabled": true,
+      "guideAltEnabled": true
     },
     "schema": [
       {
@@ -31,6 +35,26 @@
         "key": "showInFullscreen",
         "type": "boolean",
         "label": "Show over fullscreen windows"
+      },
+      {
+        "key": "guideSuperEnabled",
+        "type": "boolean",
+        "label": "Show Super guide"
+      },
+      {
+        "key": "guideShiftEnabled",
+        "type": "boolean",
+        "label": "Show Shift guide"
+      },
+      {
+        "key": "guideCtrlEnabled",
+        "type": "boolean",
+        "label": "Show Ctrl guide"
+      },
+      {
+        "key": "guideAltEnabled",
+        "type": "boolean",
+        "label": "Show Alt guide"
       }
     ]
   }

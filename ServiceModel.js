@@ -152,6 +152,10 @@ function normalizeFullscreen(value) {
   return value === true
 }
 
+function normalizeGuideRoot(value) {
+  return value !== false
+}
+
 function settingsFor(config, moduleName) {
   if (!isObject(config) || !isObject(config.bar) || !isObject(config.bar.layout)) return {}
   var sections = ["left", "center", "right"]
