@@ -1,22 +1,23 @@
 # Changelog
 
-## 0.1.0 — Unreleased
+## 0.1.0 — 2026-08-30
 
-- Added a local Super Guide for the focused workspace and monitor.
-- Added catalog browsing, search, practice, progress, and settings views.
-- Added one-click consent with exact diff preview, guarded Lua integration,
-  backups, validation, rollback, and browse-only fallback.
-- Added aggregate-only local usage statistics, XP, streaks, daily quests, and
-  reset/recovery storage.
-- Added lock-screen and Omarchy credential-surface suppression.
-- Added privacy, hardening, release-gate, security, and troubleshooting
-  documentation.
+- Added a local visual guide for registered `SUPER`, `SHIFT`, `CTRL`, and
+  `ALT` keyboard shortcuts on the focused monitor.
+- Added configurable guide roots, hold delay, fullscreen behavior, hover
+  expansion, keyboard-friendly guide interaction, and focused-monitor routing.
+- Added consent-led Hyprland integration with exact diff preview, safe
+  symlink/Git target handling, atomic replacement, rollback, and a manual
+  fallback.
+- Added lock-screen and Omarchy Polkit-dialog guide suppression.
+- Added security-oriented bridge comments, privacy documentation, hardening,
+  release-gate checks, and troubleshooting guidance.
+- Removed activity persistence, XP, streaks, recommendations, and the unused
+  full Dojo overlay. Omakeez does not store shortcut-use history.
 
 Known limitations:
 
-- v1 records observed candidate activations rather than exact dispatcher
-  execution.
-- Release/submap bindings unavailable on a particular machine are covered by
-  fixtures rather than executed destructively.
-- Application-owned credential prompts such as 1Password are outside the
-  Omarchy lock/Polkit suppression boundary.
+- The guide identifies configured binding candidates; it does not prove a
+  later Hyprland dispatcher completed successfully.
+- App-owned credential prompts such as 1Password are outside the Omarchy
+  lock/Polkit suppression boundary. Typed content is never stored or emitted.
