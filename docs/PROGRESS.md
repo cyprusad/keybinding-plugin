@@ -115,3 +115,4 @@
 | `a384240` | Replace the checklist-like setup layout with a compact decision-led enable flow. |
 | `096b051` | Size the setup panel to visible content and expand it only for the requested diff. |
 | `0c87919` | Include scroll insets in compact sizing so the primary CTA cannot be clipped. |
+| `10e2c3e` | Clarify that the visual guide exposes registered keyboard shortcuts. |
