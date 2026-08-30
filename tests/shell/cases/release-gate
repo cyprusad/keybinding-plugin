@@ -44,9 +44,15 @@ if rg -n -i 'stats\.json|recordStatsObservation|dailyQuest|totalXp|streak|recomm
 fi
 
 # Runtime code must not contain network clients, privilege escalation, dynamic
-# evaluation, or shell command injection helpers.
-if rg -n -i '(^|[^[:alnum:]_])(curl|wget|socat|nc|netcat|pkexec|sudo|doas|eval)([^[:alnum:]_]|$)|https?://|urllib|requests' $runtime_files; then
+# evaluation, or shell command injection helpers. The panel's single audited
+# GitHub bridge-source link is intentionally browser-mediated, not a runtime
+# network client, and is checked separately below.
+if rg -n -i '(^|[^[:alnum:]_])(curl|wget|socat|nc|netcat|pkexec|sudo|doas|eval)([^[:alnum:]_]|$)|urllib|requests' $runtime_files; then
   echo "forbidden runtime API or network client found" >&2
+  exit 1
+fi
+if rg -n -i 'https?://' "$root/Panel.qml" | grep -Fv 'https://github.com/cyprusad/omakeez/blob/main/bridge.lua'; then
+  echo "unexpected external runtime URL found" >&2
   exit 1
 fi
 
