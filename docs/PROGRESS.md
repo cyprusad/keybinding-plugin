@@ -16,7 +16,7 @@
 | 12 — Full Dojo overlay | Superseded by privacy release | 06c0026 | The unused browse/practice/progress overlay is removed from the manifest and repository; the focused visual guide remains. |
 | 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
 | 14 — Integration, privacy, and performance | Complete (manual gate passed) | 98fcd92 | Automated suite and live release evidence pass; manual lock/privacy/reset/focused-monitor checks pass, with the 1Password app prompt documented outside the detection boundary. |
-| 15 — Documentation and release | In progress (release candidate) | 06c0026 | README, security, troubleshooting, changelog, privacy boundary, bridge source comments, and release-gate docs are aligned with the guide-only product. Final fresh-install/manual smoke and screenshot insertion remain. |
+| 15 — Documentation and release | Ready for publication | 62e727d | README, security, troubleshooting, changelog, privacy boundary, bridge source comments, and release-gate docs are aligned with the guide-only product. Manifest validation, QML lint, Lua syntax checks, and the full suite passed from a fresh local clone with a clean worktree. Screenshots and the optional release-owner manual smoke remain publication artefacts, not code blockers. |
 
 ## UX polish workstream
 

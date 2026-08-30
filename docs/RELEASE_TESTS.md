@@ -21,6 +21,10 @@ guide layout, no-persistence runtime checks, QML models, and static release
 hardening. Its no-persistence check fails if the removed stats, gamification,
 or full-overlay sources return or if runtime code references activity history.
 
+Result: **PASS** on 2026-08-30 from a fresh local clone. Manifest validation,
+QML lint, Lua syntax validation, and `tests/shell/run all` all passed with a
+clean post-test worktree.
+
 ## Manual release smoke
 
 The following checks require a real Omarchy session and should be repeated by
