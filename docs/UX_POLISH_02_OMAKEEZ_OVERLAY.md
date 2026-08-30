@@ -70,11 +70,11 @@ Bindings and Settings surfaces around:
 
 Omakeez uses a small, monochrome O-key mark drawn with native QML vector
 paths. It inherits the shell foreground color rather than shipping a fixed
-color bitmap, so it remains legible across Omarchy themes. The current live
-workshop stages both supplied directions: the denser **compact** mark in the
-bar (where optical weight matters most) and the lighter **outline** mark at
-panel scale. After visual review, one variant will become the consistent mark
-everywhere.
+color bitmap, so it remains legible across Omarchy themes. The live workshop
+uses two optical sizes of the same mark: a deliberately simplified **micro**
+O-key in the bar, and the full layered **O-key** mark at panel scale. This
+avoids making three nested outlines look like a rendering defect in a tiny bar
+slot. After visual review, the full geometry can be refined further if needed.
 
 ## Delivery order
 
