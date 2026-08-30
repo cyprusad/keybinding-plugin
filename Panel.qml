@@ -205,9 +205,9 @@ Panel {
 
           OmakeezMark {
             id: titleMark
-            width: Style.font.title * 1.12
+            width: Style.space(32)
             height: width
-            variant: "outline"
+            variant: "full"
             color: Color.foreground
             anchors.verticalCenter: titleColumn.verticalCenter
           }

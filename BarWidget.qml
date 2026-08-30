@@ -79,9 +79,9 @@ BarWidget {
     iconComponent: Component {
       OmakeezMark {
         anchors.centerIn: parent
-        width: Style.bar.iconCanvas
-        height: Style.bar.iconCanvas
-        variant: "compact"
+        width: Style.bar.iconCanvas * 1.05
+        height: width
+        variant: "micro"
         color: root.bar ? root.bar.barForeground : Color.foreground
       }
     }

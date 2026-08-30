@@ -5,69 +5,101 @@ import qs.Commons
 Item {
   id: root
 
-  // The two references distilled into monochrome, theme-native marks.
-  // "compact" is the heavier, small-size-friendly version; "outline" is the
-  // lighter architectural version for panel-scale use.
-  property string variant: "compact"
+  // A logo needs two optical sizes. The full mark preserves the key's layered
+  // frame and side rails; the micro mark intentionally keeps only the O-key
+  // silhouette and ring, which is the most that remains legible in a bar.
+  property string variant: "full" // "full" or "micro"
   property color color: Color.foreground
-  readonly property bool compact: variant !== "outline"
-  readonly property real stroke: Math.max(1, Math.min(width, height) * (compact ? 0.115 : 0.078))
+  readonly property bool micro: variant === "micro"
+  readonly property real stroke: Math.max(1, Math.min(width, height) * (micro ? 0.115 : 0.066))
 
-  implicitWidth: 24
-  implicitHeight: 24
+  implicitWidth: 32
+  implicitHeight: 32
 
+  // The small version is deliberately a single O-key: full nested geometry
+  // at this scale reads as a rendering error, not as a richer logo.
+  Rectangle {
+    visible: root.micro
+    anchors.centerIn: parent
+    width: Math.min(parent.width, parent.height) * 0.82
+    height: width
+    radius: width * 0.24
+    color: "transparent"
+    border.color: root.color
+    border.width: root.stroke
+
+    Shape {
+      anchors.centerIn: parent
+      width: parent.width * 0.46
+      height: width
+      antialiasing: true
+      preferredRendererType: Shape.CurveRenderer
+      ShapePath {
+        strokeColor: root.color
+        fillColor: "transparent"
+        strokeWidth: root.stroke * 1.1
+        PathAngleArc {
+          centerX: parent.width / 2
+          centerY: parent.height / 2
+          radiusX: parent.width * 0.31
+          radiusY: parent.height * 0.31
+          startAngle: 0
+          sweepAngle: 360
+        }
+      }
+    }
+  }
+
+  // Full panel-scale mark traced from the supplied O-key reference: a broad
+  // outer shell, an inset key face, and a central O ring. It has no fill, so
+  // it adapts to every shell background and foreground palette.
   Shape {
+    visible: !root.micro
     anchors.fill: parent
     antialiasing: true
     preferredRendererType: Shape.CurveRenderer
 
-    // Outer key shell. It deliberately has a broad lower rail and chamfered
-    // shoulders, echoing the physical O-key silhouette in both concepts.
     ShapePath {
       strokeColor: root.color
       fillColor: "transparent"
       strokeWidth: root.stroke
       capStyle: ShapePath.RoundCap
       joinStyle: ShapePath.RoundJoin
-      startX: root.width * (root.compact ? 0.23 : 0.20)
-      startY: root.height * (root.compact ? 0.15 : 0.11)
-      PathLine { x: root.width * (root.compact ? 0.77 : 0.80); y: root.height * (root.compact ? 0.15 : 0.11) }
-      PathLine { x: root.width * (root.compact ? 0.90 : 0.92); y: root.height * (root.compact ? 0.31 : 0.27) }
-      PathLine { x: root.width * (root.compact ? 0.90 : 0.92); y: root.height * (root.compact ? 0.78 : 0.80) }
-      PathLine { x: root.width * (root.compact ? 0.80 : 0.79); y: root.height * (root.compact ? 0.90 : 0.92) }
-      PathLine { x: root.width * (root.compact ? 0.20 : 0.21); y: root.height * (root.compact ? 0.90 : 0.92) }
-      PathLine { x: root.width * (root.compact ? 0.10 : 0.08); y: root.height * (root.compact ? 0.78 : 0.80) }
-      PathLine { x: root.width * (root.compact ? 0.10 : 0.08); y: root.height * (root.compact ? 0.31 : 0.27) }
-      PathLine { x: root.width * (root.compact ? 0.23 : 0.20); y: root.height * (root.compact ? 0.15 : 0.11) }
+      startX: root.width * 0.25
+      startY: root.height * 0.10
+      PathLine { x: root.width * 0.75; y: root.height * 0.10 }
+      PathLine { x: root.width * 0.90; y: root.height * 0.25 }
+      PathLine { x: root.width * 0.90; y: root.height * 0.75 }
+      PathLine { x: root.width * 0.80; y: root.height * 0.91 }
+      PathLine { x: root.width * 0.20; y: root.height * 0.91 }
+      PathLine { x: root.width * 0.10; y: root.height * 0.75 }
+      PathLine { x: root.width * 0.10; y: root.height * 0.25 }
+      PathLine { x: root.width * 0.25; y: root.height * 0.10 }
     }
 
-    // The recessed key face keeps the mark legible as an O-key rather than a
-    // generic rounded square.
     ShapePath {
       strokeColor: root.color
       fillColor: "transparent"
       strokeWidth: root.stroke
       capStyle: ShapePath.RoundCap
       joinStyle: ShapePath.RoundJoin
-      startX: root.width * 0.28
+      startX: root.width * 0.29
       startY: root.height * 0.28
-      PathLine { x: root.width * 0.72; y: root.height * 0.28 }
-      PathLine { x: root.width * 0.72; y: root.height * 0.72 }
-      PathLine { x: root.width * 0.28; y: root.height * 0.72 }
-      PathLine { x: root.width * 0.28; y: root.height * 0.28 }
+      PathLine { x: root.width * 0.71; y: root.height * 0.28 }
+      PathLine { x: root.width * 0.71; y: root.height * 0.71 }
+      PathLine { x: root.width * 0.29; y: root.height * 0.71 }
+      PathLine { x: root.width * 0.29; y: root.height * 0.28 }
     }
 
-    // The O itself is intentionally a true ring so it survives both dark and
-    // light themes without depending on a fixed background color.
     ShapePath {
       strokeColor: root.color
       fillColor: "transparent"
-      strokeWidth: root.stroke * (root.compact ? 1.18 : 1.0)
+      strokeWidth: root.stroke * 1.35
       PathAngleArc {
         centerX: root.width * 0.50
         centerY: root.height * 0.50
-        radiusX: root.width * 0.115
-        radiusY: root.height * 0.115
+        radiusX: root.width * 0.14
+        radiusY: root.height * 0.14
         startAngle: 0
         sweepAngle: 360
       }
