@@ -122,3 +122,5 @@
 | `cedfa66` | Remove streak/XP metadata and number badge from the Omakeez bar status. |
 | `d073175` | Replace user-facing tracking language with visual-guide language. |
 | `f609fec` | Align onboarding headings and separators with the active Omakeez panel. |
+| `e2f3e66` | Use an all-caps setup title and remove the redundant enable section heading. |
+| `198ce71` | Capitalize the enabled panel's top-level OMAKEEZ heading. |
