@@ -542,20 +542,28 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          Row {
+          Item {
             width: parent.width
-            spacing: Style.space(8)
-            Button {
-              text: root.confirmDisable ? "Confirm disable guide" : "Disable visual guide"
-              onClicked: {
-                if (!root.confirmDisable) root.confirmDisable = true
-                else root.service.disableIntegration(root.displayedHash)
+            height: disableActions.implicitHeight
+
+            Row {
+              id: disableActions
+              anchors.horizontalCenter: parent.horizontalCenter
+              spacing: Style.space(8)
+
+              Button {
+                text: root.confirmDisable ? "Confirm disable guide" : "Disable visual guide"
+                selected: true
+                onClicked: {
+                  if (!root.confirmDisable) root.confirmDisable = true
+                  else root.service.disableIntegration(root.displayedHash)
+                }
               }
-            }
-            Button {
-              visible: root.confirmDisable
-              text: "Keep guide enabled"
-              onClicked: root.confirmDisable = false
+              Button {
+                visible: root.confirmDisable
+                text: "Keep guide enabled"
+                onClicked: root.confirmDisable = false
+              }
             }
           }
         }
