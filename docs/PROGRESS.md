@@ -134,3 +134,4 @@
 | `06c0026` | Remove activity persistence, gamification, and the unused full Dojo overlay. |
 | `503544a` | Add security-oriented bridge comments and retain only the intentional public source-audit URL. |
 | `7f4fd3a` | Add selected Super Guide, enabled-panel, and setup-panel release screenshots to the README. |
+| `57a6590` | Simplify public documentation to the current visual-guide-only product. |
