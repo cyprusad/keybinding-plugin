@@ -440,7 +440,15 @@ Panel {
             wrapMode: Text.WordWrap
           }
 
-          PanelSectionHeader { text: "Integration"; width: parent.width }
+          PanelSeparator { width: parent.width }
+
+          Text {
+            width: parent.width
+            text: "INTEGRATION"
+            color: Color.foreground
+            font.pixelSize: Style.font.caption
+            font.bold: true
+          }
           Text {
             width: parent.width
             text: "The local Hyprland bridge is active. Disable it to stop Omakeez from showing or receiving registered keyboard shortcuts."
@@ -467,13 +475,21 @@ Panel {
             }
           }
 
-          PanelSectionHeader { text: "Guide"; width: parent.width }
+          PanelSeparator { width: parent.width }
+
           Text {
             width: parent.width
-            text: "Delay"
+            text: "GUIDE"
             color: Color.foreground
             font.pixelSize: Style.font.caption
             font.bold: true
+          }
+          Text {
+            width: parent.width
+            text: "DELAY"
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
           }
           Text {
             width: parent.width
@@ -496,6 +512,9 @@ Panel {
               }
             }
           }
+
+          PanelSeparator { width: parent.width; strength: 0.09 }
+
           Row {
             width: parent.width
             spacing: Style.space(10)
@@ -504,10 +523,10 @@ Panel {
               spacing: Style.space(2)
               Text {
                 width: parent.width
-                text: "Show over fullscreen windows"
+                text: "FULLSCREEN"
                 color: Color.foreground
+                opacity: 0.78
                 font.pixelSize: Style.font.caption
-                font.bold: true
               }
               Text {
                 width: parent.width
