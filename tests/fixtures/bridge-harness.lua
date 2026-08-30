@@ -6,6 +6,9 @@ hl = {
   dispatch = function(value) payloads[#payloads + 1] = value end,
 }
 X = function(name, event) assert(callbacks[name], "missing callback: " .. name); callbacks[name](event) end
+-- A pre-rebrand bridge state must never prevent Omakeez from registering its
+-- own callbacks in the same Hyprland Lua session.
+_G.__keybind_dojo_bridge_state = { enabled = true }
 assert(pcall(dofile, root .. "/bridge.lua"))
 local count = 0
 for _ in pairs(callbacks) do count = count + 1 end

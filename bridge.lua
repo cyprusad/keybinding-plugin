@@ -1,5 +1,5 @@
 -- Omakeez's deliberately small Hyprland input observer.
-local STATE_NAME = "__keybind_dojo_bridge_state"
+local STATE_NAME = "__omakeez_bridge_state"
 local ORDERED_MODIFIERS = { "SUPER", "SHIFT", "CTRL", "ALT" }
 
 local state_home = os.getenv("XDG_STATE_HOME")

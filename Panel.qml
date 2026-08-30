@@ -15,7 +15,6 @@ Panel {
   property var service: null
   property var preview: ({})
   property bool confirmDisable: false
-  property bool confirmClear: false
   property bool showDiff: false
 
   readonly property bool onboarding: !service || service.integrationState !== "enabled"
@@ -144,19 +143,6 @@ Panel {
   }
 
   function delayValue(index) { return [0, 80, 150, 250, -1][index] }
-
-  function trackedBindingCount() {
-    return root.service && root.service.stats && root.service.stats.bindings
-      ? Object.keys(root.service.stats.bindings).length : 0
-  }
-
-  function questSummary() {
-    if (!root.service || !root.service.dailyQuest) return "None available"
-    var quest = root.service.dailyQuest
-    var binding = root.service.bindingForId(quest.bindingId)
-    var label = binding ? String(binding.description || binding.combo || quest.bindingId) : quest.bindingId
-    return label + (quest.completed ? " (complete)" : "")
-  }
 
   onBarChanged: syncService()
   Component.onCompleted: syncService()
@@ -445,8 +431,24 @@ Panel {
           width: parent.width
           spacing: Style.space(10)
 
+          Text {
+            width: parent.width
+            text: "Omakeez shows a visual guide for registered keyboard shortcuts while you hold their starting keys."
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
+
           PanelSectionHeader { text: "Integration"; width: parent.width }
-          Text { width: parent.width; text: root.statusText() + "\n" + root.pathValue("resolvedPath"); color: Color.foreground; font.pixelSize: Style.font.caption; elide: Text.ElideMiddle }
+          Text {
+            width: parent.width
+            text: "The local Hyprland bridge is active. Disable it to stop Omakeez from showing or receiving registered keyboard shortcuts."
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
 
           Row {
             width: parent.width
@@ -466,7 +468,21 @@ Panel {
           }
 
           PanelSectionHeader { text: "Guide"; width: parent.width }
-          Text { width: parent.width; text: "Delay"; color: Color.foreground; font.pixelSize: Style.font.caption; font.bold: true }
+          Text {
+            width: parent.width
+            text: "Delay"
+            color: Color.foreground
+            font.pixelSize: Style.font.caption
+            font.bold: true
+          }
+          Text {
+            width: parent.width
+            text: "How long to hold a key before its guide appears. Off keeps Omakeez enabled without showing a guide."
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
           Flow {
             width: parent.width
             spacing: Style.space(4)
@@ -483,51 +499,30 @@ Panel {
           Row {
             width: parent.width
             spacing: Style.space(10)
-            Text {
-              anchors.verticalCenter: parent.verticalCenter
-              text: "Show in fullscreen: " + (root.service && root.service.showInFullscreen ? "On" : "Off")
-              color: Color.foreground
-              font.pixelSize: Style.font.caption
+            Column {
+              width: parent.width - fullscreenToggle.width - parent.spacing
+              spacing: Style.space(2)
+              Text {
+                width: parent.width
+                text: "Show over fullscreen windows"
+                color: Color.foreground
+                font.pixelSize: Style.font.caption
+                font.bold: true
+              }
+              Text {
+                width: parent.width
+                text: "Keep the guide visible while you use fullscreen apps."
+                color: Color.foreground
+                opacity: 0.78
+                font.pixelSize: Style.font.caption
+                wrapMode: Text.WordWrap
+              }
             }
             ToggleSwitch {
+              id: fullscreenToggle
+              anchors.verticalCenter: parent.verticalCenter
               checked: root.service && root.service.showInFullscreen
               onToggled: root.service.setShowInFullscreen(!checked)
-            }
-          }
-
-          PanelSectionHeader { text: "Progress"; width: parent.width }
-          BorderSurface {
-            width: parent.width
-            implicitHeight: statsColumn.implicitHeight + Style.space(16)
-            color: Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.04)
-            borderSpec: Border.flat(Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.10), 1)
-            radius: Style.cornerRadius
-            Column {
-              id: statsColumn
-              anchors.fill: parent
-              anchors.margins: Style.space(8)
-              spacing: Style.space(3)
-              Text { text: "Tracked bindings: " + root.trackedBindingCount(); color: Color.foreground; font.pixelSize: Style.font.caption }
-              Text { text: "Level: " + (root.service && root.service.currentLevel ? root.service.currentLevel.name : "Initiate") + " · XP: " + (root.service ? Number(root.service.stats.totalXp || 0) : 0); color: Color.foreground; font.pixelSize: Style.font.caption }
-              Text { text: "Daily quest: " + root.questSummary(); color: Color.foreground; font.pixelSize: Style.font.caption; wrapMode: Text.WordWrap }
-              Text { text: "Persistence: " + (root.service ? root.service.statsState : "unavailable"); color: Color.foreground; font.pixelSize: Style.font.caption }
-              Text { text: "Session events: " + (root.service ? root.service.observedEventCount : 0); color: Color.foreground; font.pixelSize: Style.font.caption }
-            }
-          }
-
-          Button {
-            width: parent.width
-            text: "Open Dojo"
-            onClicked: if (root.service && root.service.shell) root.service.shell.summon(root.moduleName, "{}")
-          }
-          Button {
-            width: parent.width
-            text: root.confirmClear ? "Confirm clear local data" : "Clear local data"
-            enabled: !!root.service && root.service.statsLoaded
-              && !root.service.statsRecoveryRunning
-            onClicked: {
-              if (!root.confirmClear) root.confirmClear = true
-              else if (root.service.clearLocalData(true)) root.confirmClear = false
             }
           }
         }
