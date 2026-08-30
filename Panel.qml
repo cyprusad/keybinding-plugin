@@ -199,30 +199,45 @@ Panel {
         width: scroll.width
         spacing: Style.space(12)
 
-        Column {
+        Row {
           width: parent.width
-          spacing: Style.space(3)
+          spacing: Style.space(8)
 
-          Text {
-            width: parent.width
-            text: root.onboarding ? "SET UP OMAKEEZ" : "OMAKEEZ"
+          OmakeezMark {
+            id: titleMark
+            width: Style.font.title * 1.12
+            height: width
+            variant: "outline"
             color: Color.foreground
-            font.family: root.bar ? root.bar.fontFamily : Style.font.family
-            font.pixelSize: Style.font.title
-            font.bold: true
+            anchors.verticalCenter: titleColumn.verticalCenter
           }
-          Text {
-            width: parent.width
-            visible: !root.service || root.service.integrationMutationRunning
-              || root.service.integrationInspectRunning
-              || root.service.integrationState === "error"
-              || root.service.integrationState === "disconnected"
-            text: root.statusText()
-            color: root.service && root.service.integrationState === "error" ? Color.urgent : Color.foreground
-            opacity: 0.78
-            font.family: root.bar ? root.bar.fontFamily : Style.font.family
-            font.pixelSize: Style.font.caption
-            wrapMode: Text.WordWrap
+
+          Column {
+            id: titleColumn
+            width: parent.width - parent.spacing - titleMark.width
+            spacing: Style.space(3)
+
+            Text {
+              width: parent.width
+              text: root.onboarding ? "SET UP OMAKEEZ" : "OMAKEEZ"
+              color: Color.foreground
+              font.family: root.bar ? root.bar.fontFamily : Style.font.family
+              font.pixelSize: Style.font.title
+              font.bold: true
+            }
+            Text {
+              width: parent.width
+              visible: !root.service || root.service.integrationMutationRunning
+                || root.service.integrationInspectRunning
+                || root.service.integrationState === "error"
+                || root.service.integrationState === "disconnected"
+              text: root.statusText()
+              color: root.service && root.service.integrationState === "error" ? Color.urgent : Color.foreground
+              opacity: 0.78
+              font.family: root.bar ? root.bar.fontFamily : Style.font.family
+              font.pixelSize: Style.font.caption
+              wrapMode: Text.WordWrap
+            }
           }
         }
 

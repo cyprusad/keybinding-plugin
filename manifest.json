@@ -5,7 +5,7 @@
   "version": "0.1.0",
   "author": "cyprusad",
   "license": "MIT",
-  "description": "A local-first, gamified Omarchy keybinding guide.",
+  "description": "A local-first visual guide for Omarchy keyboard shortcuts.",
   "kinds": ["bar-widget", "service", "overlay"],
   "entryPoints": {
     "barWidget": "BarWidget.qml",

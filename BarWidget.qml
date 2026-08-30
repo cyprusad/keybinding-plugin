@@ -72,14 +72,20 @@ BarWidget {
     }
   }
 
-  WidgetButton {
+  BarIconButton {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "󰌌" + root.statusMark
+    iconComponent: Component {
+      OmakeezMark {
+        anchors.centerIn: parent
+        width: Style.bar.iconCanvas
+        height: Style.bar.iconCanvas
+        variant: "compact"
+        color: root.bar ? root.bar.barForeground : Color.foreground
+      }
+    }
     tooltipText: root.tooltipSummary
-    fontSize: Style.font.body
-    labelVisible: true
     onPressed: function(button) {
       if (button === Qt.LeftButton) root.toggle()
     }
