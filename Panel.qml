@@ -237,6 +237,7 @@ Panel {
             width: parent.width
             text: "CONFIGURATION REVIEW"
             color: Color.foreground
+            opacity: 0.82
             font.pixelSize: Style.font.caption
             font.bold: true
           }
@@ -327,6 +328,7 @@ Panel {
             visible: root.displayedDiff !== ""
             text: "WHAT OMAKEEZ CHANGES"
             color: Color.foreground
+            opacity: 0.82
             font.pixelSize: Style.font.caption
             font.bold: true
           }
@@ -464,6 +466,7 @@ Panel {
             width: parent.width
             text: "INTEGRATION"
             color: Color.foreground
+            opacity: 0.82
             font.pixelSize: Style.font.caption
             font.bold: true
           }
@@ -499,6 +502,7 @@ Panel {
             width: parent.width
             text: "GUIDE"
             color: Color.foreground
+            opacity: 0.82
             font.pixelSize: Style.font.caption
             font.bold: true
           }
@@ -506,8 +510,9 @@ Panel {
             width: parent.width
             text: "DELAY"
             color: Color.foreground
-            opacity: 0.78
+            opacity: 0.70
             font.pixelSize: Style.font.caption
+            font.bold: true
           }
           Text {
             width: parent.width
@@ -543,8 +548,9 @@ Panel {
                 width: parent.width
                 text: "FULLSCREEN"
                 color: Color.foreground
-                opacity: 0.78
+                opacity: 0.70
                 font.pixelSize: Style.font.caption
+                font.bold: true
               }
               Text {
                 width: parent.width
