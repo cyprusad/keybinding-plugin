@@ -4,7 +4,18 @@ Omakeez is a local-first visual guide for your registered Omarchy keyboard
 shortcuts. Hold an enabled starting key to see the relevant shortcuts on the
 focused monitor, without changing how the shortcuts themselves work.
 
-<!-- Screenshots will be added here before the public announcement. -->
+## See it in use
+
+![Omakeez Super Guide over an Omarchy desktop](assets/screenshots/super-guide.png)
+
+*The guide arranges the highest-priority shortcuts near the center, preserves
+the visible canopy while overflow expands on hover, and remains readable over
+the active workspace.*
+
+| Enabled controls | Safe first-time setup |
+|---|---|
+| ![Enabled Omakeez panel](assets/screenshots/enabled-panel.png) | ![Omakeez setup review](assets/screenshots/setup-panel.png) |
+| Choose guide roots, delay, fullscreen behavior, or disable the guide. | Review the config target, safety checks, exact bridge source, and proposed change before enabling. |
 
 ## Requirements
 

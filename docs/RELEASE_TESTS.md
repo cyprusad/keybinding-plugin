@@ -42,7 +42,8 @@ the release owner before publishing a GitHub release:
 
 ## Publication artefacts
 
-- README screenshots are intentionally pending release-owner supplied images.
-- No generated state, backup, local configuration, screenshots, or secrets are
-  tracked in the release tree.
+- README includes a Super Guide hero plus enabled/setup panel screenshots.
+- No generated state, backup, local configuration, or secrets are tracked in
+  the release tree; the three committed screenshots are intentional README
+  assets.
 - The source-linked bridge has in-place security comments for reviewer audit.
