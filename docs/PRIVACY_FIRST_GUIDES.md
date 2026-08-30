@@ -26,9 +26,8 @@ discarded. See [SECURITY.md](SECURITY.md) and the in-source comments in
 The release stores no activity history and has no policy file:
 
 - no raw key logs, typed text, passwords, or command arguments;
-- no per-binding counts, timestamps, daily buckets, XP, streaks, quests, or
-  recommendations;
-- no `stats.json`, recovery history, practice view, or progress view; and
+- no per-binding counts, timestamps, or any other usage history;
+- no activity-data files or unused full-screen browser; and
 - no network telemetry.
 
 Only the regenerated catalog/bridge lookup and controller safety files remain.

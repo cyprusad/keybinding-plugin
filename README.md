@@ -54,9 +54,8 @@ underlying shortcut.
 
 ## Privacy and local files
 
-Omakeez does not record typing, password fields, raw key logs, shortcut-use
-history, XP, streaks, application activity, commands, window titles, or network
-telemetry. It has no network client and does not use `/dev/input`.
+Omakeez does not record or transmit what you type or do. It has no network
+client, does not use `/dev/input`, and keeps no shortcut-use history.
 
 It keeps only the local configuration metadata required to operate safely:
 

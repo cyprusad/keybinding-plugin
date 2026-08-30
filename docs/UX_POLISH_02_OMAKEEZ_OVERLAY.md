@@ -15,13 +15,11 @@ The active panel is intentionally compact:
   action;
 - onboarding shows a reviewed safety verdict, a concise explanation, an
   optional exact diff/source inspection path, and one primary enable action;
-- no XP, streaks, practice, progress, reset, or catalog-browser controls are
-  exposed; and
+- no usage-history, reset, or catalog-browser controls are exposed; and
 - the bar has no activity badge and uses a plain operational tooltip.
 
-The implementation also removes the underlying activity persistence,
-gamification/recommendation runtime, and unused full Dojo overlay—not merely
-their UI surfaces.
+The implementation contains no activity persistence and no unused full-screen
+browser—not merely hidden UI surfaces.
 
 ## Deferred work
 

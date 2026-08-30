@@ -12,8 +12,8 @@
 - Added lock-screen and Omarchy Polkit-dialog guide suppression.
 - Added security-oriented bridge comments, privacy documentation, hardening,
   release-gate checks, and troubleshooting guidance.
-- Removed activity persistence, XP, streaks, recommendations, and the unused
-  full Dojo overlay. Omakeez does not store shortcut-use history.
+- Kept the release focused on the visual guide: Omakeez does not store
+  shortcut-use history or ship an unused full-screen browser.
 
 Known limitations:
 

@@ -55,7 +55,7 @@ browser link to the public bridge source.
 
 Omakeez does **not** persist typed text, passwords, raw key sequences,
 keybinding-use history, commands, dispatcher arguments, window titles,
-application identifiers, XP, streaks, or telemetry.
+application identifiers, or telemetry.
 
 ## Configuration safety
 

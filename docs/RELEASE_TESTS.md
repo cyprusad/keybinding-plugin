@@ -18,8 +18,8 @@ tests/shell/run all
 The release suite covers manifest structure, catalog generation, configuration
 inspection and patching, symlink/Git safety, bridge protocol behavior,
 guide layout, no-persistence runtime checks, QML models, and static release
-hardening. Its no-persistence check fails if the removed stats, gamification,
-or full-overlay sources return or if runtime code references activity history.
+hardening. Its no-persistence check fails if non-guide legacy sources return or
+if runtime code references activity history.
 
 Result: **PASS** on 2026-08-30 from a fresh local clone. Manifest validation,
 QML lint, Lua syntax validation, and `tests/shell/run all` all passed with a
