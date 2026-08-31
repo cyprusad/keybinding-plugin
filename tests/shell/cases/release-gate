@@ -77,7 +77,7 @@ trap 'rm -rf "$out"; rm -f "$callback"' EXIT
 jq -e '
   .schemaVersion == 1 and
   (.sourceHash | startswith("sha256:")) and
-  (.bindings | length == 6) and
+  (.bindings | length == 7) and
   all(.bindings[]; (.id | startswith("sha256:")) and (.xkbCodes | type == "array") and (has("arg") | not) and (has("argument") | not))
 ' "$out/catalog.json" >/dev/null
 luac -p "$out/bridge-catalog.lua"

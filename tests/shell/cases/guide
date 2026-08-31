@@ -8,7 +8,7 @@ grep -q 'GuideModel.canopyLayout' "$root/SuperGuide.qml"
 grep -q 'Util.alpha(Color.menu.background' "$root/SuperGuide.qml"
 grep -q 'gradient: Gradient' "$root/SuperGuide.qml"
 grep -q 'fontSizeMode: Text.HorizontalFit' "$root/SuperGuide.qml"
-grep -q 'hold Super · add Shift / Ctrl / Alt' "$root/SuperGuide.qml"
+grep -q 'Hold SUPER · Add SHIFT / CTRL / ALT' "$root/SuperGuide.qml"
 grep -q 'split("_").join(" + ")' "$root/SuperGuide.qml"
 if grep -q 'laneSummary' "$root/SuperGuide.qml"; then
   echo "shortcut lane guidance belongs in the header, not a footer" >&2

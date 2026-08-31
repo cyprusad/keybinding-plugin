@@ -14,7 +14,7 @@ the active workspace.*
 
 | Enabled controls | Safe first-time setup |
 |---|---|
-| ![Enabled Omakeez panel](assets/screenshots/enabled-panel.png) | ![Omakeez setup review](assets/screenshots/setup-panel.png) |
+| ![Enabled Omakeez panel](assets/screenshots/enabled-panel.png) | ![Omakeez setup review](assets/screenshots/onboarding-panel.png) |
 | Choose guide roots, delay, fullscreen behavior, or disable the guide. | Review the config target, safety checks, exact bridge source, and proposed change before enabling. |
 
 ## Requirements
