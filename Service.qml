@@ -29,6 +29,10 @@ Item {
   property bool activeWindowFullscreen: false
 
   property string catalogState: "loading"
+  property int catalogRecoveryAttempts: 0
+  readonly property int catalogRecoveryLimit: 3
+  property int catalogGenerationAttempts: 0
+  property string lastCatalogGenerationError: ""
   property string manualSnippet: ""
   property string lastProtocolError: ""
   property int bridgeEventCount: 0
@@ -149,6 +153,10 @@ Item {
       samplesMs: latencySamples,
       guideVisible: guideVisible,
       catalogState: catalogState,
+      catalogGenerationRunning: catalogGenerationRunning,
+      catalogGenerationAttempts: catalogGenerationAttempts,
+      catalogRecoveryAttempts: catalogRecoveryAttempts,
+      lastCatalogGenerationError: lastCatalogGenerationError,
       integrationState: integrationState,
       lastProtocolError: lastProtocolError,
       sessionDiagnostics: sessionDiagnostics
@@ -161,10 +169,15 @@ Item {
       catalog = null
       catalogState = "error"
       setDiagnostic("catalogLoadFailures", 1)
+      scheduleCatalogRecovery()
       return false
     }
     catalog = result.catalog
     catalogState = "ready"
+    catalogRecoveryAttempts = 0
+    lastCatalogGenerationError = ""
+    catalogRecoveryTimer.stop()
+    catalogReloadTimer.stop()
     return true
   }
 
@@ -368,18 +381,71 @@ Item {
     onTriggered: root.regenerateCatalog()
   }
 
+  Timer {
+    id: catalogRecoveryTimer
+    interval: 750
+    repeat: false
+    onTriggered: root.tryCatalogRecovery()
+  }
+
+  Timer {
+    id: catalogReloadTimer
+    interval: 500
+    repeat: false
+    onTriggered: {
+      if (root.catalogState !== "ready") root.scheduleCatalogRecovery()
+    }
+  }
+
   property bool catalogRegenerationPending: false
   property string generatorOutput: ""
 
-  function regenerateCatalog() {
+  function regenerateCatalog(recoveryAttempt) {
     if (catalogGenerationProcess.running) {
       catalogRegenerationPending = true
       return false
     }
     if (generatorPath === "") return false
     catalogRegenerationPending = false
+    catalogGenerationAttempts += 1
+    if (recoveryAttempt === true) catalogRecoveryAttempts += 1
+    catalogState = "loading"
     catalogGenerationProcess.command = ["python3", generatorPath, "--output-dir", stateDir]
     catalogGenerationProcess.running = true
+    return true
+  }
+
+  function scheduleCatalogRecovery() {
+    var action = Model.catalogRecoveryAction(catalogState,
+      catalogGenerationProcess.running, catalogRecoveryAttempts, catalogRecoveryLimit)
+    if (action === "start") {
+      catalogRecoveryTimer.restart()
+      return true
+    }
+    if (action === "exhausted") catalogState = "error"
+    return false
+  }
+
+  function tryCatalogRecovery() {
+    var action = Model.catalogRecoveryAction(catalogState,
+      catalogGenerationProcess.running, catalogRecoveryAttempts, catalogRecoveryLimit)
+    if (action === "start") {
+      // A manual retry starts immediately; later attempts retain a short delay
+      // so transient Hyprland/keymap startup races can settle.
+      catalogRecoveryTimer.interval = 750
+      return regenerateCatalog(true)
+    }
+    if (action === "exhausted") catalogState = "error"
+    return false
+  }
+
+  function retryCatalogGeneration() {
+    if (catalogGenerationProcess.running) return false
+    catalogRecoveryAttempts = 0
+    lastCatalogGenerationError = ""
+    catalogState = "loading"
+    catalogRecoveryTimer.interval = 0
+    catalogRecoveryTimer.restart()
     return true
   }
 
@@ -392,6 +458,7 @@ Item {
       root.catalog = null
       root.catalogState = "error"
       root.setDiagnostic("catalogLoadFailures", 1)
+      root.scheduleCatalogRecovery()
     }
   }
 
@@ -399,12 +466,17 @@ Item {
     id: catalogGenerationProcess
     running: false
     stdout: StdioCollector { id: generatorStdout; waitForEnd: true }
+    stderr: StdioCollector { id: generatorStderr; waitForEnd: true }
     onExited: {
       root.generatorOutput = String(generatorStdout.text || "")
+      root.lastCatalogGenerationError = String(generatorStderr.text || "").trim()
       if (exitCode !== 0) {
         root.catalogState = "error"
         root.setDiagnostic("catalogLoadFailures", 1)
+        root.scheduleCatalogRecovery()
       } else {
+        root.catalogState = "loading"
+        catalogReloadTimer.restart()
         catalogFile.reload()
       }
       if (root.catalogRegenerationPending) {
@@ -521,7 +593,7 @@ Item {
     root.inspectIntegration()
     manualSnippetProcess.command = [root.controllerPath, "manual-snippet"]
     manualSnippetProcess.running = true
-    root.regenerateCatalog()
+    root.scheduleCatalogRecovery()
     root.requestFullscreenRefresh()
   })
 

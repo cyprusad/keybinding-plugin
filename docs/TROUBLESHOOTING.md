@@ -62,6 +62,11 @@ hyprctl configerrors
 Then reopen Omakeez; it regenerates its local catalog from the active binding
 table. A clean `hyprctl configerrors` result has no output.
 
+On a fresh install, Omakeez retries a missing catalog up to three times and
+keeps the bridge safely inactive until the catalog loads. If the panel shows
+**Guide setup needs attention**, select **Retry shortcut catalog**. The bar
+tooltip also reports this state instead of claiming the guide is ready.
+
 For a cautious local audit, list only Omakeez's operational state:
 
 ```sh

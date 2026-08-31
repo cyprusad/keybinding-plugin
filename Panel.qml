@@ -451,6 +451,50 @@ Panel {
           width: parent.width
           spacing: Style.space(10)
 
+          BorderSurface {
+            width: parent.width
+            visible: !!root.service && root.service.catalogState !== "ready"
+            implicitHeight: catalogStatusColumn.implicitHeight + Style.space(16)
+            color: Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.04)
+            borderSpec: Border.flat(Qt.rgba(Color.foreground.r, Color.foreground.g, Color.foreground.b, 0.12), 1)
+            radius: Style.cornerRadius
+
+            Column {
+              id: catalogStatusColumn
+              anchors.left: parent.left
+              anchors.right: parent.right
+              anchors.top: parent.top
+              anchors.margins: Style.space(8)
+              spacing: Style.space(5)
+
+              Text {
+                width: parent.width
+                text: root.service && root.service.catalogState === "error"
+                  ? "GUIDE SETUP NEEDS ATTENTION" : "PREPARING KEYBOARD SHORTCUTS"
+                color: Color.foreground
+                opacity: 0.78
+                font.pixelSize: Style.font.caption
+                font.bold: true
+              }
+              Text {
+                width: parent.width
+                text: root.service && root.service.catalogState === "error"
+                  ? "The local shortcut catalog could not be generated. The Hyprland bridge remains safely inactive until this succeeds."
+                  : "Omakeez is reading your registered keyboard shortcuts. The visual guides will become available automatically."
+                color: Color.foreground
+                opacity: 0.78
+                font.pixelSize: Style.font.caption
+                wrapMode: Text.WordWrap
+              }
+              Button {
+                visible: !!root.service && root.service.catalogState === "error"
+                text: "Retry shortcut catalog"
+                selected: true
+                onClicked: root.service.retryCatalogGeneration()
+              }
+            }
+          }
+
           Text {
             width: parent.width
             text: "Omakeez shows a visual guide for registered keyboard shortcuts while you hold their starting keys."
