@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 — 2026-08-31
+
+- Fixed fresh-install catalog generation hanging when `xkbcli` inherited
+  Quickshell's permanently open stdin pipe.
+- Added a regression test that models the service pipe boundary and a bounded
+  timeout for non-interactive catalog discovery commands.
+
 ## 0.1.0 — 2026-08-30
 
 - Added a local visual guide for registered `SUPER`, `SHIFT`, `CTRL`, and

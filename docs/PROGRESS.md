@@ -16,7 +16,7 @@
 | 12 — Full Dojo overlay | Superseded by privacy release | 06c0026 | The unused browse/practice/progress overlay is removed from the manifest and repository; the focused visual guide remains. |
 | 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
 | 14 — Integration, privacy, and performance | Complete (manual gate passed) | 98fcd92 | Automated suite and live release evidence pass; manual lock/privacy/reset/focused-monitor checks pass, with the 1Password app prompt documented outside the detection boundary. |
-| 15 — Documentation and release | Submitted; automated validation passed | 54193c5 | README, security, troubleshooting, changelog, privacy boundary, bridge source comments, release-gate docs, and selected live screenshots are aligned with the guide-only product. The official marketplace manifest, Quattro compatibility, and automated security baseline checks pass. Listing review remains with the marketplace maintainers in issue #3726. |
+| 15 — Documentation and release | Published | 0b9f03f | README, security, troubleshooting, changelog, privacy boundary, bridge source comments, release-gate docs, and selected live screenshots are aligned with the guide-only product. Omakeez is published in the Omarchy plugin marketplace. |
 
 ## Marketplace publication
 
@@ -24,7 +24,13 @@
 - [x] Local manifest, QML lint, Lua syntax, hardening, and complete test suite pass at `54193c5`.
 - [x] Official marketplace submission opened as `omacom/omarchy-plugin-marketplace#3726`.
 - [x] Marketplace structure, Quattro compatibility, and automated security baseline validation pass at `54193c5`.
-- [ ] Marketplace maintainer listing approval is pending.
+- [x] Marketplace maintainer listing approved and Omakeez published.
+
+## Maintenance
+
+| Issue | Status | Commit | Notes |
+|---|---|---|---|
+| [#1 — Fresh install can remain enabled but inert](https://github.com/cyprusad/omakeez/issues/1) | Complete; automated and manual gates passed | `4ce55e2` | Catalog discovery now closes inherited stdin before launching `hyprctl` or `xkbcli`, with a 15-second timeout and an open-pipe regression test. A live missing-catalog restart regenerated both files, left no blocked subprocess, loaded `catalogState: ready`, and passed the physical Super Guide gate before release. |
 
 ## UX polish workstream
 
@@ -148,3 +154,4 @@
 | `57a6590` | Simplify public documentation to the current visual-guide-only product. |
 | `4727768` | Record the final public-language simplification. |
 | `54193c5` | Clear marketplace validation by renaming the onboarding screenshot and aligning stale release assertions. |
+| `4ce55e2` | Close catalog-discovery stdin and cover Quickshell's open-pipe startup boundary. |
