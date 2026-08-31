@@ -16,7 +16,15 @@
 | 12 — Full Dojo overlay | Superseded by privacy release | 06c0026 | The unused browse/practice/progress overlay is removed from the manifest and repository; the focused visual guide remains. |
 | 13 — Dotfiles and failure hardening | Complete | c368aaa | Symlink/deployment/marker/permission/dependency matrix, safe state handling, troubleshooting backup listing, and immediate guide disconnect behavior pass. |
 | 14 — Integration, privacy, and performance | Complete (manual gate passed) | 98fcd92 | Automated suite and live release evidence pass; manual lock/privacy/reset/focused-monitor checks pass, with the 1Password app prompt documented outside the detection boundary. |
-| 15 — Documentation and release | Ready for publication | 7f4fd3a | README, security, troubleshooting, changelog, privacy boundary, bridge source comments, release-gate docs, and selected live screenshots are aligned with the guide-only product. Manifest validation, QML lint, Lua syntax checks, and the full suite passed from a fresh local clone with a clean worktree. The optional release-owner manual smoke remains a publication check, not a code blocker. |
+| 15 — Documentation and release | Submitted; automated validation passed | 54193c5 | README, security, troubleshooting, changelog, privacy boundary, bridge source comments, release-gate docs, and selected live screenshots are aligned with the guide-only product. The official marketplace manifest, Quattro compatibility, and automated security baseline checks pass. Listing review remains with the marketplace maintainers in issue #3726. |
+
+## Marketplace publication
+
+- [x] Public release repository available at `cyprusad/omakeez`.
+- [x] Local manifest, QML lint, Lua syntax, hardening, and complete test suite pass at `54193c5`.
+- [x] Official marketplace submission opened as `omacom/omarchy-plugin-marketplace#3726`.
+- [x] Marketplace structure, Quattro compatibility, and automated security baseline validation pass at `54193c5`.
+- [ ] Marketplace maintainer listing approval is pending.
 
 ## UX polish workstream
 
@@ -134,4 +142,9 @@
 | `06c0026` | Remove activity persistence, gamification, and the unused full Dojo overlay. |
 | `503544a` | Add security-oriented bridge comments and retain only the intentional public source-audit URL. |
 | `7f4fd3a` | Add selected Super Guide, enabled-panel, and setup-panel release screenshots to the README. |
+| `62e727d` | Prepare the guide-only release documentation and metadata. |
+| `96de811` | Record the successful fresh-clone release smoke. |
+| `4d042da` | Record the selected release screenshots in the progress log. |
 | `57a6590` | Simplify public documentation to the current visual-guide-only product. |
+| `4727768` | Record the final public-language simplification. |
+| `54193c5` | Clear marketplace validation by renaming the onboarding screenshot and aligning stale release assertions. |
