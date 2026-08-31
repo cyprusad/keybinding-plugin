@@ -29,6 +29,7 @@ DISPLAY_SYMBOLS = {
 # normal XKB character key (the generic XKB alias looks like F23), so preserve
 # the physical key's real user-facing name.
 SPECIAL_CODE_LABELS = {201: "COPILOT"}
+COMMAND_TIMEOUT_SECONDS = 15
 
 
 def fail(code, message):
@@ -38,7 +39,19 @@ def fail(code, message):
 
 def command_output(command, code):
     try:
-        return subprocess.check_output(command, text=True, stderr=subprocess.STDOUT)
+        # Quickshell Process keeps its stdin pipe open. xkbcli treats a
+        # non-terminal stdin as keymap input and waits for EOF, so inheriting
+        # that pipe can leave first-start catalog generation blocked forever.
+        # These discovery commands are non-interactive and must receive EOF.
+        return subprocess.check_output(
+            command,
+            text=True,
+            stderr=subprocess.STDOUT,
+            stdin=subprocess.DEVNULL,
+            timeout=COMMAND_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired:
+        fail(code, f"{command[0]} timed out after {COMMAND_TIMEOUT_SECONDS} seconds")
     except (OSError, subprocess.CalledProcessError) as exc:
         fail(code, str(exc))
 

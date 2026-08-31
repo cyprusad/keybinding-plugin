@@ -16,3 +16,4 @@ jq -e '.bindings[] | select(.key == "code:201") | .combo == "SUPER + SHIFT + COP
 luac -p "$out/bridge-catalog.lua"
 second=$("$root/scripts/generate-catalog" --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" --keymap-file "$root/tests/fixtures/catalog-keymap.txt" --output-dir "$out")
 printf '%s\n' "$second" | grep -q '"changed":false'
+python3 "$root/tests/generator-stdin-regression.py"
