@@ -186,16 +186,6 @@ function isCatalogChangeEvent(name) {
   return ["configreloaded", "configreloadedv2", "activelayout", "activekeyboardlayout", "keyboardlayout"].indexOf(String(name || "")) !== -1
 }
 
-function catalogRecoveryAction(catalogState, generationRunning, attempts, limit) {
-  if (String(catalogState || "") === "ready") return "stop"
-  if (generationRunning === true) return "wait"
-  var count = Number(attempts)
-  var maximum = Number(limit)
-  if (!isFinite(count) || count < 0) count = 0
-  if (!isFinite(maximum) || maximum < 1) maximum = 1
-  return count < maximum ? "start" : "exhausted"
-}
-
 function isFullscreenEvent(name) {
   return ["activewindow", "activewindowv2", "fullscreen"].indexOf(String(name || "")) !== -1
 }

@@ -1,13 +1,5 @@
 # Changelog
 
-## 0.1.1 — 2026-08-31
-
-- Fixed a first-install race that could leave the integration enabled while
-  `catalog.json` and `bridge-catalog.lua` were missing.
-- Added bounded automatic catalog recovery, explicit reload verification, a
-  manual retry action, and accurate incomplete-setup status in the panel and
-  bar tooltip.
-
 ## 0.1.0 — 2026-08-30
 
 - Added a local visual guide for registered `SUPER`, `SHIFT`, `CTRL`, and

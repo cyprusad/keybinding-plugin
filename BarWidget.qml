@@ -9,17 +9,10 @@ BarWidget {
 
   property var service: null
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
-  readonly property string statusMark: service && service.integrationState === "enabled"
-    && service.catalogState === "error" ? " !"
-    : !service || service.integrationState === "disabled" ? " ·"
-    : service.integrationState === "error" ? " !" : service.integrationState === "disconnected" ? " ?" : ""
+  readonly property string statusMark: !service || service.integrationState === "disabled"
+    ? " ·" : service.integrationState === "error" ? " !" : service.integrationState === "disconnected" ? " ?" : ""
   readonly property string tooltipSummary: service && service.integrationState === "enabled"
-    && service.catalogState === "error"
-    ? "Omakeez needs attention: shortcut catalog unavailable"
-    : service && service.integrationState === "enabled" && service.catalogState !== "ready"
-      ? "Omakeez is preparing keyboard shortcuts"
-    : service && service.integrationState === "enabled"
-      ? "Omakeez keyboard shortcuts enabled"
+    ? "Omakeez keyboard shortcuts enabled"
     : service && service.integrationState === "disconnected"
       ? "Omakeez keyboard shortcuts disconnected"
       : service && service.integrationState === "error"

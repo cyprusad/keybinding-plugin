@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.cyprusad.omakeez",
   "name": "Omakeez",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "author": "cyprusad",
   "license": "MIT",
   "description": "A local-first visual guide for Omarchy keyboard shortcuts.",

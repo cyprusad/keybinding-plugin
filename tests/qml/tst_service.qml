@@ -125,13 +125,4 @@ TestCase {
     verify(Model.isFullscreenEvent("activewindowv2"))
     verify(!Model.isFullscreenEvent("custom"))
   }
-
-  function test_catalogRecoveryIsBoundedAndWaitsForActiveGeneration() {
-    compare(Model.catalogRecoveryAction("ready", false, 0, 3), "stop")
-    compare(Model.catalogRecoveryAction("error", true, 0, 3), "wait")
-    compare(Model.catalogRecoveryAction("loading", false, 0, 3), "start")
-    compare(Model.catalogRecoveryAction("error", false, 2, 3), "start")
-    compare(Model.catalogRecoveryAction("error", false, 3, 3), "exhausted")
-    compare(Model.catalogRecoveryAction("error", false, -1, 0), "start")
-  }
 }

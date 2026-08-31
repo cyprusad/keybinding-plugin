@@ -12,12 +12,6 @@ if rg -q 'root\.(catalogChangeTimer|fullscreenQueryTimer)' "$root/Service.qml"; 
   echo "QML timer IDs must not be accessed through root" >&2
   exit 1
 fi
-for recovery_surface in catalogRecoveryTimer catalogReloadTimer retryCatalogGeneration catalogRecoveryLimit; do
-  if ! rg -q "$recovery_surface" "$root/Service.qml"; then
-    echo "service is missing bounded first-start catalog recovery: $recovery_surface" >&2
-    exit 1
-  fi
-done
 for removed in Stats.js Recommendations.js scripts/stats-store Overlay.qml; do
   if [ -e "$root/$removed" ]; then
     echo "removed privacy-risk surface still present: $removed" >&2
