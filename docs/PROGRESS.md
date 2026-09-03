@@ -31,6 +31,7 @@
 | Issue | Status | Commit | Notes |
 |---|---|---|---|
 | [#1 — Fresh install can remain enabled but inert](https://github.com/cyprusad/omakeez/issues/1) | Complete; automated and manual gates passed | `4ce55e2` | Catalog discovery now closes inherited stdin before launching `hyprctl` or `xkbcli`, with a 15-second timeout and an open-pipe regression test. A live missing-catalog restart regenerated both files, left no blocked subprocess, loaded `catalogState: ready`, and passed the physical Super Guide gate before release. |
+| [#2 — Catalog and controller disagree on state-directory permissions](https://github.com/cyprusad/omakeez/issues/2) | Fixed; automated and manual gates passed | `872f0a3` | Catalog generation now creates or repairs its user-owned state directory as `0700`, preserves `0600` catalog files, and rejects symlinked or foreign-owned output directories. Fixture and live generation pass, including legacy `0755` repair; the exact UI flow repaired permissions, enabled the bridge, and returned `reasonCode: ok`. |
 
 ## UX polish workstream
 
