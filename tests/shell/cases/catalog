@@ -2,11 +2,15 @@
 set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/../../.." && pwd)
-out=$(mktemp -d)
-trap 'rm -rf "$out"' EXIT
+fixture=$(mktemp -d)
+out="$fixture/state"
+trap 'rm -rf "$fixture"' EXIT
 
 first=$("$root/scripts/generate-catalog" --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" --keymap-file "$root/tests/fixtures/catalog-keymap.txt" --output-dir "$out")
 printf '%s\n' "$first" | grep -q '"changed":true'
+[ "$(stat -c %a "$out")" = 700 ]
+[ "$(stat -c %a "$out/catalog.json")" = 600 ]
+[ "$(stat -c %a "$out/bridge-catalog.lua")" = 600 ]
 jq -e '.schemaVersion == 1 and (.bindings | length == 7)' "$out/catalog.json" >/dev/null
 jq -e '.bindings[] | select(.description == "Move silently to workspace 1") | .combo == "SUPER + SHIFT + ALT + 1" and .xkbCodes == [10]' "$out/catalog.json" >/dev/null
 jq -e '.bindings[] | select(.description == "Toggle style") | .combo == "-" and .xkbCodes == [20]' "$out/catalog.json" >/dev/null
@@ -16,4 +20,17 @@ jq -e '.bindings[] | select(.key == "code:201") | .combo == "SUPER + SHIFT + COP
 luac -p "$out/bridge-catalog.lua"
 second=$("$root/scripts/generate-catalog" --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" --keymap-file "$root/tests/fixtures/catalog-keymap.txt" --output-dir "$out")
 printf '%s\n' "$second" | grep -q '"changed":false'
+
+chmod 755 "$out"
+third=$("$root/scripts/generate-catalog" --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" --keymap-file "$root/tests/fixtures/catalog-keymap.txt" --output-dir "$out")
+printf '%s\n' "$third" | grep -q '"changed":false'
+[ "$(stat -c %a "$out")" = 700 ]
+
+ln -s "$out" "$fixture/symlink-state"
+if "$root/scripts/generate-catalog" --hyprctl-file "$root/tests/fixtures/catalog-binds.txt" --keymap-file "$root/tests/fixtures/catalog-keymap.txt" --output-dir "$fixture/symlink-state" >"$fixture/symlink.out" 2>"$fixture/symlink.err"; then
+  echo "symlinked output directory accepted" >&2
+  exit 1
+fi
+grep -q 'unsafe-output-directory' "$fixture/symlink.err"
+
 python3 "$root/tests/generator-stdin-regression.py"

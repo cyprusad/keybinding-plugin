@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2 — 2026-09-03
+
+- Fixed fresh-install setup failing with `unsafe-state-directory` after the
+  catalog generator created its output directory with permissions inherited
+  from the user's umask.
+- The generator now creates or repairs its user-owned state directory as
+  `0700`, keeps catalog files at `0600`, and rejects symlinked or foreign-owned
+  output directories.
+
 ## 0.1.1 — 2026-08-31
 
 - Fixed fresh-install catalog generation hanging when `xkbcli` inherited

@@ -41,7 +41,10 @@ On failure, print one JSON error object to stderr and return nonzero:
 6. Compute opaque IDs with the dispatcher argument included in the hash but never serialize that argument.
 7. Generate the `modifierCodes` table for left/right Super, Shift, Ctrl, and Alt from the active/supplied XKB keymap; sort and deduplicate codes.
 8. Mark mouse bindings untrackable and guide-ineligible instead of dropping them from `catalog.json`; omit them from `bridge-catalog.lua`.
-9. Write both output files through same-directory temporaries followed by atomic rename. Set mode `0600`.
+9. Create or repair the user-owned output directory with mode `0700`, reject
+   symlinked or foreign-owned output directories, and write both output files
+   through same-directory temporaries followed by atomic rename with mode
+   `0600`.
 10. Produce byte-for-byte identical files for identical normalized inputs except `generatedAt`. To preserve change detection, do not rewrite files when `sourceHash` is unchanged.
 11. Safely encode generated Lua; no fixture content may escape its quoted value or become executable syntax.
 

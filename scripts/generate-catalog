@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -248,8 +249,27 @@ def category(description):
     return "other"
 
 
+def prepare_output_dir(path):
+    """Create or repair the private directory shared with bridge-control."""
+    descriptor = None
+    try:
+        path.mkdir(parents=True, mode=0o700, exist_ok=True)
+        flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_NOFOLLOW", 0)
+        descriptor = os.open(path, flags)
+        info = os.fstat(descriptor)
+        if not stat.S_ISDIR(info.st_mode):
+            fail("unsafe-output-directory", "output path is not a directory")
+        if info.st_uid != os.getuid():
+            fail("unsafe-output-directory", "output directory is not owned by the current user")
+        os.fchmod(descriptor, 0o700)
+    except OSError as exc:
+        fail("unsafe-output-directory", str(exc))
+    finally:
+        if descriptor is not None:
+            os.close(descriptor)
+
+
 def atomic_write(path, data):
-    path.parent.mkdir(parents=True, exist_ok=True)
     fd, temporary = tempfile.mkstemp(prefix=".omakeez.", dir=path.parent)
     try:
         os.fchmod(fd, 0o600)
@@ -309,6 +329,7 @@ def build(args):
     source = json.dumps({"bindings": entries, "modifierCodes": {k: sorted(v) for k, v in modifier_codes.items()}}, sort_keys=True, separators=(",", ":"))
     source_hash = "sha256:" + hashlib.sha256(source.encode()).hexdigest()
     state = Path(args.output_dir)
+    prepare_output_dir(state)
     catalog = {"schemaVersion": 1, "generatedAt": int(time.time()), "sourceHash": source_hash, "bindings": entries}
     lua = ["return {", "  schemaVersion = 1,", f"  sourceHash = {lua_string(source_hash)},", "  modifierCodes = {"]
     for name in CANONICAL:

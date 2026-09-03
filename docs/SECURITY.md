@@ -25,6 +25,11 @@ It writes local operational files in:
 ${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/omakeez/
 ```
 
+The leaf state directory is user-owned with mode `0700`; generated files use
+mode `0600`. Catalog generation repairs legacy user-owned state directories
+that were created with broader permissions and rejects symlinked or
+foreign-owned output directories.
+
 | File or directory | Purpose |
 |---|---|
 | `catalog.json` | Registered shortcut descriptions, modifier/key metadata, and opaque SHA-256 IDs. |
