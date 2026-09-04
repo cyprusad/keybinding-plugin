@@ -26,7 +26,9 @@ Item {
     activeWindowFullscreen: service.activeWindowFullscreen,
     showInFullscreen: service.showInFullscreen
   }) : false
-  readonly property int delayValue: service ? Number(service.guideDelayMs) : -1
+  // The effective delay, not the stored one: selecting the tap zeroes it, so
+  // the press that follows the tap opens the guide instead of starting a hold.
+  readonly property int delayValue: service ? Number(service.effectiveDelayMs) : -1
   readonly property string currentMask: service && String(service.activeModifiers || "") !== ""
     ? String(service.activeModifiers)
     : service && String(service.activeGuideRoot || "") !== "" ? String(service.activeGuideRoot) : "SUPER"

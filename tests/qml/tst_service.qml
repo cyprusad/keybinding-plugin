@@ -95,6 +95,8 @@ TestCase {
     compare(Model.normalizeDelay(80), 80)
     compare(Model.normalizeDelay("150"), 150)
     compare(Model.normalizeDelay("disabled"), -1)
+    compare(Model.normalizeDelay(-1), -1)
+    compare(Model.normalizeDelay("-1"), -1)
     compare(Model.normalizeDelay(99), 0)
     compare(Model.normalizeFullscreen(true), true)
     compare(Model.normalizeFullscreen("true"), false)
@@ -103,15 +105,97 @@ TestCase {
     compare(Model.normalizeGuideRoot(false), false)
 
     var config = { bar: { layout: { left: [], center: [], right: [
-      { id: "io.github.cyprusad.omakeez", guideDelayMs: 150, showInFullscreen: true,
+      { id: "io.github.cyprusad.omakeez", guideDelayMs: 150,
+        guideDoubleTapEnabled: true, showInFullscreen: true,
         guideSuperEnabled: false, guideShiftEnabled: true, guideCtrlEnabled: false, guideAltEnabled: true }
     ] } } }
     var settings = Model.settingsFor(config, "io.github.cyprusad.omakeez")
     compare(settings.guideDelayMs, 150)
+    compare(settings.guideDoubleTapEnabled, true)
     compare(settings.showInFullscreen, true)
     compare(settings.guideSuperEnabled, false)
     compare(settings.guideCtrlEnabled, false)
     compare(Model.settingsFor({}, "io.github.cyprusad.omakeez").guideDelayMs, undefined)
+  }
+
+  function test_activationIsOneAxis() {
+    // Every stored pair resolves to exactly one choice on the control.
+    compare(Model.activationIndex(0, false), 0)
+    compare(Model.activationIndex(80, false), 1)
+    compare(Model.activationIndex(150, false), 2)
+    compare(Model.activationIndex(250, false), 3)
+    compare(Model.activationIndex(0, true), 4)
+    compare(Model.activationIndex(-1, false), 5)
+
+    // A config written before the two settings were merged can hold a delay
+    // and the tap together. The tap wins and the delay drops to zero, so the
+    // press after the tap opens the guide instead of starting a hold.
+    compare(Model.activationIndex(250, true), 4)
+    compare(Model.effectiveDelay(250, true), 0)
+    compare(Model.effectiveDoubleTap(250, true), true)
+
+    // Off wins over both, because off has to mean off.
+    compare(Model.activationIndex(-1, true), 5)
+    compare(Model.effectiveDelay(-1, true), -1)
+    compare(Model.effectiveDoubleTap(-1, true), false)
+
+    // A plain delay keeps its value and never implies a tap.
+    compare(Model.effectiveDelay(150, false), 150)
+    compare(Model.effectiveDoubleTap(150, false), false)
+
+    // Junk falls back to the first choice rather than an unreachable state.
+    compare(Model.activationIndex(99, false), 0)
+    compare(Model.effectiveDelay(undefined, undefined), 0)
+    compare(Model.activationAt(-1).delayMs, 0)
+    compare(Model.activationAt(99).delayMs, 0)
+    compare(Model.activationAt("notanumber").doubleTapEnabled, false)
+
+    // Selecting a choice and reading it back is a round trip, which is what
+    // keeps the panel selection and the stored config from drifting apart.
+    for (var i = 0; i < 6; i++) {
+      var choice = Model.activationAt(i)
+      compare(Model.activationIndex(choice.delayMs, choice.doubleTapEnabled), i)
+    }
+  }
+
+  function test_doubleTapArming() {
+    // A hold with nothing armed stays silent.
+    var down = Model.tapGateDown(Model.emptyTapState(), "SUPER", 1000)
+    compare(down.show, false)
+
+    // Releasing that press quickly arms the same root...
+    var armed = Model.tapGateUp(down.state, 1100)
+    compare(armed.armedRoot, "SUPER")
+
+    // ...and the next press of it opens the guide.
+    var second = Model.tapGateDown(armed, "SUPER", 1200)
+    compare(second.show, true)
+    compare(second.state.armedRoot, "")
+
+    // Arming is per root: a tap of SUPER does not open SHIFT.
+    compare(Model.tapGateDown(armed, "SHIFT", 1200).show, false)
+
+    // Arming expires.
+    compare(Model.tapGateDown(armed, "SUPER", 1100 + 801).show, false)
+
+    // A long press is a hold, not a tap, so it never arms.
+    var held = Model.tapGateDown(Model.emptyTapState(), "SUPER", 2000)
+    compare(Model.tapGateUp(held.state, 2000 + 401).armedRoot, "")
+
+    // Releasing a press that opened a guide clears the state instead of
+    // re-arming, so one tap cannot open two guides.
+    compare(Model.tapGateUp(second.state, 1250).armedRoot, "")
+
+    // A backwards clock reads as not armed rather than arming forever.
+    compare(Model.tapGateDown(armed, "SUPER", 900).show, false)
+
+    // Malformed state is treated as empty.
+    compare(Model.tapGateDown(null, "SUPER", 10).show, false)
+    compare(Model.tapGateUp(undefined, 10).armedRoot, "")
+
+    compare(Model.normalizeDoubleTap(true), true)
+    compare(Model.normalizeDoubleTap("true"), false)
+    compare(Model.normalizeDoubleTap(undefined), false)
   }
 
   function test_fullscreenAndEventClassification() {

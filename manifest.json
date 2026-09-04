@@ -18,6 +18,7 @@
     "defaultSection": "right",
     "defaults": {
       "guideDelayMs": 0,
+      "guideDoubleTapEnabled": false,
       "showInFullscreen": false,
       "guideSuperEnabled": true,
       "guideShiftEnabled": true,
@@ -28,7 +29,12 @@
       {
         "key": "guideDelayMs",
         "type": "integer",
-        "label": "Super Guide delay (ms)"
+        "label": "Super Guide delay (ms, -1 for off, ignored while tap-to-arm is on)"
+      },
+      {
+        "key": "guideDoubleTapEnabled",
+        "type": "boolean",
+        "label": "Open on a double tap instead of a delay"
       },
       {
         "key": "showInFullscreen",

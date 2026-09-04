@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+- Added `guideDoubleTapEnabled`, a trigger that opens a guide only after its
+  key is tapped once. A plain hold stays silent, so the guide never appears
+  during the holds that using a shortcut involves.
+
+  It joins the delay on one **Activation** control rather than arriving as a
+  second setting beside it. The two are answers to the same question -- how
+  much intent a guide should ask for before it covers the screen -- and as
+  independent settings they would stack into a tap-then-hold nobody wants.
+  Selecting the tap zeroes the delay, so the press after the tap opens the
+  guide at once. The panel's DELAY section becomes ACTIVATION, with Double
+  tap added between the delays and Off.
+
+- Fixed the panel's **Off** delay choice, which wrote `-1` but read it back as
+  `0` and silently selected Instant instead. `-1` is the sentinel the delay
+  normalizer itself returns, so it now survives a round trip through the config.
+
 ## 0.1.2 — 2026-09-03
 
 - Fixed fresh-install setup failing with `unsafe-state-directory` after the

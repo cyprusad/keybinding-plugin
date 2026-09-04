@@ -46,8 +46,37 @@ bindings. The guide follows the focused monitor.
 The panel lets you:
 
 - choose each guide root independently;
-- choose how long a key must be held before the guide appears; and
+- choose how a guide opens: instantly, after a hold, after a tap, or not at
+  all; and
 - keep guides hidden over fullscreen apps by default, or enable them there.
+
+### Activation
+
+A guide opening whenever you hold one of its keys also means it opens during
+the ordinary holds that using a shortcut involves. **Activation** is the single
+control for how much intent the guide asks for first:
+
+| Choice | What opens a guide |
+| --- | --- |
+| Instant | Any press of the key. |
+| 80 / 150 / 250 ms | Holding the key for that long. |
+| Double tap | Tapping the key, then pressing it again. |
+| Off | Nothing; Omakeez stays enabled without showing a guide. |
+
+The delay and the tap are two answers to the same question, so they are one
+choice rather than two settings that stack: picking **Double tap** means the
+press after the tap opens the guide immediately, with no hold on top of it.
+
+The tap and the press that follows are ordinary key presses, so every shortcut
+keeps working exactly as before; only the guide waits. A tap arms its own key
+for 800 ms, a press longer than 400 ms counts as a hold rather than a tap, and
+actually firing a shortcut consumes the arming.
+
+The choice is stored across the `guideDelayMs` and `guideDoubleTapEnabled`
+bar-widget settings, so a config written before this control existed keeps
+loading unchanged. Nothing reads either key on its own: a config that sets both
+resolves the way the control would, with `-1` (off) winning over everything and
+the tap winning over a delay.
 
 Turning off a guide root hides only that overlay. It never disables the
 underlying shortcut.

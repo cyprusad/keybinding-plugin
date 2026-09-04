@@ -7,6 +7,13 @@ var CATEGORIES = [
 var MODIFIERS = ["SUPER", "SHIFT", "CTRL", "ALT"]
 var PROTOCOL_PREFIX = "omakeez:v1:"
 
+// Double-tap arming. A guide root pressed and released inside TAP_MAX_MS is a
+// tap, which arms that root for ARM_WINDOW_MS; only a press arriving while the
+// root is armed opens a guide. Both spans are compared with a non-negative age
+// so a backwards clock reads as "not armed" instead of arming forever.
+var TAP_MAX_MS = 400
+var ARM_WINDOW_MS = 800
+
 function isObject(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value)
 }
@@ -142,10 +149,100 @@ function parseProtocol(payload, catalog) {
   return { ok: false, error: "invalid-protocol" }
 }
 
+// -1 is the off sentinel this function itself returns, so it has to survive a
+// round trip through the config. Without it the panel's Off button wrote -1,
+// read back 0, and quietly selected Instant instead.
 function normalizeDelay(value) {
   if (value === false || String(value).toLowerCase() === "disabled") return -1
   var number = Number(value)
-  return [0, 80, 150, 250].indexOf(number) !== -1 ? number : 0
+  return [-1, 0, 80, 150, 250].indexOf(number) !== -1 ? number : 0
+}
+
+function emptyTapState() {
+  return { armedRoot: "", armedAtMs: 0, downRoot: "", downAtMs: 0, shown: false }
+}
+
+function normalizeDoubleTap(value) {
+  return value === true
+}
+
+// The delay and the double tap answer the same question -- how much intent a
+// guide should demand before it covers the screen -- so they are one axis with
+// one selected value, not two settings that stack. `guideDelayMs` and
+// `guideDoubleTapEnabled` remain separate keys only so configs written before
+// the merge keep loading; every reader goes through the helpers below.
+var ACTIVATIONS = [
+  { key: "instant", delayMs: 0, doubleTap: false },
+  { key: "80ms", delayMs: 80, doubleTap: false },
+  { key: "150ms", delayMs: 150, doubleTap: false },
+  { key: "250ms", delayMs: 250, doubleTap: false },
+  { key: "doubleTap", delayMs: 0, doubleTap: true },
+  { key: "off", delayMs: -1, doubleTap: false }
+]
+
+function activationIndexOfKey(key) {
+  for (var i = 0; i < ACTIVATIONS.length; i++) {
+    if (ACTIVATIONS[i].key === key) return i
+  }
+  return 0
+}
+
+// Resolves any pair of stored values, including a hand-edited or pre-merge
+// config that sets both, onto the one choice the control can express. Off wins
+// over everything because off has to mean off; the tap wins over a delay
+// because the tap is what replaced it.
+function activationIndex(delayMs, doubleTapEnabled) {
+  var delay = normalizeDelay(delayMs)
+  if (delay < 0) return activationIndexOfKey("off")
+  if (normalizeDoubleTap(doubleTapEnabled)) return activationIndexOfKey("doubleTap")
+  for (var i = 0; i < ACTIVATIONS.length; i++) {
+    if (!ACTIVATIONS[i].doubleTap && ACTIVATIONS[i].delayMs === delay) return i
+  }
+  return activationIndexOfKey("instant")
+}
+
+function activationAt(index) {
+  var i = Number(index)
+  if (!isFinite(i)) i = 0
+  i = Math.floor(i)
+  if (i < 0 || i >= ACTIVATIONS.length) i = 0
+  return { delayMs: ACTIVATIONS[i].delayMs, doubleTapEnabled: ACTIVATIONS[i].doubleTap }
+}
+
+// Both effective values come off the same resolved index, so they cannot
+// disagree: selecting the tap always means a zero delay, and the second press
+// opens the guide at once instead of starting a hold on top of it.
+function effectiveDelay(delayMs, doubleTapEnabled) {
+  return activationAt(activationIndex(delayMs, doubleTapEnabled)).delayMs
+}
+
+function effectiveDoubleTap(delayMs, doubleTapEnabled) {
+  return activationAt(activationIndex(delayMs, doubleTapEnabled)).doubleTapEnabled
+}
+
+// Press of a guide root. Opens a guide only when that same root is already
+// armed by a preceding tap; otherwise it records the press so the matching
+// release can decide whether it was one.
+function tapGateDown(state, rootName, nowMs) {
+  var current = isObject(state) ? state : emptyTapState()
+  var age = nowMs - current.armedAtMs
+  var armed = current.armedRoot === rootName && current.armedAtMs > 0 && age >= 0 && age <= ARM_WINDOW_MS
+  return {
+    show: armed,
+    state: { armedRoot: "", armedAtMs: 0, downRoot: rootName, downAtMs: nowMs, shown: armed }
+  }
+}
+
+// Release of a guide root. A short press that did not open a guide arms that
+// root; anything else clears the arming, so a long hold cannot stand in for
+// the first tap.
+function tapGateUp(state, nowMs) {
+  var current = isObject(state) ? state : emptyTapState()
+  if (current.shown) return emptyTapState()
+  var held = nowMs - current.downAtMs
+  if (current.downRoot !== "" && current.downAtMs > 0 && held >= 0 && held <= TAP_MAX_MS)
+    return { armedRoot: current.downRoot, armedAtMs: nowMs, downRoot: "", downAtMs: 0, shown: false }
+  return emptyTapState()
 }
 
 function normalizeFullscreen(value) {
