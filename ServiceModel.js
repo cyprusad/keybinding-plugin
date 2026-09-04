@@ -148,6 +148,12 @@ function normalizeDelay(value) {
   return [0, 80, 150, 250].indexOf(number) !== -1 ? number : 0
 }
 
+function normalizeTopOffset(value) {
+  var number = Number(value)
+  if (!isFinite(number)) return 0
+  return Math.min(320, Math.max(0, Math.floor(number)))
+}
+
 function normalizeFullscreen(value) {
   return value === true
 }

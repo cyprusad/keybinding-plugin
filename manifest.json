@@ -18,6 +18,7 @@
     "defaultSection": "right",
     "defaults": {
       "guideDelayMs": 0,
+      "guideTopOffset": 0,
       "showInFullscreen": false,
       "guideSuperEnabled": true,
       "guideShiftEnabled": true,
@@ -29,6 +30,11 @@
         "key": "guideDelayMs",
         "type": "integer",
         "label": "Super Guide delay (ms)"
+      },
+      {
+        "key": "guideTopOffset",
+        "type": "integer",
+        "label": "Guide top offset (px)"
       },
       {
         "key": "showInFullscreen",
