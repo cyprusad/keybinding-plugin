@@ -142,7 +142,7 @@ Panel {
     Qt.openUrlExternally(root.bridgeSourceUrl)
   }
 
-  function delayValue(index) { return [0, 80, 150, 250, -1][index] }
+  readonly property var activationLabels: ["Instant", "80 ms", "150 ms", "250 ms", "Double tap", "Off"]
 
   onBarChanged: syncService()
   Component.onCompleted: syncService()
@@ -462,7 +462,7 @@ Panel {
 
           Text {
             width: parent.width
-            text: "DELAY"
+            text: "ACTIVATION"
             color: Color.foreground
             opacity: 0.70
             font.pixelSize: Style.font.caption
@@ -470,7 +470,7 @@ Panel {
           }
           Text {
             width: parent.width
-            text: "How long to hold a key before its guide appears. Off keeps Omakeez enabled without showing a guide."
+            text: "How much intent a guide should ask for before it covers the screen. A delay waits while you hold the key. Double tap opens the guide on the second press instead, so holding the key on its own stays silent. Off keeps Omakeez enabled without showing a guide."
             color: Color.foreground
             opacity: 0.78
             font.pixelSize: Style.font.caption
@@ -480,12 +480,12 @@ Panel {
             width: parent.width
             spacing: Style.space(4)
             Repeater {
-              model: ["Instant", "80 ms", "150 ms", "250 ms", "Off"]
+              model: root.activationLabels
               Button {
                 required property int index
-                text: ["Instant", "80 ms", "150 ms", "250 ms", "Off"][index]
-                selected: root.service && root.service.guideDelayMs === root.delayValue(index)
-                onClicked: root.service.setGuideDelayMs(root.delayValue(index))
+                text: root.activationLabels[index]
+                selected: root.service && root.service.guideActivationIndex === index
+                onClicked: root.service.setGuideActivation(index)
               }
             }
           }

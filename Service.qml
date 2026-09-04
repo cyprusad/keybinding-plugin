@@ -19,6 +19,14 @@ Item {
   property string activeGuideRoot: ""
   property string highlightedBindingId: ""
   property int guideDelayMs: 0
+  property bool guideDoubleTapEnabled: false
+  property var tapState: Model.emptyTapState()
+  // The delay and the tap are one setting with one selected value. These
+  // derived properties are what the rest of the plugin reads, so no config can
+  // produce a guide that wants a tap and then a hold on top of it.
+  readonly property int guideActivationIndex: Model.activationIndex(guideDelayMs, guideDoubleTapEnabled)
+  readonly property int effectiveDelayMs: Model.effectiveDelay(guideDelayMs, guideDoubleTapEnabled)
+  readonly property bool tapRequired: Model.effectiveDoubleTap(guideDelayMs, guideDoubleTapEnabled)
   property bool showInFullscreen: false
   property bool guideSuperEnabled: true
   property bool guideShiftEnabled: true
@@ -94,11 +102,25 @@ Item {
           return true
         }
         pendingGuideReceivedMs = Date.now()
+        if (tapRequired) {
+          var gate = Model.tapGateDown(tapState, parsed.root, Date.now())
+          tapState = gate.state
+          // An unarmed press stays silent. The key itself is untouched, so the
+          // shortcut still fires; only the guide waits for the tap that arms it.
+          if (!gate.show) {
+            activeModifiers = ""
+            activeGuideRoot = ""
+            guideVisible = false
+            pendingGuideReceivedMs = 0
+            return true
+          }
+        }
         activeGuideRoot = parsed.root
         activeModifiers = parsed.root
         highlightedBindingId = ""
         guideVisible = true
       } else {
+        if (tapRequired) tapState = Model.tapGateUp(tapState, Date.now())
         activeModifiers = ""
         activeGuideRoot = ""
         guideVisible = false
@@ -116,6 +138,9 @@ Item {
         return false
       }
       highlightedBindingId = parsed.id
+      // Firing a shortcut consumes the arming: a tap followed by real work
+      // should not leave the next hold primed.
+      if (tapRequired) tapState = Model.emptyTapState()
       return true
     }
     return false
@@ -134,6 +159,7 @@ Item {
     activeModifiers = ""
     activeGuideRoot = ""
     highlightedBindingId = ""
+    tapState = Model.emptyTapState()
     pendingGuideReceivedMs = 0
     observedEventCount = 0
     bridgeEventCount = 0
@@ -182,7 +208,10 @@ Item {
 
   function syncSettings() {
     var entry = settingsEntry()
+    var previousTapRequired = tapRequired
     guideDelayMs = Model.normalizeDelay(entry.guideDelayMs)
+    guideDoubleTapEnabled = Model.normalizeDoubleTap(entry.guideDoubleTapEnabled)
+    if (tapRequired !== previousTapRequired) tapState = Model.emptyTapState()
     showInFullscreen = Model.normalizeFullscreen(entry.showInFullscreen)
     guideSuperEnabled = Model.normalizeGuideRoot(entry.guideSuperEnabled)
     guideShiftEnabled = Model.normalizeGuideRoot(entry.guideShiftEnabled)
@@ -205,11 +234,21 @@ Item {
     return true
   }
 
+  // One choice, one write. Writing the delay without clearing the tap -- or the
+  // reverse -- is what let the two settings stack in the first place.
+  function setGuideActivation(index) {
+    var choice = Model.activationAt(index)
+    if (choice.delayMs === guideDelayMs && choice.doubleTapEnabled === guideDoubleTapEnabled) return false
+    guideDelayMs = choice.delayMs
+    guideDoubleTapEnabled = choice.doubleTapEnabled
+    tapState = Model.emptyTapState()
+    return persistSettings({ guideDelayMs: choice.delayMs, guideDoubleTapEnabled: choice.doubleTapEnabled })
+  }
+
+  // Kept for callers that only know about the delay; routed through the
+  // activation so picking a delay always turns the tap off.
   function setGuideDelayMs(value) {
-    var next = Model.normalizeDelay(value)
-    if (next === guideDelayMs) return false
-    guideDelayMs = next
-    return persistSettings({ guideDelayMs: next })
+    return setGuideActivation(Model.activationIndex(value, false))
   }
 
   function setShowInFullscreen(value) {
@@ -246,6 +285,7 @@ Item {
       activeModifiers = ""
       activeGuideRoot = ""
     }
+    if (!next) tapState = Model.emptyTapState()
     var changes = {}
     changes[setting] = next
     return persistSettings(changes)
@@ -288,6 +328,7 @@ Item {
       activeModifiers = ""
       activeGuideRoot = ""
       highlightedBindingId = ""
+      tapState = Model.emptyTapState()
     } else integrationState = "error"
     return integrationState !== "error"
   }
