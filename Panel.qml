@@ -143,6 +143,7 @@ Panel {
   }
 
   function delayValue(index) { return [0, 80, 150, 250, -1][index] }
+  function topOffsetValue(index) { return [0, 24, 32, 48, 64][index] }
 
   onBarChanged: syncService()
   Component.onCompleted: syncService()
@@ -486,6 +487,38 @@ Panel {
                 text: ["Instant", "80 ms", "150 ms", "250 ms", "Off"][index]
                 selected: root.service && root.service.guideDelayMs === root.delayValue(index)
                 onClicked: root.service.setGuideDelayMs(root.delayValue(index))
+              }
+            }
+          }
+
+          PanelSeparator { width: parent.width; strength: 0.09 }
+
+          Text {
+            width: parent.width
+            text: "TOP OFFSET"
+            color: Color.foreground
+            opacity: 0.70
+            font.pixelSize: Style.font.caption
+            font.bold: true
+          }
+          Text {
+            width: parent.width
+            text: "Push the guide down from the top edge, for displays with a notch or camera housing that would cover it."
+            color: Color.foreground
+            opacity: 0.78
+            font.pixelSize: Style.font.caption
+            wrapMode: Text.WordWrap
+          }
+          Flow {
+            width: parent.width
+            spacing: Style.space(4)
+            Repeater {
+              model: ["None", "24 px", "32 px", "48 px", "64 px"]
+              Button {
+                required property int index
+                text: ["None", "24 px", "32 px", "48 px", "64 px"][index]
+                selected: root.service && root.service.guideTopOffset === root.topOffsetValue(index)
+                onClicked: root.service.setGuideTopOffset(root.topOffsetValue(index))
               }
             }
           }

@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added `guideTopOffset`, which moves the guide down from the top edge of the
+  screen so a notch or camera housing does not cover it. The offset band is
+  left transparent, so the bar underneath stays readable. The panel offers 24,
+  32, 48 and 64 px; the setting accepts 0-320. Defaults to 0, leaving the
+  existing appearance unchanged.
+
 ## 0.1.2 — 2026-09-03
 
 - Fixed fresh-install setup failing with `unsafe-state-directory` after the

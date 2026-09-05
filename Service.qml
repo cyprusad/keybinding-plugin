@@ -19,6 +19,7 @@ Item {
   property string activeGuideRoot: ""
   property string highlightedBindingId: ""
   property int guideDelayMs: 0
+  property int guideTopOffset: 0
   property bool showInFullscreen: false
   property bool guideSuperEnabled: true
   property bool guideShiftEnabled: true
@@ -183,6 +184,7 @@ Item {
   function syncSettings() {
     var entry = settingsEntry()
     guideDelayMs = Model.normalizeDelay(entry.guideDelayMs)
+    guideTopOffset = Model.normalizeTopOffset(entry.guideTopOffset)
     showInFullscreen = Model.normalizeFullscreen(entry.showInFullscreen)
     guideSuperEnabled = Model.normalizeGuideRoot(entry.guideSuperEnabled)
     guideShiftEnabled = Model.normalizeGuideRoot(entry.guideShiftEnabled)
@@ -210,6 +212,13 @@ Item {
     if (next === guideDelayMs) return false
     guideDelayMs = next
     return persistSettings({ guideDelayMs: next })
+  }
+
+  function setGuideTopOffset(value) {
+    var next = Model.normalizeTopOffset(value)
+    if (next === guideTopOffset) return false
+    guideTopOffset = next
+    return persistSettings({ guideTopOffset: next })
   }
 
   function setShowInFullscreen(value) {

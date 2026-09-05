@@ -46,8 +46,19 @@ bindings. The guide follows the focused monitor.
 The panel lets you:
 
 - choose each guide root independently;
-- choose how long a key must be held before the guide appears; and
+- choose how long a key must be held before the guide appears;
+- push the guide down from the top edge, for displays with a notch; and
 - keep guides hidden over fullscreen apps by default, or enable them there.
+
+### Displays with a notch
+
+The guide starts at the top edge of the focused monitor, which a notch or
+camera housing can cover. **Top offset** moves the guide down by a fixed number
+of pixels and leaves the band above it completely transparent, so the bar stays
+readable instead of sitting under the contrast gradient. The panel offers 24,
+32, 48 and 64 px, and the `guideTopOffset` bar-widget setting accepts any value
+from 0 to 320 for a housing that falls between them. The default is 0, which is
+the previous behavior.
 
 Turning off a guide root hides only that overlay. It never disables the
 underlying shortcut.

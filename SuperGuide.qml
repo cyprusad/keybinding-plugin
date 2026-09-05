@@ -27,6 +27,7 @@ Item {
     showInFullscreen: service.showInFullscreen
   }) : false
   readonly property int delayValue: service ? Number(service.guideDelayMs) : -1
+  readonly property int topOffset: service ? Number(service.guideTopOffset) : 0
   readonly property string currentMask: service && String(service.activeModifiers || "") !== ""
     ? String(service.activeModifiers)
     : service && String(service.activeGuideRoot || "") !== "" ? String(service.activeGuideRoot) : "SUPER"
@@ -194,9 +195,13 @@ Item {
         Rectangle {
           id: guideBackdrop
           x: 0
-          y: 0
+          // Start the shield at the offset, not at the screen edge. The band a
+          // notch occupies also holds the bar, and dimming it to read a guide
+          // trades one unreadable thing for another. Above the offset the
+          // window stays fully transparent.
+          y: root.topOffset
           width: parent.width
-          height: guideContent.y + guideContent.height + Style.space(80)
+          height: guideContent.y - root.topOffset + guideContent.height + Style.space(80)
           z: -1
           gradient: Gradient {
             orientation: Gradient.Vertical
@@ -222,8 +227,12 @@ Item {
           x: Style.space(4)
           // The guide's transparent contrast surface already begins at the
           // screen edge. Start the header there too, rather than reserving an
-          // opaque-looking dead band for the bar underneath.
-          y: Style.space(4)
+          // opaque-looking dead band for the bar underneath. `guideTopOffset`
+          // opts back into that band for displays whose top edge is physically
+          // obstructed by a notch or camera housing. The window and shield
+          // heights are derived from this y, so both grow with the offset
+          // instead of clipping the last row.
+          y: Style.space(4) + root.topOffset
           width: Math.max(1, parent.width - Style.space(8))
           height: headerChip.height + Style.space(5) + deckCanvas.height
 

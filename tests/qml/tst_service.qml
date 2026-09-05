@@ -96,6 +96,13 @@ TestCase {
     compare(Model.normalizeDelay("150"), 150)
     compare(Model.normalizeDelay("disabled"), -1)
     compare(Model.normalizeDelay(99), 0)
+    compare(Model.normalizeTopOffset(undefined), 0)
+    compare(Model.normalizeTopOffset(48), 48)
+    compare(Model.normalizeTopOffset("32"), 32)
+    compare(Model.normalizeTopOffset(37.9), 37)
+    compare(Model.normalizeTopOffset(-10), 0)
+    compare(Model.normalizeTopOffset(9999), 320)
+    compare(Model.normalizeTopOffset("notch"), 0)
     compare(Model.normalizeFullscreen(true), true)
     compare(Model.normalizeFullscreen("true"), false)
     compare(Model.normalizeGuideRoot(undefined), true)
@@ -103,11 +110,12 @@ TestCase {
     compare(Model.normalizeGuideRoot(false), false)
 
     var config = { bar: { layout: { left: [], center: [], right: [
-      { id: "io.github.cyprusad.omakeez", guideDelayMs: 150, showInFullscreen: true,
+      { id: "io.github.cyprusad.omakeez", guideDelayMs: 150, guideTopOffset: 48, showInFullscreen: true,
         guideSuperEnabled: false, guideShiftEnabled: true, guideCtrlEnabled: false, guideAltEnabled: true }
     ] } } }
     var settings = Model.settingsFor(config, "io.github.cyprusad.omakeez")
     compare(settings.guideDelayMs, 150)
+    compare(settings.guideTopOffset, 48)
     compare(settings.showInFullscreen, true)
     compare(settings.guideSuperEnabled, false)
     compare(settings.guideCtrlEnabled, false)
